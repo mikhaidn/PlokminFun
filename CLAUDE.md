@@ -4,45 +4,106 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a FreeCell card game implementation built as a React component. The codebase is a single-file React application (`claudeprototype.jsx`) that implements a complete, playable FreeCell game with seeded random number generation, game history tracking, and responsive design.
+This is a FreeCell card game implementation built with React, TypeScript, and Vite. The codebase follows a modular architecture with clear separation between core logic, game rules, state management, and UI components.
+
+See `ARCHITECTURE.md` for the long-term vision of extracting reusable libraries for other card games.
+
+## Build & Test Commands
+
+```bash
+cd freecell-mvp
+
+# Development
+npm run dev          # Start dev server at localhost:5173
+
+# Testing
+npm run test         # Run all tests once
+npm run test:watch   # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
+
+# Build & Lint
+npm run build        # TypeScript check + production build
+npm run lint         # ESLint
+```
+
+## Project Structure
+
+```
+CardGames/
+├── CLAUDE.md              # This file
+├── ARCHITECTURE.md        # Long-term architectural plans
+└── freecell-mvp/          # Main application
+    ├── src/
+    │   ├── core/          # Game-agnostic card primitives
+    │   │   ├── types.ts   # Card, Suit, Value types
+    │   │   ├── deck.ts    # createDeck(), shuffleWithSeed()
+    │   │   ├── rng.ts     # seededRandom() for reproducible shuffles
+    │   │   └── __tests__/ # Unit tests for core modules
+    │   │
+    │   ├── rules/         # FreeCell-specific game rules
+    │   │   ├── validation.ts   # canStackOnTableau(), canStackOnFoundation()
+    │   │   ├── movement.ts     # getMaxMovable(), getValidMoveableStack()
+    │   │   ├── autoComplete.ts # Auto-move logic
+    │   │   ├── hints.ts        # Hint calculation
+    │   │   └── __tests__/      # Rule tests
+    │   │
+    │   ├── state/         # Game state management
+    │   │   ├── gameState.ts    # GameState type, initializeGame(), checkWinCondition()
+    │   │   ├── gameActions.ts  # Move operations (immutable state updates)
+    │   │   └── __tests__/      # State tests
+    │   │
+    │   ├── components/    # React UI components
+    │   │   ├── Card.tsx
+    │   │   ├── EmptyCell.tsx
+    │   │   ├── Tableau.tsx
+    │   │   ├── FreeCellArea.tsx
+    │   │   ├── FoundationArea.tsx
+    │   │   └── GameBoard.tsx
+    │   │
+    │   ├── config/        # Configuration
+    │   │   └── featureFlags.ts # Feature flag definitions
+    │   │
+    │   ├── App.tsx        # Main game component
+    │   └── main.tsx       # Entry point
+    │
+    ├── package.json
+    └── TESTING.md         # Manual testing guide
+```
 
 ## Architecture
 
-### Core Game State
-- **gameState**: The primary state object containing:
-  - `tableau`: 8 columns of cards (the main playing area)
-  - `freeCells`: 4 temporary holding cells for single cards
-  - `foundations`: 4 stacks where cards are built up by suit (A→K)
-- **moveHistory**: Array of game states for undo functionality
-- **gameHistory**: Persistent record of completed games (stored via `window.storage`)
+### Core Types (`src/core/types.ts`)
+```typescript
+type Suit = '♠' | '♥' | '♦' | '♣';
+type Value = 'A' | '2' | ... | 'K';
+
+interface Card {
+  suit: Suit;
+  value: Value;
+  rank: number;  // 1-13 (A=1, K=13)
+  id: string;    // e.g., "A♠", "K♥"
+}
+```
+
+### Game State (`src/state/gameState.ts`)
+```typescript
+interface GameState {
+  tableau: Card[][];        // 8 columns (main playing area)
+  freeCells: (Card | null)[]; // 4 temporary holding cells
+  foundations: Card[][];    // 4 suit piles (A→K)
+  seed: number;             // For reproducible games
+  moves: number;            // Move counter
+}
+```
 
 ### Seeded Random Number Generation
-The game uses a custom seeded RNG (`seededRandom`) based on bit manipulation to ensure reproducible shuffles. Each game is identified by a numeric seed, allowing players to replay specific deals.
+The game uses `seededRandom()` in `src/core/rng.ts` based on bit manipulation to ensure reproducible shuffles. Each game is identified by a numeric seed, allowing players to replay specific deals.
 
-### Game Logic Components
-- **Card Movement**: Supports both click-to-select and drag-and-drop interactions
-- **Stack Movement**: Can move sequences of cards that form valid descending alternating-color stacks (limited by available free cells and empty columns)
-- **Auto-completion**: Automatically moves safe cards to foundations when they meet criteria (rank ≤ minimum foundation rank + 2)
-- **Validation**: `canStackOnTableau()` and `canStackOnFoundation()` enforce FreeCell rules
-
-### UI Architecture
-- **Responsive Design**: Uses `isCompact` state to adapt layout based on viewport size (threshold: 520px width or 700px height)
-- **Component Hierarchy**:
-  - `Card`: Individual card rendering with drag/select states
-  - `TableauColumn`: Column of stacked cards with cascade display
-  - `EmptyCell`: Placeholder for free cells and foundation spots
-  - `MenuModal`: Game menu with seed input and new game options
-  - `HistoryModal`: Statistics and previous games list
-
-### State Management Patterns
-- Deep cloning (`JSON.parse(JSON.stringify())`) is used for immutable state updates
-- Move history is appended after each valid move for undo support
-- Game recording happens once on completion to prevent duplicate history entries
-
-### Storage Integration
-The game assumes a `window.storage` API with async `get()` and `set()` methods for persisting game history. This appears to be a custom storage abstraction (not standard browser localStorage).
-
-## Key Algorithms
+### Game Rules
+- **Tableau stacking**: Alternating colors, descending rank (Red 7 on Black 8)
+- **Foundation building**: Same suit, ascending rank (A→2→3...→K)
+- **Free cells**: Single card storage only
+- **Stack movement**: Limited by available free cells and empty columns
 
 ### Maximum Movable Stack Calculation
 `getMaxMovable()` determines how many cards can be moved as a sequence:
@@ -50,28 +111,25 @@ The game assumes a `window.storage` API with async `get()` and `set()` methods f
 maxMovable = (emptyFreeCells + 1) × 2^(emptyTableauColumns)
 ```
 
-### Auto-move Logic
-Cards are automatically moved to foundations when:
-1. The card can legally stack on a foundation (correct suit and rank)
-2. The card's rank ≤ minimum foundation rank + 2 (ensures safe moves)
-
 ## Development Notes
 
-### File Structure
-This is a single-file application. The entire game logic, UI, and styling are contained in `claudeprototype.jsx`.
+### State Management Pattern
+- State updates are immutable (return new objects, don't mutate)
+- `gameActions.ts` contains all move operations
+- Each action validates the move before applying
 
-### Styling Approach
-All styles are inline JavaScript objects. The design uses:
-- Google Fonts: 'Crimson Text' for typography
-- CSS-in-JS with computed responsive values
-- Gradient background with SVG noise texture overlay
-- Card colors: Red suits (#c41e3a) and Black suits (#1a1a2e)
-
-### Testing a Specific Seed
-To test a specific game configuration, use the seed input feature in the menu or modify `initGameWithSeed()` to accept a specific seed value during development.
+### Testing Approach
+- Unit tests co-located with source files in `__tests__/` directories
+- Vitest as test runner with jsdom environment
+- See `TESTING.md` for manual testing scenarios
 
 ### Adding New Features
 When extending the game:
-- Card movement logic should update `gameState`, call `saveState()`, and increment `moves`
-- New UI elements should respect the `isCompact` flag for responsive sizing
-- Game validation rules are centralized in `canStackOnTableau()` and `canStackOnFoundation()`
+- Core card utilities go in `src/core/`
+- FreeCell-specific rules go in `src/rules/`
+- State mutations go through `src/state/gameActions.ts`
+- UI components go in `src/components/`
+- Use feature flags in `src/config/featureFlags.ts` for toggleable features
+
+### Feature Flags
+Feature flags are defined in `src/config/featureFlags.ts`. Check this file before implementing new toggleable features.
