@@ -133,3 +133,125 @@ When extending the game:
 
 ### Feature Flags
 Feature flags are defined in `src/config/featureFlags.ts`. Check this file before implementing new toggleable features.
+
+## Deployment to iOS/Android
+
+### Current Status
+The game is **ready for desktop browser prototyping** but requires additional work for mobile deployment:
+- ❌ No PWA manifest or service worker
+- ❌ Layout uses fixed pixels (not responsive)
+- ❌ No touch-optimized interactions
+- ❌ No app icons
+
+### Deployment Options
+
+#### Option A: PWA (Recommended for Prototyping)
+Progressive Web App - works on both iOS Safari and Android Chrome.
+
+**Step 1: Add PWA Plugin**
+```bash
+cd freecell-mvp
+npm install -D vite-plugin-pwa
+```
+
+**Step 2: Configure vite.config.ts**
+```typescript
+import { VitePWA } from 'vite-plugin-pwa'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      manifest: {
+        name: 'FreeCell',
+        short_name: 'FreeCell',
+        display: 'standalone',
+        orientation: 'landscape',
+        background_color: '#2c5f2d',
+        theme_color: '#2c5f2d',
+        icons: [
+          { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icon-512.png', sizes: '512x512', type: 'image/png' }
+        ]
+      }
+    })
+  ]
+})
+```
+
+**Step 3: Add Icons**
+Create `public/icon-192.png` and `public/icon-512.png`
+
+**Step 4: Deploy to Static Host**
+```bash
+npm run build
+# Deploy dist/ to Vercel, Netlify, or GitHub Pages
+```
+
+**Step 5: Install on Device**
+- **iOS**: Open in Safari → Share → "Add to Home Screen"
+- **Android**: Open in Chrome → Menu → "Install app"
+
+#### Option B: Capacitor (Native App Wrapper)
+For App Store/Play Store distribution or native features.
+
+**Step 1: Install Capacitor**
+```bash
+cd freecell-mvp
+npm install @capacitor/core @capacitor/cli
+npx cap init FreeCell com.yourname.freecell
+npm install @capacitor/ios @capacitor/android
+```
+
+**Step 2: Build and Sync**
+```bash
+npm run build
+npx cap add ios
+npx cap add android
+npx cap sync
+```
+
+**Step 3: Open in Native IDEs**
+```bash
+npx cap open ios      # Opens Xcode (macOS only)
+npx cap open android  # Opens Android Studio
+```
+
+**Step 4: Run on Device**
+- **iOS**: Requires Mac with Xcode, Apple Developer account ($99/year for App Store)
+- **Android**: Android Studio, can test on device via USB
+
+### Pre-Deployment Checklist
+
+Before deploying to mobile, address these issues:
+
+1. **Responsive Layout**
+   - [ ] Replace fixed `px` values with viewport units (`vw`, `vh`) or CSS Grid
+   - [ ] Test at 1024x768 (iPad) and 360x640 (mobile)
+   - [ ] Add CSS media queries or use `window.innerWidth` for sizing
+
+2. **Touch Optimization**
+   - [ ] Increase tap targets to minimum 44x44px
+   - [ ] Test drag-and-drop on touch devices (may need touch event handlers)
+   - [ ] Consider tap-to-select as primary interaction (drag as secondary)
+
+3. **Viewport Configuration**
+   - [ ] Add to `index.html`:
+     ```html
+     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+     <meta name="apple-mobile-web-app-capable" content="yes">
+     ```
+
+4. **Icons & Splash Screens**
+   - [ ] Create app icons (192x192, 512x512 minimum)
+   - [ ] For iOS: Add Apple touch icons and splash screens
+   - [ ] Consider using a generator like realfavicongenerator.net
+
+### Quick Test on Mobile (No Changes Needed)
+To test the current build on a mobile device immediately:
+```bash
+cd freecell-mvp
+npm run dev -- --host
+```
+Then open `http://<your-ip>:5173` on your mobile device (same network).
