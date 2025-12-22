@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Ask a Question
+    url: https://github.com/mikhaidn/CardGames/discussions
+    about: Ask questions or discuss ideas
+  - name: 🎮 Play FreeCell
+    url: https://mikhaidn.github.io/CardGames/freecell/
+    about: Try the live game
