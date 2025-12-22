@@ -11,6 +11,7 @@ import { getLowestPlayableCards } from '../rules/hints';
 import { FreeCellArea } from './FreeCellArea';
 import { FoundationArea } from './FoundationArea';
 import { Tableau } from './Tableau';
+import { version } from '../../package.json';
 
 type SelectedCard =
   | { type: 'tableau'; column: number; cardIndex: number }
@@ -26,6 +27,10 @@ export const GameBoard: React.FC = () => {
   const [showSeedInput, setShowSeedInput] = useState(false);
   const [showHints, setShowHints] = useState(false);
   const [inputSeed, setInputSeed] = useState('');
+
+  // Touch drag-and-drop state
+  const [touchDragging, setTouchDragging] = useState(false);
+  const [touchPosition, setTouchPosition] = useState<{ x: number; y: number } | null>(null);
 
   // Reset game when seed changes (recommended pattern for derived state)
   if (prevSeed !== seed) {
@@ -254,13 +259,100 @@ export const GameBoard: React.FC = () => {
     setSelectedCard(null);
   };
 
+  // Touch handlers
+  const handleTouchStart = (source: SelectedCard) => (e: React.TouchEvent) => {
+    if (!source) return;
+    e.preventDefault(); // Prevent scrolling
+    setTouchDragging(true);
+    setDraggingCard(source);
+    setSelectedCard(source);
+    const touch = e.touches[0];
+    setTouchPosition({ x: touch.clientX, y: touch.clientY });
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchDragging) return;
+    e.preventDefault(); // Prevent scrolling
+    const touch = e.touches[0];
+    setTouchPosition({ x: touch.clientX, y: touch.clientY });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchDragging || !draggingCard) {
+      setTouchDragging(false);
+      setTouchPosition(null);
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    if (element) {
+      // Find the drop target by checking data attributes
+      const dropTarget = element.closest('[data-drop-target]');
+      if (dropTarget) {
+        const targetType = dropTarget.getAttribute('data-drop-type');
+        const targetIndex = parseInt(dropTarget.getAttribute('data-drop-index') || '0');
+
+        let newState: GameState | null = null;
+
+        if (targetType === 'tableau') {
+          if (draggingCard.type === 'freeCell') {
+            newState = moveCardFromFreeCell(gameState, draggingCard.index, targetIndex);
+          } else if (draggingCard.type === 'tableau') {
+            const numCards = gameState.tableau[draggingCard.column].length - draggingCard.cardIndex;
+            newState = moveCardsToTableau(gameState, draggingCard.column, numCards, targetIndex);
+          }
+        } else if (targetType === 'freeCell') {
+          if (draggingCard.type === 'tableau') {
+            const column = gameState.tableau[draggingCard.column];
+            if (draggingCard.cardIndex === column.length - 1) {
+              newState = moveCardToFreeCell(gameState, draggingCard.column, targetIndex);
+            }
+          }
+        } else if (targetType === 'foundation') {
+          if (draggingCard.type === 'freeCell') {
+            newState = moveCardToFoundation(gameState, 'freeCell', draggingCard.index, targetIndex);
+          } else if (draggingCard.type === 'tableau') {
+            const column = gameState.tableau[draggingCard.column];
+            if (draggingCard.cardIndex === column.length - 1) {
+              newState = moveCardToFoundation(gameState, 'tableau', draggingCard.column, targetIndex);
+            }
+          }
+        }
+
+        if (newState) {
+          setGameState(newState);
+        }
+      }
+    }
+
+    setTouchDragging(false);
+    setDraggingCard(null);
+    setSelectedCard(null);
+    setTouchPosition(null);
+  };
+
+  const handleTouchCancel = () => {
+    setTouchDragging(false);
+    setDraggingCard(null);
+    setSelectedCard(null);
+    setTouchPosition(null);
+  };
+
   return (
-    <div style={{
-      padding: '24px',
-      backgroundColor: '#2c5f2d',
-      minHeight: '100vh',
-      fontFamily: 'Arial, sans-serif',
-    }}>
+    <div
+      style={{
+        padding: '24px',
+        backgroundColor: '#2c5f2d',
+        minHeight: '100vh',
+        fontFamily: 'Arial, sans-serif',
+        touchAction: 'none',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+      }}
+      onTouchMove={handleTouchMove}
+    >
       {/* Header */}
       <div style={{
         display: 'flex',
@@ -354,12 +446,17 @@ export const GameBoard: React.FC = () => {
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
           onDrop={handleFreeCellDrop}
+          onTouchStart={(index) => handleTouchStart({ type: 'freeCell', index })}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchCancel}
         />
         <FoundationArea
           foundations={gameState.foundations}
           onFoundationClick={handleFoundationClick}
           onDragOver={handleDragOver}
           onDrop={handleFoundationDrop}
+          onTouchEnd={handleTouchEnd}
         />
       </div>
 
@@ -375,6 +472,10 @@ export const GameBoard: React.FC = () => {
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
         onDrop={handleTableauDrop}
+        onTouchStart={(columnIndex, cardIndex) => handleTouchStart({ type: 'tableau', column: columnIndex, cardIndex })}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
       />
 
       {/* Win Modal */}
@@ -408,6 +509,68 @@ export const GameBoard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Footer with Version */}
+      <div style={{
+        marginTop: '24px',
+        textAlign: 'center',
+        color: 'rgba(255, 255, 255, 0.6)',
+        fontSize: '12px',
+      }}>
+        v{version}
+      </div>
+
+      {/* Touch drag preview */}
+      {touchDragging && touchPosition && draggingCard && (() => {
+        let card = null;
+        if (draggingCard.type === 'freeCell') {
+          card = gameState.freeCells[draggingCard.index];
+        } else if (draggingCard.type === 'tableau') {
+          const column = gameState.tableau[draggingCard.column];
+          card = column[draggingCard.cardIndex];
+        }
+
+        if (!card) return null;
+
+        return (
+          <div
+            style={{
+              position: 'fixed',
+              left: touchPosition.x - 30,
+              top: touchPosition.y - 42,
+              pointerEvents: 'none',
+              zIndex: 1000,
+              opacity: 0.8,
+            }}
+          >
+            <div
+              style={{
+                width: '60px',
+                height: '84px',
+                borderRadius: '6px',
+                backgroundColor: 'white',
+                border: '2px solid #4caf50',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: card.suit === '♥' || card.suit === '♦' ? '#c41e3a' : '#1a1a2e',
+                position: 'relative',
+              }}
+            >
+              <div style={{ position: 'absolute', top: '4px', left: '6px', fontSize: '14px', lineHeight: '1' }}>
+                <div>{card.value}{card.suit}</div>
+              </div>
+              <div style={{ fontSize: '26px' }}>{card.suit}</div>
+              <div style={{ position: 'absolute', bottom: '4px', right: '6px', fontSize: '14px', lineHeight: '1', transform: 'rotate(180deg)' }}>
+                <div>{card.value}{card.suit}</div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

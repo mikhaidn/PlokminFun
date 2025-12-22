@@ -14,6 +14,10 @@ interface TableauProps {
   onDragEnd?: () => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (columnIndex: number) => (e: React.DragEvent) => void;
+  onTouchStart?: (columnIndex: number, cardIndex: number) => (e: React.TouchEvent) => void;
+  onTouchMove?: (e: React.TouchEvent) => void;
+  onTouchEnd?: (e: React.TouchEvent) => void;
+  onTouchCancel?: () => void;
 }
 
 export const Tableau: React.FC<TableauProps> = ({
@@ -27,6 +31,10 @@ export const Tableau: React.FC<TableauProps> = ({
   onDragEnd,
   onDragOver,
   onDrop,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+  onTouchCancel,
 }) => {
   return (
     <div style={{ display: 'flex', gap: '8px', marginTop: '24px' }}>
@@ -38,6 +46,9 @@ export const Tableau: React.FC<TableauProps> = ({
             flexDirection: 'column',
             minHeight: '100px',
           }}
+          data-drop-target="true"
+          data-drop-type="tableau"
+          data-drop-index={columnIndex}
           onDragOver={onDragOver}
           onDrop={onDrop ? onDrop(columnIndex) : undefined}
         >
@@ -72,6 +83,10 @@ export const Tableau: React.FC<TableauProps> = ({
                     isDragging={isDragging}
                     onDragStart={onDragStart ? onDragStart(columnIndex, cardIndex) : undefined}
                     onDragEnd={onDragEnd}
+                    onTouchStart={onTouchStart ? onTouchStart(columnIndex, cardIndex) : undefined}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                    onTouchCancel={onTouchCancel}
                   />
                 </div>
               );
