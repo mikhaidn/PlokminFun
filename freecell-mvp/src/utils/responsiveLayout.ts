@@ -26,10 +26,16 @@ const BASE_FONT_SMALL = 14;
 /**
  * Calculate optimal card size based on available viewport dimensions
  * Ensures the game fits within the viewport while maintaining card aspect ratio
+ * @param viewportWidth - Width of viewport in pixels
+ * @param viewportHeight - Height of viewport in pixels
+ * @param maxCardWidth - Maximum card width (for accessibility overrides)
+ * @param fontSizeMultiplier - Font size multiplier (for accessibility)
  */
 export function calculateLayoutSizes(
   viewportWidth: number,
-  viewportHeight: number
+  viewportHeight: number,
+  maxCardWidth: number = BASE_CARD_WIDTH,
+  fontSizeMultiplier: number = 1.0
 ): LayoutSizes {
   // Reserve space for padding and UI elements
   const HORIZONTAL_PADDING = 48; // 24px on each side
@@ -49,7 +55,7 @@ export function calculateLayoutSizes(
 
   // Use the smaller constraint and maintain aspect ratio
   const cardWidthFromHeight = maxCardHeightFromViewport * (BASE_CARD_WIDTH / BASE_CARD_HEIGHT);
-  const constrainedCardWidth = Math.min(maxCardWidthFromViewport, cardWidthFromHeight, BASE_CARD_WIDTH);
+  const constrainedCardWidth = Math.min(maxCardWidthFromViewport, cardWidthFromHeight, maxCardWidth);
 
   // Calculate scale factor
   const scale = constrainedCardWidth / BASE_CARD_WIDTH;
@@ -60,9 +66,9 @@ export function calculateLayoutSizes(
     cardGap: BASE_GAP * scale,
     cardOverlap: BASE_OVERLAP * scale,
     fontSize: {
-      large: BASE_FONT_LARGE * scale,
-      medium: BASE_FONT_MEDIUM * scale,
-      small: BASE_FONT_SMALL * scale,
+      large: BASE_FONT_LARGE * scale * fontSizeMultiplier,
+      medium: BASE_FONT_MEDIUM * scale * fontSizeMultiplier,
+      small: BASE_FONT_SMALL * scale * fontSizeMultiplier,
     },
   };
 }

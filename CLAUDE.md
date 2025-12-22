@@ -41,8 +41,8 @@ CardGames/
 │   │   ├── rules/            # FreeCell-specific game rules
 │   │   ├── state/            # Game state management
 │   │   ├── components/       # React UI components
-│   │   ├── config/           # Configuration (feature flags)
-│   │   ├── utils/            # Utility functions (responsive layout)
+│   │   ├── config/           # Configuration (feature flags, accessibility)
+│   │   ├── utils/            # Utility functions (responsive layout, accessibility)
 │   │   ├── test/             # Test setup and utilities
 │   │   ├── App.tsx           # Main game component
 │   │   └── main.tsx          # Entry point
@@ -418,6 +418,147 @@ npm run dev -- --host
 # Access from mobile: http://<your-local-ip>:5173
 ```
 
+### Accessibility Features (`src/config/accessibilitySettings.ts`)
+
+The game includes comprehensive accessibility settings to improve visibility and one-handed usability. Settings are stored in localStorage and persist across sessions.
+
+#### Available Settings
+
+**1. High Contrast Mode** (boolean)
+- Bolder card borders (4px vs 1-2px)
+- Stronger colors: Pure black (#000) for black suits, bright red (#ff0000) for red suits
+- Enhanced selection/highlight indicators
+- Higher contrast shadows
+- Better for users with vision impairments or in bright sunlight
+
+**2. Card Size** (small | medium | large | extra-large)
+- **Small**: Up to 60px width (default responsive behavior)
+- **Medium**: Up to 75px width (25% larger)
+- **Large**: Up to 90px width (50% larger)
+- **Extra Large**: Up to 110px width (80% larger)
+- Larger cards are easier to see and tap on mobile devices
+
+**3. Font Size Multiplier** (1.0 - 2.0)
+- Scales all text elements independently from card size
+- Default: 1.0 (normal)
+- Range: 1.0x to 2.0x (double size)
+- Improves readability for users with vision impairments
+
+**4. Button Position** (top | bottom)
+- **Top**: Default position in header (traditional layout)
+- **Bottom**: Fixed position at bottom of screen (one-handed mode)
+- Bottom position is easier to reach with thumb on mobile devices
+- Ideal for playing on smartphones or tablets
+
+**5. Touch Target Size** (normal | large)
+- **Normal**: Standard button sizing
+- **Large**: Minimum 44px height (WCAG AAA guideline)
+- Larger targets reduce tapping errors on touchscreens
+
+#### Implementation Details
+
+**Settings Storage:**
+```typescript
+// Load settings
+const settings = loadAccessibilitySettings();
+
+// Save settings
+saveAccessibilitySettings(settings);
+
+// Stored in localStorage under key: 'freecell-accessibility-settings'
+```
+
+**High Contrast Styling** (`src/utils/highContrastStyles.ts`):
+```typescript
+// Get colors for a card based on high contrast mode
+const colors = getCardColors(card, highContrastMode, isSelected, isHighlighted);
+// Returns: { text, background, border, borderWidth }
+
+// Get box shadow based on selection state
+const boxShadow = getCardBoxShadow(isSelected, isHighlighted, highContrastMode);
+```
+
+**Responsive Layout Integration:**
+The `calculateLayoutSizes()` function accepts accessibility overrides:
+```typescript
+calculateLayoutSizes(
+  window.innerWidth,
+  window.innerHeight,
+  getMaxCardWidth(settings.cardSize),      // Override max card size
+  settings.fontSizeMultiplier               // Override font scaling
+)
+```
+
+**Component Props:**
+All card-rendering components accept `highContrastMode` prop:
+- `Card.tsx`
+- `FreeCellArea.tsx`
+- `FoundationArea.tsx`
+- `Tableau.tsx`
+
+#### User Interface
+
+**Settings Button:**
+- Located in header/bottom bar (depending on buttonPosition setting)
+- Gear icon (⚙️) with "Settings" label
+- Opens modal dialog with all accessibility options
+
+**Settings Modal** (`src/components/SettingsModal.tsx`):
+- Checkbox for high contrast mode
+- Dropdown for card size
+- Slider for font size (visual feedback with multiplier value)
+- Dropdown for button position
+- Dropdown for touch target size
+- Save and Cancel buttons
+- Settings preview in real-time when modal is open
+
+#### Testing Accessibility Features
+
+**Manual Testing Checklist:**
+1. Open settings and enable high contrast mode → Cards should have bolder colors and thicker borders
+2. Increase card size to "Extra Large" → Cards should scale larger (up to 110px)
+3. Increase font size to 2.0x → All text should be double size
+4. Switch button position to "Bottom" → Controls should move to fixed bottom bar
+5. Set touch target size to "Large" → Buttons should be taller (44px minimum)
+6. Reload page → Settings should persist
+
+**Device Testing:**
+- Test on real mobile devices (iPhone, Android)
+- Test with one hand to verify bottom button bar usability
+- Test in bright sunlight to verify high contrast mode effectiveness
+- Test with screen readers (ARIA labels should be present)
+
+#### Key Files for Accessibility
+
+**Configuration:**
+- `src/config/accessibilitySettings.ts` - Settings types, defaults, storage functions
+- `src/utils/highContrastStyles.ts` - High contrast color calculations
+- `src/utils/responsiveLayout.ts` - Layout calculations with accessibility overrides
+
+**Components:**
+- `src/components/SettingsModal.tsx` - Settings UI
+- `src/components/Card.tsx` - Card rendering with high contrast support
+- `src/components/GameBoard.tsx` - Main integration point
+
+**Usage in GameBoard:**
+```typescript
+// Load settings on mount
+const [accessibilitySettings, setAccessibilitySettings] = useState(() =>
+  loadAccessibilitySettings()
+);
+
+// Apply to layout calculation
+const layoutSizes = calculateLayoutSizes(
+  window.innerWidth,
+  window.innerHeight,
+  getMaxCardWidth(accessibilitySettings.cardSize),
+  accessibilitySettings.fontSizeMultiplier
+);
+
+// Pass to card components
+<Card highContrastMode={accessibilitySettings.highContrastMode} />
+```
+
 ## Development Notes
 
 ### State Management Pattern
@@ -753,9 +894,11 @@ git push origin main  # Automatic via GitHub Actions
 - `freecell-mvp/src/core/` - Card primitives (types, deck, RNG)
 - `freecell-mvp/src/rules/` - FreeCell game rules
 - `freecell-mvp/src/state/` - Game state management
-- `freecell-mvp/src/components/` - React UI components
+- `freecell-mvp/src/components/` - React UI components (includes SettingsModal)
 - `freecell-mvp/src/utils/responsiveLayout.ts` - Responsive sizing calculations
+- `freecell-mvp/src/utils/highContrastStyles.ts` - Accessibility color utilities
 - `freecell-mvp/src/config/featureFlags.ts` - Feature toggles
+- `freecell-mvp/src/config/accessibilitySettings.ts` - Accessibility configuration
 
 ### Documentation
 - `ROADMAP.md` - Strategic priorities and what to build next

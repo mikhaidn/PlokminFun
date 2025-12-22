@@ -1,6 +1,6 @@
 import React from 'react';
 import { type Card as CardType } from '../core/types';
-import { isRed } from '../rules/validation';
+import { getCardColors, getCardBoxShadow } from '../utils/highContrastStyles';
 
 interface CardProps {
   card: CardType;
@@ -24,6 +24,8 @@ interface CardProps {
     medium: number;
     small: number;
   };
+  // Accessibility
+  highContrastMode?: boolean;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -43,24 +45,26 @@ export const Card: React.FC<CardProps> = ({
   cardWidth = 60,
   cardHeight = 84,
   fontSize = { large: 26, medium: 24, small: 14 },
+  highContrastMode = false,
 }) => {
-  const red = isRed(card);
   const borderRadius = cardWidth * 0.1; // 10% of width
+  const colors = getCardColors(card, highContrastMode, isSelected, isHighlighted);
+  const boxShadow = getCardBoxShadow(isSelected, isHighlighted, highContrastMode);
 
   const cardStyle: React.CSSProperties = {
     width: `${cardWidth}px`,
     height: `${cardHeight}px`,
     boxSizing: 'border-box',
     borderRadius: `${borderRadius}px`,
-    backgroundColor: isHighlighted ? '#e8f5e9' : 'white',
-    border: isSelected ? '2px solid #4caf50' : isHighlighted ? '2px solid #4caf50' : '1px solid #ccc',
-    boxShadow: isSelected ? '0 0 8px rgba(76, 175, 80, 0.5)' : isHighlighted ? '0 0 4px rgba(76, 175, 80, 0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
+    backgroundColor: colors.background,
+    border: `${colors.borderWidth} solid ${colors.border}`,
+    boxShadow,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: `${fontSize.medium}px`,
     fontWeight: 'bold',
-    color: red ? '#c41e3a' : '#1a1a2e',
+    color: colors.text,
     cursor: onClick || draggable ? 'pointer' : 'default',
     userSelect: 'none',
     position: 'relative',

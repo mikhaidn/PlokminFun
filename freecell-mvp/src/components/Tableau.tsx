@@ -28,6 +28,8 @@ interface TableauProps {
     medium: number;
     small: number;
   };
+  // Accessibility
+  highContrastMode?: boolean;
 }
 
 export const Tableau: React.FC<TableauProps> = ({
@@ -50,6 +52,7 @@ export const Tableau: React.FC<TableauProps> = ({
   cardGap = 8,
   cardOverlap = 64,
   fontSize = { large: 26, medium: 24, small: 14 },
+  highContrastMode = false,
 }) => {
   return (
     <div style={{ display: 'flex', gap: `${cardGap}px`, marginTop: `${cardGap * 3}px` }}>
@@ -103,6 +106,7 @@ export const Tableau: React.FC<TableauProps> = ({
                     cardWidth={cardWidth}
                     cardHeight={cardHeight}
                     fontSize={fontSize}
+                    highContrastMode={highContrastMode}
                     onDragStart={onDragStart ? onDragStart(columnIndex, cardIndex) : undefined}
                     onDragEnd={onDragEnd}
                     onTouchStart={onTouchStart ? onTouchStart(columnIndex, cardIndex) : undefined}
