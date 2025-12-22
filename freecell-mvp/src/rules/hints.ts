@@ -1,4 +1,5 @@
-import { type GameState } from '../core/types';
+import { type GameState } from '../state/gameState';
+import { type Card } from '../core/types';
 
 /**
  * Returns the IDs of cards that are the lowest unplayed cards for each suit
@@ -8,7 +9,7 @@ export function getLowestPlayableCards(gameState: GameState): string[] {
   const cardIds: string[] = [];
 
   // For each foundation, find the next card that needs to be placed
-  gameState.foundations.forEach((foundation, foundationIndex) => {
+  gameState.foundations.forEach((foundation: Card[], foundationIndex: number) => {
     const nextRank = foundation.length + 1; // Next rank needed (1-13)
     if (nextRank > 13) return; // Foundation is complete
 
@@ -17,15 +18,15 @@ export function getLowestPlayableCards(gameState: GameState): string[] {
     const targetValue = rankToValue(nextRank);
 
     // Search in free cells
-    gameState.freeCells.forEach((card) => {
+    gameState.freeCells.forEach((card: Card | null) => {
       if (card && card.suit === targetSuit && card.value === targetValue) {
         cardIds.push(card.id);
       }
     });
 
     // Search in tableau columns
-    gameState.tableau.forEach((column) => {
-      column.forEach((card) => {
+    gameState.tableau.forEach((column: Card[]) => {
+      column.forEach((card: Card) => {
         if (card.suit === targetSuit && card.value === targetValue) {
           cardIds.push(card.id);
         }

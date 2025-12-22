@@ -28,13 +28,6 @@ export const EmptyCell: React.FC<EmptyCellProps> = ({
     ...style,
   };
 
-  const hoverStyle = onClick ? {
-    ':hover': {
-      backgroundColor: '#e8e8e8',
-      borderColor: '#999',
-    }
-  } : {};
-
   return (
     <div
       style={cellStyle}
