@@ -82,6 +82,7 @@ We have a working FreeCell game but it's not ready for real users. Before buildi
   - Test with VoiceOver (iOS) and TalkBack (Android)
 
 - [ ] **Undo/Redo System** (6-8 hours)
+  - **See:** `rfcs/001-undo-redo-system.md` for detailed design
   - Add moveHistory to game state
   - Implement undo button (pop from history)
   - Keyboard shortcut (U key)
@@ -280,16 +281,19 @@ We have a working FreeCell game but it's not ready for real users. Before buildi
 **For AI Agents:**
 1. Read this file to understand current priorities
 2. Check `STATUS.md` for what's in progress
-3. Refer to `CLAUDE.md` for implementation details
-4. Update this file when priorities change
+3. Review `rfcs/` for technical design decisions
+4. Refer to `CLAUDE.md` for implementation details
+5. Update this file when priorities change
 
 **For Developers:**
 1. Pick tasks from the current priority phase
 2. Check off completed items
-3. Update STATUS.md when starting new work
-4. Consult ARCHITECTURE.md for long-term vision
+3. Write RFCs for major features (see `rfcs/README.md`)
+4. Update STATUS.md when starting new work
+5. Consult ARCHITECTURE.md for long-term vision
 
 **Review Cadence:**
 - Update weekly based on progress
 - Re-prioritize monthly based on metrics
 - Major strategy changes require decision log entry
+- RFCs required for features >1 day of work

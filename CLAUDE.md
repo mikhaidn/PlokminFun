@@ -17,14 +17,16 @@ This repository has multiple documentation files for different purposes:
 - **ROADMAP.md** - Strategic priorities, what to build next and why
 - **STATUS.md** - Current sprint status, what's being worked on now
 - **ARCHITECTURE.md** - Long-term technical vision for library extraction
+- **rfcs/** - Technical design documents for major features (Request for Comments)
 - **freecell-mvp/README.md** - FreeCell-specific documentation
 - **freecell-mvp/TESTING.md** - Manual testing guide
 
 **Quick Start for AI Agents:**
 1. Read **STATUS.md** to see what's currently in progress
 2. Check **ROADMAP.md** for priorities and next tasks
-3. Use **CLAUDE.md** (this file) for implementation details
-4. Consult **ARCHITECTURE.md** for long-term decisions
+3. Review **rfcs/** for technical design decisions on major features
+4. Use **CLAUDE.md** (this file) for implementation details
+5. Consult **ARCHITECTURE.md** for long-term decisions
 
 ## Repository Structure
 
