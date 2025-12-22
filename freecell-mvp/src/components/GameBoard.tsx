@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { initializeGame, checkWinCondition, type GameState } from '../state/gameState';
 import {
   moveCardToFreeCell,
@@ -18,32 +18,28 @@ type SelectedCard =
   | null;
 
 export const GameBoard: React.FC = () => {
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [seed, setSeed] = useState<number>(() => Date.now());
+  const [prevSeed, setPrevSeed] = useState(seed);
+  const [gameState, setGameState] = useState<GameState>(() => initializeGame(seed));
   const [selectedCard, setSelectedCard] = useState<SelectedCard>(null);
   const [draggingCard, setDraggingCard] = useState<SelectedCard>(null);
-  const [seed, setSeed] = useState<number>(Date.now());
-  const [showWin, setShowWin] = useState(false);
   const [showSeedInput, setShowSeedInput] = useState(false);
   const [showHints, setShowHints] = useState(false);
   const [inputSeed, setInputSeed] = useState('');
 
-  // Initialize game on mount and when seed changes
-  useEffect(() => {
+  // Reset game when seed changes (recommended pattern for derived state)
+  if (prevSeed !== seed) {
+    setPrevSeed(seed);
     setGameState(initializeGame(seed));
     setSelectedCard(null);
-    setShowWin(false);
-  }, [seed]);
+  }
 
-  // Check for win condition
-  useEffect(() => {
-    if (gameState && checkWinCondition(gameState)) {
-      setShowWin(true);
-    }
-  }, [gameState]);
+  // Derive win condition from game state
+  const showWin = useMemo(() => checkWinCondition(gameState), [gameState]);
 
   // Auto-move cards to foundations
   useEffect(() => {
-    if (!gameState || draggingCard || selectedCard) return;
+    if (draggingCard || selectedCard) return;
 
     const timer = setTimeout(() => {
       const autoMove = findSafeAutoMove(gameState);
@@ -74,8 +70,6 @@ export const GameBoard: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, [gameState, draggingCard, selectedCard]);
-
-  if (!gameState) return <div>Loading...</div>;
 
   // Calculate highlighted cards for hints
   const highlightedCardIds = showHints ? getLowestPlayableCards(gameState) : [];
@@ -201,10 +195,10 @@ export const GameBoard: React.FC = () => {
     let newState: GameState | null = null;
 
     if (draggingCard.type === 'freeCell') {
-      newState = moveCardFromFreeCell(gameState!, draggingCard.index, columnIndex);
+      newState = moveCardFromFreeCell(gameState, draggingCard.index, columnIndex);
     } else if (draggingCard.type === 'tableau') {
-      const numCards = gameState!.tableau[draggingCard.column].length - draggingCard.cardIndex;
-      newState = moveCardsToTableau(gameState!, draggingCard.column, numCards, columnIndex);
+      const numCards = gameState.tableau[draggingCard.column].length - draggingCard.cardIndex;
+      newState = moveCardsToTableau(gameState, draggingCard.column, numCards, columnIndex);
     }
 
     if (newState) {
@@ -219,10 +213,10 @@ export const GameBoard: React.FC = () => {
     if (!draggingCard) return;
 
     if (draggingCard.type === 'tableau') {
-      const column = gameState!.tableau[draggingCard.column];
+      const column = gameState.tableau[draggingCard.column];
       // Only single cards can go to free cells
       if (draggingCard.cardIndex === column.length - 1) {
-        const newState = moveCardToFreeCell(gameState!, draggingCard.column, index);
+        const newState = moveCardToFreeCell(gameState, draggingCard.column, index);
         if (newState) {
           setGameState(newState);
         }
@@ -239,12 +233,12 @@ export const GameBoard: React.FC = () => {
     let newState: GameState | null = null;
 
     if (draggingCard.type === 'freeCell') {
-      newState = moveCardToFoundation(gameState!, 'freeCell', draggingCard.index, foundationIndex);
+      newState = moveCardToFoundation(gameState, 'freeCell', draggingCard.index, foundationIndex);
     } else if (draggingCard.type === 'tableau') {
-      const column = gameState!.tableau[draggingCard.column];
+      const column = gameState.tableau[draggingCard.column];
       // Only single cards can go to foundations
       if (draggingCard.cardIndex === column.length - 1) {
-        newState = moveCardToFoundation(gameState!, 'tableau', draggingCard.column, foundationIndex);
+        newState = moveCardToFoundation(gameState, 'tableau', draggingCard.column, foundationIndex);
       }
     }
 
