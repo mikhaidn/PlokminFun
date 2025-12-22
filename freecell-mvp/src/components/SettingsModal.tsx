@@ -49,12 +49,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     {
       value: 'one-handed-left',
       label: 'One-Handed - Left Hand',
-      description: 'Game at bottom, easy to reach with left thumb',
+      description: 'Controls at bottom, larger cards and text',
     },
     {
       value: 'one-handed-right',
       label: 'One-Handed - Right Hand',
-      description: 'Game at bottom, easy to reach with right thumb',
+      description: 'Controls at bottom, larger cards and text',
     },
   ];
 
