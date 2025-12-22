@@ -30,6 +30,7 @@ export const Card: React.FC<CardProps> = ({
   const cardStyle: React.CSSProperties = {
     width: '60px',
     height: '84px',
+    boxSizing: 'border-box',
     borderRadius: '6px',
     backgroundColor: isHighlighted ? '#e8f5e9' : 'white',
     border: isSelected ? '2px solid #4caf50' : isHighlighted ? '2px solid #4caf50' : '1px solid #ccc',

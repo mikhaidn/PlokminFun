@@ -161,6 +161,11 @@ export const GameBoard: React.FC = () => {
     setSeed(Date.now());
   };
 
+  const handleResetGame = () => {
+    setGameState(initializeGame(seed));
+    setSelectedCard(null);
+  };
+
   const handleSeedSubmit = () => {
     const parsedSeed = parseInt(inputSeed);
     if (!isNaN(parsedSeed)) {
@@ -282,6 +287,13 @@ export const GameBoard: React.FC = () => {
             title="Toggle hints to highlight next playable cards"
           >
             💡 Hints
+          </button>
+          <button
+            onClick={handleResetGame}
+            style={{ padding: '8px 16px', cursor: 'pointer' }}
+            title="Restart the current game from the beginning"
+          >
+            ↺ Reset
           </button>
           <button
             onClick={() => setShowSeedInput(!showSeedInput)}

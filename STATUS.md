@@ -9,10 +9,7 @@
 ## 🎯 Current Sprint
 
 ### Active Work
-- [x] Update CLAUDE.md with current deployment state
-- [x] Create bug tracking infrastructure (GitHub issue templates)
-- [x] Create in-game bug reporter utility
-- [ ] **NEXT:** PWA setup and configuration
+- [ ] **NEXT:** Responsive CSS layout for mobile/tablet/desktop
 
 ### Blocked/Waiting
 - None
@@ -20,6 +17,14 @@
 ---
 
 ## ✅ Recently Completed
+
+### Week of 2025-12-22
+- [x] PWA setup and configuration (vite-plugin-pwa, service worker, manifest)
+- [x] App icons created (192x192, 512x512) with FreeCell branding
+- [x] Mobile viewport and Apple-specific meta tags
+- [x] Update CLAUDE.md with current deployment state
+- [x] Create bug tracking infrastructure (GitHub issue templates)
+- [x] Create in-game bug reporter utility
 
 ### Week of 2025-12-15
 - [x] GitHub Pages deployment with landing page
@@ -95,10 +100,10 @@
 ## 🎮 Games Status
 
 ### FreeCell
-- **Status:** ✅ Live and Playable
-- **Features:** Core gameplay, hints, auto-complete, seed-based
-- **Missing:** Undo/redo, persistence, mobile optimization
-- **Next:** Mobile optimization (P0)
+- **Status:** ✅ Live and Playable (PWA-enabled)
+- **Features:** Core gameplay, hints, auto-complete, seed-based, installable as PWA
+- **Missing:** Responsive layout, touch optimization, undo/redo, persistence
+- **Next:** Responsive CSS (P0)
 
 ### Spider Solitaire
 - **Status:** ⏸️ Planned (P3)
@@ -112,13 +117,7 @@
 
 ## 📋 Next 3 Tasks
 
-1. **PWA Setup** (2-4 hours)
-   - Install vite-plugin-pwa
-   - Configure manifest.json
-   - Create app icons
-   - Test on iOS and Android
-
-2. **Responsive CSS** (6-8 hours)
+1. **Responsive CSS** (6-8 hours) ⬅️ CURRENT
    - Add viewport meta tag
    - CSS breakpoints for mobile/tablet/desktop
    - Scale cards based on screen size
