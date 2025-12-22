@@ -34,6 +34,7 @@ Seed:
 
 ## Environment
 <!-- Please complete the following information -->
+- **App Version**: [e.g., 0.1.0 - find this at the bottom of the game page]
 - **Browser**: [e.g., Chrome 120, Safari 17, Firefox 121]
 - **Device**: [e.g., iPhone 14, Desktop, iPad]
 - **OS**: [e.g., iOS 17, macOS 14, Windows 11]

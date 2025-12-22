@@ -11,6 +11,7 @@ import { getLowestPlayableCards } from '../rules/hints';
 import { FreeCellArea } from './FreeCellArea';
 import { FoundationArea } from './FoundationArea';
 import { Tableau } from './Tableau';
+import { version } from '../../package.json';
 
 type SelectedCard =
   | { type: 'tableau'; column: number; cardIndex: number }
@@ -408,6 +409,16 @@ export const GameBoard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Footer with Version */}
+      <div style={{
+        marginTop: '24px',
+        textAlign: 'center',
+        color: 'rgba(255, 255, 255, 0.6)',
+        fontSize: '12px',
+      }}>
+        v{version}
+      </div>
     </div>
   );
 };
