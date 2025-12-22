@@ -13,6 +13,10 @@ interface FreeCellAreaProps {
   onDragEnd?: () => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (index: number) => (e: React.DragEvent) => void;
+  onTouchStart?: (index: number) => (e: React.TouchEvent) => void;
+  onTouchMove?: (e: React.TouchEvent) => void;
+  onTouchEnd?: (e: React.TouchEvent) => void;
+  onTouchCancel?: () => void;
 }
 
 export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
@@ -25,6 +29,10 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
   onDragEnd,
   onDragOver,
   onDrop,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+  onTouchCancel,
 }) => {
   return (
     <div style={{ display: 'flex', gap: '8px' }}>
@@ -35,6 +43,9 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
         return (
           <div
             key={`freecell-${index}`}
+            data-drop-target="true"
+            data-drop-type="freeCell"
+            data-drop-index={index}
             onDragOver={onDragOver}
             onDrop={onDrop ? onDrop(index) : undefined}
           >
@@ -47,6 +58,10 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
                 isDragging={isDragging}
                 onDragStart={onDragStart ? onDragStart(index) : undefined}
                 onDragEnd={onDragEnd}
+                onTouchStart={onTouchStart ? onTouchStart(index) : undefined}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+                onTouchCancel={onTouchCancel}
               />
             ) : (
               <EmptyCell onClick={() => onFreeCellClick(index)} />

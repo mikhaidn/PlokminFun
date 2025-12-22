@@ -8,6 +8,7 @@ interface FoundationAreaProps {
   onFoundationClick: (index: number) => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (index: number) => (e: React.DragEvent) => void;
+  onTouchEnd?: (e: React.TouchEvent) => void;
 }
 
 const SUIT_LABELS = ['♠', '♥', '♦', '♣'];
@@ -17,6 +18,7 @@ export const FoundationArea: React.FC<FoundationAreaProps> = ({
   onFoundationClick,
   onDragOver,
   onDrop,
+  onTouchEnd,
 }) => {
   return (
     <div style={{ display: 'flex', gap: '8px' }}>
@@ -26,8 +28,12 @@ export const FoundationArea: React.FC<FoundationAreaProps> = ({
         return (
           <div
             key={`foundation-${index}`}
+            data-drop-target="true"
+            data-drop-type="foundation"
+            data-drop-index={index}
             onDragOver={onDragOver}
             onDrop={onDrop ? onDrop(index) : undefined}
+            onTouchEnd={onTouchEnd}
           >
             {topCard ? (
               <Card
