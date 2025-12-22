@@ -392,19 +392,12 @@ export const GameBoard: React.FC = () => {
   // Responsive sizing for UI elements (with accessibility overrides)
   const isMobile = window.innerWidth < 600;
   const isTablet = window.innerWidth >= 600 && window.innerWidth < 900;
-  const isPortrait = window.innerHeight > window.innerWidth;
   const padding = isMobile ? 12 : 24;
   const minButtonHeight = getMinButtonHeight(modeSettings.touchTargetSize);
   const buttonPadding = isMobile ? '8px 12px' : '10px 18px';
   const fontSize = (isMobile ? 0.8 : 1.0) * modeSettings.fontSizeMultiplier;
   const titleSize = isMobile ? '1.5em' : isTablet ? '2em' : '2.5em';
   const buttonsAtBottom = modeSettings.buttonPosition === 'bottom';
-
-  // One-handed mode positioning (mobile portrait only)
-  const oneHandedModeActive = (modeSettings.gamePosition === 'bottom') && isMobile && isPortrait;
-  const sidePaddingPercent = oneHandedModeActive ? Math.abs(modeSettings.sidePadding) : 0;
-  const paddingLeft = modeSettings.sidePadding < 0 ? `${sidePaddingPercent}%` : '0';
-  const paddingRight = modeSettings.sidePadding > 0 ? `${sidePaddingPercent}%` : '0';
 
   // Button controls JSX (reused for top/bottom positioning)
   const buttonControls = (
@@ -496,23 +489,11 @@ export const GameBoard: React.FC = () => {
         touchAction: 'none',
         userSelect: 'none',
         WebkitUserSelect: 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: oneHandedModeActive ? 'flex-end' : 'flex-start',
         paddingBottom: buttonsAtBottom ? '80px' : `${padding}px`, // Space for bottom bar
       }}
       onTouchMove={handleTouchMove}
     >
-      {/* Game content wrapper with side padding for one-handed mode */}
-      <div
-        style={{
-          paddingLeft,
-          paddingRight,
-          maxHeight: oneHandedModeActive ? '60vh' : 'none',
-          overflow: oneHandedModeActive ? 'hidden' : 'visible',
-        }}
-      >
-        {/* Header */}
+      {/* Header */}
         <div
           style={{
             display: 'flex',
@@ -593,7 +574,6 @@ export const GameBoard: React.FC = () => {
         fontSize={layoutSizes.fontSize}
         highContrastMode={modeSettings.highContrastMode}
       />
-      </div>
 
       {/* Win Modal */}
       {showWin && (

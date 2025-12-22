@@ -51,8 +51,8 @@ export function getSettingsFromMode(mode: GameMode) {
         fontSizeMultiplier: 1.5,
         buttonPosition: 'bottom' as const,
         touchTargetSize: 'large' as const,
-        gamePosition: 'bottom' as const,
-        sidePadding: 30, // 30% padding on RIGHT side (for left hand)
+        gamePosition: 'center' as const,
+        sidePadding: 0,
       };
 
     case 'one-handed-right':
@@ -62,8 +62,8 @@ export function getSettingsFromMode(mode: GameMode) {
         fontSizeMultiplier: 1.5,
         buttonPosition: 'bottom' as const,
         touchTargetSize: 'large' as const,
-        gamePosition: 'bottom' as const,
-        sidePadding: -30, // 30% padding on LEFT side (for right hand)
+        gamePosition: 'center' as const,
+        sidePadding: 0,
       };
   }
 }
