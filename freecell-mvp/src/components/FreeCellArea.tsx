@@ -26,6 +26,8 @@ interface FreeCellAreaProps {
     medium: number;
     small: number;
   };
+  // Accessibility
+  highContrastMode?: boolean;
 }
 
 export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
@@ -46,6 +48,7 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
   cardHeight = 84,
   cardGap = 8,
   fontSize = { large: 26, medium: 24, small: 14 },
+  highContrastMode = false,
 }) => {
   return (
     <div style={{ display: 'flex', gap: `${cardGap}px` }}>
@@ -72,6 +75,7 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
                 cardWidth={cardWidth}
                 cardHeight={cardHeight}
                 fontSize={fontSize}
+                highContrastMode={highContrastMode}
                 onDragStart={onDragStart ? onDragStart(index) : undefined}
                 onDragEnd={onDragEnd}
                 onTouchStart={onTouchStart ? onTouchStart(index) : undefined}

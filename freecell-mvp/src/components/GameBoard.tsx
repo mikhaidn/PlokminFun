@@ -11,8 +11,17 @@ import { getLowestPlayableCards } from '../rules/hints';
 import { FreeCellArea } from './FreeCellArea';
 import { FoundationArea } from './FoundationArea';
 import { Tableau } from './Tableau';
+import { SettingsModal } from './SettingsModal';
 import { version } from '../../package.json';
 import { calculateLayoutSizes, type LayoutSizes } from '../utils/responsiveLayout';
+import {
+  type AccessibilitySettings,
+  loadAccessibilitySettings,
+  saveAccessibilitySettings,
+  getMaxCardWidth,
+  getMinButtonHeight,
+} from '../config/accessibilitySettings';
+import { isRed } from '../rules/validation';
 
 type SelectedCard =
   | { type: 'tableau'; column: number; cardIndex: number }
@@ -28,21 +37,41 @@ export const GameBoard: React.FC = () => {
   const [showSeedInput, setShowSeedInput] = useState(false);
   const [showHints, setShowHints] = useState(false);
   const [inputSeed, setInputSeed] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
 
   // Touch drag-and-drop state
   const [touchDragging, setTouchDragging] = useState(false);
   const [touchPosition, setTouchPosition] = useState<{ x: number; y: number } | null>(null);
 
-  // Responsive layout sizing
-  const [layoutSizes, setLayoutSizes] = useState<LayoutSizes>(() =>
-    calculateLayoutSizes(window.innerWidth, window.innerHeight)
+  // Accessibility settings
+  const [accessibilitySettings, setAccessibilitySettings] = useState<AccessibilitySettings>(() =>
+    loadAccessibilitySettings()
   );
 
-  // Update layout sizes on window resize
+  // Responsive layout sizing (with accessibility overrides)
+  const [layoutSizes, setLayoutSizes] = useState<LayoutSizes>(() =>
+    calculateLayoutSizes(
+      window.innerWidth,
+      window.innerHeight,
+      getMaxCardWidth(accessibilitySettings.cardSize),
+      accessibilitySettings.fontSizeMultiplier
+    )
+  );
+
+  // Update layout sizes on window resize or accessibility settings change
   useEffect(() => {
     const handleResize = () => {
-      setLayoutSizes(calculateLayoutSizes(window.innerWidth, window.innerHeight));
+      setLayoutSizes(
+        calculateLayoutSizes(
+          window.innerWidth,
+          window.innerHeight,
+          getMaxCardWidth(accessibilitySettings.cardSize),
+          accessibilitySettings.fontSizeMultiplier
+        )
+      );
     };
+
+    handleResize(); // Recalculate immediately when settings change
 
     window.addEventListener('resize', handleResize);
     // Also handle orientation change
@@ -52,7 +81,13 @@ export const GameBoard: React.FC = () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
     };
-  }, []);
+  }, [accessibilitySettings.cardSize, accessibilitySettings.fontSizeMultiplier]);
+
+  // Save accessibility settings when they change
+  const handleSaveSettings = (newSettings: AccessibilitySettings) => {
+    setAccessibilitySettings(newSettings);
+    saveAccessibilitySettings(newSettings);
+  };
 
   // Reset game when seed changes (recommended pattern for derived state)
   if (prevSeed !== seed) {
@@ -362,13 +397,99 @@ export const GameBoard: React.FC = () => {
     setTouchPosition(null);
   };
 
-  // Responsive sizing for UI elements
+  // Responsive sizing for UI elements (with accessibility overrides)
   const isMobile = window.innerWidth < 600;
   const isTablet = window.innerWidth >= 600 && window.innerWidth < 900;
   const padding = isMobile ? 12 : 24;
-  const buttonPadding = isMobile ? '6px 10px' : '8px 16px';
-  const fontSize = isMobile ? '0.8em' : '1em';
+  const minButtonHeight = getMinButtonHeight(accessibilitySettings.touchTargetSize);
+  const buttonPadding = isMobile ? '8px 12px' : '10px 18px';
+  const fontSize = (isMobile ? 0.8 : 1.0) * accessibilitySettings.fontSizeMultiplier;
   const titleSize = isMobile ? '1.5em' : isTablet ? '2em' : '2.5em';
+  const buttonsAtBottom = accessibilitySettings.buttonPosition === 'bottom';
+
+  // Button controls JSX (reused for top/bottom positioning)
+  const buttonControls = (
+    <div
+      style={{
+        display: 'flex',
+        gap: isMobile ? '8px' : '12px',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        fontSize: `${fontSize}em`,
+      }}
+    >
+      <span>Moves: {gameState.moves}</span>
+      <span>Seed: {gameState.seed}</span>
+      <button
+        onClick={() => setShowSettings(true)}
+        style={{
+          padding: buttonPadding,
+          minHeight: `${minButtonHeight}px`,
+          cursor: 'pointer',
+          backgroundColor: '#4caf50',
+          color: 'white',
+          border: 'none',
+          borderRadius: '4px',
+          fontWeight: 'bold',
+          fontSize: `${fontSize}em`,
+        }}
+        title="Accessibility Settings"
+      >
+        ⚙️ Settings
+      </button>
+      <button
+        onClick={() => setShowHints(!showHints)}
+        style={{
+          padding: buttonPadding,
+          minHeight: `${minButtonHeight}px`,
+          cursor: 'pointer',
+          backgroundColor: showHints ? '#4caf50' : 'white',
+          color: showHints ? 'white' : 'black',
+          border: 'none',
+          borderRadius: '4px',
+          fontWeight: showHints ? 'bold' : 'normal',
+          fontSize: `${fontSize}em`,
+        }}
+        title="Toggle hints to highlight next playable cards"
+      >
+        💡 Hints
+      </button>
+      <button
+        onClick={handleResetGame}
+        style={{
+          padding: buttonPadding,
+          minHeight: `${minButtonHeight}px`,
+          cursor: 'pointer',
+          fontSize: `${fontSize}em`,
+        }}
+        title="Restart the current game from the beginning"
+      >
+        ↺ Reset
+      </button>
+      <button
+        onClick={() => setShowSeedInput(!showSeedInput)}
+        style={{
+          padding: buttonPadding,
+          minHeight: `${minButtonHeight}px`,
+          cursor: 'pointer',
+          fontSize: `${fontSize}em`,
+        }}
+      >
+        Change Seed
+      </button>
+      <button
+        onClick={handleNewGame}
+        style={{
+          padding: buttonPadding,
+          minHeight: `${minButtonHeight}px`,
+          cursor: 'pointer',
+          fontSize: `${fontSize}em`,
+        }}
+      >
+        New Game
+      </button>
+    </div>
+  );
 
   return (
     <div
@@ -384,55 +505,19 @@ export const GameBoard: React.FC = () => {
       onTouchMove={handleTouchMove}
     >
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-        justifyContent: 'space-between',
-        alignItems: isMobile ? 'flex-start' : 'center',
-        marginBottom: `${padding}px`,
-        color: 'white',
-        gap: isMobile ? '12px' : '0',
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          justifyContent: 'space-between',
+          alignItems: isMobile ? 'flex-start' : 'center',
+          marginBottom: `${padding}px`,
+          color: 'white',
+          gap: isMobile ? '12px' : '0',
+        }}
+      >
         <h1 style={{ margin: 0, fontSize: titleSize }}>FreeCell</h1>
-        <div style={{ display: 'flex', gap: isMobile ? '8px' : '12px', alignItems: 'center', flexWrap: 'wrap', fontSize }}>
-          <span>Moves: {gameState.moves}</span>
-          <span>Seed: {gameState.seed}</span>
-          <button
-            onClick={() => setShowHints(!showHints)}
-            style={{
-              padding: buttonPadding,
-              cursor: 'pointer',
-              backgroundColor: showHints ? '#4caf50' : 'white',
-              color: showHints ? 'white' : 'black',
-              border: 'none',
-              borderRadius: '4px',
-              fontWeight: showHints ? 'bold' : 'normal',
-              fontSize,
-            }}
-            title="Toggle hints to highlight next playable cards"
-          >
-            💡 Hints
-          </button>
-          <button
-            onClick={handleResetGame}
-            style={{ padding: buttonPadding, cursor: 'pointer', fontSize }}
-            title="Restart the current game from the beginning"
-          >
-            ↺ Reset
-          </button>
-          <button
-            onClick={() => setShowSeedInput(!showSeedInput)}
-            style={{ padding: buttonPadding, cursor: 'pointer', fontSize }}
-          >
-            Change Seed
-          </button>
-          <button
-            onClick={handleNewGame}
-            style={{ padding: buttonPadding, cursor: 'pointer', fontSize }}
-          >
-            New Game
-          </button>
-        </div>
+        {!buttonsAtBottom && buttonControls}
       </div>
 
       {/* Seed Input */}
@@ -452,13 +537,35 @@ export const GameBoard: React.FC = () => {
             value={inputSeed}
             onChange={(e) => setInputSeed(e.target.value)}
             placeholder="Enter seed number"
-            style={{ padding: '8px', flex: 1, width: isMobile ? '100%' : 'auto', fontSize }}
+            style={{
+              padding: '8px',
+              flex: 1,
+              width: isMobile ? '100%' : 'auto',
+              fontSize: `${fontSize}em`,
+              minHeight: `${minButtonHeight}px`,
+            }}
             onKeyPress={(e) => e.key === 'Enter' && handleSeedSubmit()}
           />
-          <button onClick={handleSeedSubmit} style={{ padding: buttonPadding, fontSize, width: isMobile ? '100%' : 'auto' }}>
+          <button
+            onClick={handleSeedSubmit}
+            style={{
+              padding: buttonPadding,
+              minHeight: `${minButtonHeight}px`,
+              fontSize: `${fontSize}em`,
+              width: isMobile ? '100%' : 'auto',
+            }}
+          >
             Start Game
           </button>
-          <button onClick={() => setShowSeedInput(false)} style={{ padding: buttonPadding, fontSize, width: isMobile ? '100%' : 'auto' }}>
+          <button
+            onClick={() => setShowSeedInput(false)}
+            style={{
+              padding: buttonPadding,
+              minHeight: `${minButtonHeight}px`,
+              fontSize: `${fontSize}em`,
+              width: isMobile ? '100%' : 'auto',
+            }}
+          >
             Cancel
           </button>
         </div>
@@ -488,6 +595,7 @@ export const GameBoard: React.FC = () => {
           cardHeight={layoutSizes.cardHeight}
           cardGap={layoutSizes.cardGap}
           fontSize={layoutSizes.fontSize}
+          highContrastMode={accessibilitySettings.highContrastMode}
         />
         <FoundationArea
           foundations={gameState.foundations}
@@ -499,6 +607,7 @@ export const GameBoard: React.FC = () => {
           cardHeight={layoutSizes.cardHeight}
           cardGap={layoutSizes.cardGap}
           fontSize={layoutSizes.fontSize}
+          highContrastMode={accessibilitySettings.highContrastMode}
         />
       </div>
 
@@ -523,6 +632,7 @@ export const GameBoard: React.FC = () => {
         cardGap={layoutSizes.cardGap}
         cardOverlap={layoutSizes.cardOverlap}
         fontSize={layoutSizes.fontSize}
+        highContrastMode={accessibilitySettings.highContrastMode}
       />
 
       {/* Win Modal */}
@@ -547,11 +657,16 @@ export const GameBoard: React.FC = () => {
             maxWidth: isMobile ? '90%' : '400px',
           }}>
             <h2 style={{ fontSize: isMobile ? '1.5em' : '2em' }}>Congratulations!</h2>
-            <p style={{ fontSize }}>You won in {gameState.moves} moves!</p>
-            <p style={{ fontSize }}>Seed: {gameState.seed}</p>
+            <p style={{ fontSize: `${fontSize}em` }}>You won in {gameState.moves} moves!</p>
+            <p style={{ fontSize: `${fontSize}em` }}>Seed: {gameState.seed}</p>
             <button
               onClick={handleNewGame}
-              style={{ padding: isMobile ? '10px 20px' : '12px 24px', fontSize: isMobile ? '14px' : '16px', cursor: 'pointer' }}
+              style={{
+                padding: buttonPadding,
+                minHeight: `${minButtonHeight}px`,
+                fontSize: `${fontSize}em`,
+                cursor: 'pointer',
+              }}
             >
               New Game
             </button>
@@ -560,14 +675,46 @@ export const GameBoard: React.FC = () => {
       )}
 
       {/* Footer with Version */}
-      <div style={{
-        marginTop: '24px',
-        textAlign: 'center',
-        color: 'rgba(255, 255, 255, 0.6)',
-        fontSize: '12px',
-      }}>
+      <div
+        style={{
+          marginTop: '24px',
+          textAlign: 'center',
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '12px',
+        }}
+      >
         v{version}
       </div>
+
+      {/* Bottom Button Bar (for one-handed mode) */}
+      {buttonsAtBottom && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: '#2c5f2d',
+            borderTop: '2px solid rgba(255, 255, 255, 0.2)',
+            padding: `${padding}px`,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: 'white',
+            zIndex: 100,
+          }}
+        >
+          {buttonControls}
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      <SettingsModal
+        isOpen={showSettings}
+        settings={accessibilitySettings}
+        onClose={() => setShowSettings(false)}
+        onSave={handleSaveSettings}
+      />
 
       {/* Touch drag preview */}
       {touchDragging && touchPosition && draggingCard && (() => {
@@ -580,6 +727,12 @@ export const GameBoard: React.FC = () => {
         }
 
         if (!card) return null;
+
+        const red = isRed(card);
+        const textColor = accessibilitySettings.highContrastMode
+          ? (red ? '#ff0000' : '#000000')
+          : (red ? '#c41e3a' : '#1a1a2e');
+        const borderWidth = accessibilitySettings.highContrastMode ? '4px' : '2px';
 
         return (
           <div
@@ -598,22 +751,41 @@ export const GameBoard: React.FC = () => {
                 height: `${layoutSizes.cardHeight}px`,
                 borderRadius: `${layoutSizes.cardWidth * 0.1}px`,
                 backgroundColor: 'white',
-                border: '2px solid #4caf50',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                border: `${borderWidth} solid #4caf50`,
+                boxShadow: accessibilitySettings.highContrastMode
+                  ? '0 4px 12px rgba(0,0,0,0.5)'
+                  : '0 4px 8px rgba(0,0,0,0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: `${layoutSizes.fontSize.medium}px`,
                 fontWeight: 'bold',
-                color: card.suit === '♥' || card.suit === '♦' ? '#c41e3a' : '#1a1a2e',
+                color: textColor,
                 position: 'relative',
               }}
             >
-              <div style={{ position: 'absolute', top: `${layoutSizes.cardHeight * 0.05}px`, left: `${layoutSizes.cardWidth * 0.1}px`, fontSize: `${layoutSizes.fontSize.small}px`, lineHeight: '1' }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: `${layoutSizes.cardHeight * 0.05}px`,
+                  left: `${layoutSizes.cardWidth * 0.1}px`,
+                  fontSize: `${layoutSizes.fontSize.small}px`,
+                  lineHeight: '1',
+                }}
+              >
                 <div>{card.value}{card.suit}</div>
               </div>
               <div style={{ fontSize: `${layoutSizes.fontSize.large}px` }}>{card.suit}</div>
-              <div style={{ position: 'absolute', bottom: `${layoutSizes.cardHeight * 0.05}px`, right: `${layoutSizes.cardWidth * 0.1}px`, fontSize: `${layoutSizes.fontSize.small}px`, lineHeight: '1', transform: 'rotate(180deg)' }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: `${layoutSizes.cardHeight * 0.05}px`,
+                  right: `${layoutSizes.cardWidth * 0.1}px`,
+                  fontSize: `${layoutSizes.fontSize.small}px`,
+                  lineHeight: '1',
+                  transform: 'rotate(180deg)',
+                }}
+              >
                 <div>{card.value}{card.suit}</div>
               </div>
             </div>

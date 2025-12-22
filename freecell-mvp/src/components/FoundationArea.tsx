@@ -18,6 +18,8 @@ interface FoundationAreaProps {
     medium: number;
     small: number;
   };
+  // Accessibility
+  highContrastMode?: boolean;
 }
 
 const SUIT_LABELS = ['♠', '♥', '♦', '♣'];
@@ -32,6 +34,7 @@ export const FoundationArea: React.FC<FoundationAreaProps> = ({
   cardHeight = 84,
   cardGap = 8,
   fontSize = { large: 26, medium: 24, small: 14 },
+  highContrastMode = false,
 }) => {
   return (
     <div style={{ display: 'flex', gap: `${cardGap}px` }}>
@@ -56,6 +59,7 @@ export const FoundationArea: React.FC<FoundationAreaProps> = ({
                 cardWidth={cardWidth}
                 cardHeight={cardHeight}
                 fontSize={fontSize}
+                highContrastMode={highContrastMode}
               />
             ) : (
               <EmptyCell
