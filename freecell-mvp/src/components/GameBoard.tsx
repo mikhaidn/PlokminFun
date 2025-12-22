@@ -12,6 +12,7 @@ import { FreeCellArea } from './FreeCellArea';
 import { FoundationArea } from './FoundationArea';
 import { Tableau } from './Tableau';
 import { version } from '../../package.json';
+import { calculateLayoutSizes, type LayoutSizes } from '../utils/responsiveLayout';
 
 type SelectedCard =
   | { type: 'tableau'; column: number; cardIndex: number }
@@ -31,6 +32,27 @@ export const GameBoard: React.FC = () => {
   // Touch drag-and-drop state
   const [touchDragging, setTouchDragging] = useState(false);
   const [touchPosition, setTouchPosition] = useState<{ x: number; y: number } | null>(null);
+
+  // Responsive layout sizing
+  const [layoutSizes, setLayoutSizes] = useState<LayoutSizes>(() =>
+    calculateLayoutSizes(window.innerWidth, window.innerHeight)
+  );
+
+  // Update layout sizes on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setLayoutSizes(calculateLayoutSizes(window.innerWidth, window.innerHeight));
+    };
+
+    window.addEventListener('resize', handleResize);
+    // Also handle orientation change
+    window.addEventListener('orientationchange', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
 
   // Reset game when seed changes (recommended pattern for derived state)
   if (prevSeed !== seed) {
@@ -340,10 +362,18 @@ export const GameBoard: React.FC = () => {
     setTouchPosition(null);
   };
 
+  // Responsive sizing for UI elements
+  const isMobile = window.innerWidth < 600;
+  const isTablet = window.innerWidth >= 600 && window.innerWidth < 900;
+  const padding = isMobile ? 12 : 24;
+  const buttonPadding = isMobile ? '6px 10px' : '8px 16px';
+  const fontSize = isMobile ? '0.8em' : '1em';
+  const titleSize = isMobile ? '1.5em' : isTablet ? '2em' : '2.5em';
+
   return (
     <div
       style={{
-        padding: '24px',
+        padding: `${padding}px`,
         backgroundColor: '#2c5f2d',
         minHeight: '100vh',
         fontFamily: 'Arial, sans-serif',
@@ -356,25 +386,28 @@ export const GameBoard: React.FC = () => {
       {/* Header */}
       <div style={{
         display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '24px',
+        alignItems: isMobile ? 'flex-start' : 'center',
+        marginBottom: `${padding}px`,
         color: 'white',
+        gap: isMobile ? '12px' : '0',
       }}>
-        <h1 style={{ margin: 0 }}>FreeCell</h1>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <h1 style={{ margin: 0, fontSize: titleSize }}>FreeCell</h1>
+        <div style={{ display: 'flex', gap: isMobile ? '8px' : '12px', alignItems: 'center', flexWrap: 'wrap', fontSize }}>
           <span>Moves: {gameState.moves}</span>
           <span>Seed: {gameState.seed}</span>
           <button
             onClick={() => setShowHints(!showHints)}
             style={{
-              padding: '8px 16px',
+              padding: buttonPadding,
               cursor: 'pointer',
               backgroundColor: showHints ? '#4caf50' : 'white',
               color: showHints ? 'white' : 'black',
               border: 'none',
               borderRadius: '4px',
               fontWeight: showHints ? 'bold' : 'normal',
+              fontSize,
             }}
             title="Toggle hints to highlight next playable cards"
           >
@@ -382,20 +415,20 @@ export const GameBoard: React.FC = () => {
           </button>
           <button
             onClick={handleResetGame}
-            style={{ padding: '8px 16px', cursor: 'pointer' }}
+            style={{ padding: buttonPadding, cursor: 'pointer', fontSize }}
             title="Restart the current game from the beginning"
           >
             ↺ Reset
           </button>
           <button
             onClick={() => setShowSeedInput(!showSeedInput)}
-            style={{ padding: '8px 16px', cursor: 'pointer' }}
+            style={{ padding: buttonPadding, cursor: 'pointer', fontSize }}
           >
             Change Seed
           </button>
           <button
             onClick={handleNewGame}
-            style={{ padding: '8px 16px', cursor: 'pointer' }}
+            style={{ padding: buttonPadding, cursor: 'pointer', fontSize }}
           >
             New Game
           </button>
@@ -406,25 +439,26 @@ export const GameBoard: React.FC = () => {
       {showSeedInput && (
         <div style={{
           marginBottom: '16px',
-          padding: '12px',
+          padding: `${padding}px`,
           backgroundColor: 'white',
           borderRadius: '8px',
           display: 'flex',
           gap: '8px',
           alignItems: 'center',
+          flexDirection: isMobile ? 'column' : 'row',
         }}>
           <input
             type="number"
             value={inputSeed}
             onChange={(e) => setInputSeed(e.target.value)}
             placeholder="Enter seed number"
-            style={{ padding: '8px', flex: 1 }}
+            style={{ padding: '8px', flex: 1, width: isMobile ? '100%' : 'auto', fontSize }}
             onKeyPress={(e) => e.key === 'Enter' && handleSeedSubmit()}
           />
-          <button onClick={handleSeedSubmit} style={{ padding: '8px 16px' }}>
+          <button onClick={handleSeedSubmit} style={{ padding: buttonPadding, fontSize, width: isMobile ? '100%' : 'auto' }}>
             Start Game
           </button>
-          <button onClick={() => setShowSeedInput(false)} style={{ padding: '8px 16px' }}>
+          <button onClick={() => setShowSeedInput(false)} style={{ padding: buttonPadding, fontSize, width: isMobile ? '100%' : 'auto' }}>
             Cancel
           </button>
         </div>
@@ -434,7 +468,7 @@ export const GameBoard: React.FC = () => {
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
-        marginBottom: '24px',
+        marginBottom: `${layoutSizes.cardGap * 3}px`,
       }}>
         <FreeCellArea
           freeCells={gameState.freeCells}
@@ -450,6 +484,10 @@ export const GameBoard: React.FC = () => {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchCancel}
+          cardWidth={layoutSizes.cardWidth}
+          cardHeight={layoutSizes.cardHeight}
+          cardGap={layoutSizes.cardGap}
+          fontSize={layoutSizes.fontSize}
         />
         <FoundationArea
           foundations={gameState.foundations}
@@ -457,6 +495,10 @@ export const GameBoard: React.FC = () => {
           onDragOver={handleDragOver}
           onDrop={handleFoundationDrop}
           onTouchEnd={handleTouchEnd}
+          cardWidth={layoutSizes.cardWidth}
+          cardHeight={layoutSizes.cardHeight}
+          cardGap={layoutSizes.cardGap}
+          fontSize={layoutSizes.fontSize}
         />
       </div>
 
@@ -476,6 +518,11 @@ export const GameBoard: React.FC = () => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
+        cardWidth={layoutSizes.cardWidth}
+        cardHeight={layoutSizes.cardHeight}
+        cardGap={layoutSizes.cardGap}
+        cardOverlap={layoutSizes.cardOverlap}
+        fontSize={layoutSizes.fontSize}
       />
 
       {/* Win Modal */}
@@ -490,19 +537,21 @@ export const GameBoard: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          padding: `${padding}px`,
         }}>
           <div style={{
             backgroundColor: 'white',
-            padding: '32px',
+            padding: isMobile ? '24px' : '32px',
             borderRadius: '12px',
             textAlign: 'center',
+            maxWidth: isMobile ? '90%' : '400px',
           }}>
-            <h2>Congratulations!</h2>
-            <p>You won in {gameState.moves} moves!</p>
-            <p>Seed: {gameState.seed}</p>
+            <h2 style={{ fontSize: isMobile ? '1.5em' : '2em' }}>Congratulations!</h2>
+            <p style={{ fontSize }}>You won in {gameState.moves} moves!</p>
+            <p style={{ fontSize }}>Seed: {gameState.seed}</p>
             <button
               onClick={handleNewGame}
-              style={{ padding: '12px 24px', fontSize: '16px', cursor: 'pointer' }}
+              style={{ padding: isMobile ? '10px 20px' : '12px 24px', fontSize: isMobile ? '14px' : '16px', cursor: 'pointer' }}
             >
               New Game
             </button>
@@ -536,8 +585,8 @@ export const GameBoard: React.FC = () => {
           <div
             style={{
               position: 'fixed',
-              left: touchPosition.x - 30,
-              top: touchPosition.y - 42,
+              left: touchPosition.x - (layoutSizes.cardWidth / 2),
+              top: touchPosition.y - (layoutSizes.cardHeight / 2),
               pointerEvents: 'none',
               zIndex: 1000,
               opacity: 0.8,
@@ -545,26 +594,26 @@ export const GameBoard: React.FC = () => {
           >
             <div
               style={{
-                width: '60px',
-                height: '84px',
-                borderRadius: '6px',
+                width: `${layoutSizes.cardWidth}px`,
+                height: `${layoutSizes.cardHeight}px`,
+                borderRadius: `${layoutSizes.cardWidth * 0.1}px`,
                 backgroundColor: 'white',
                 border: '2px solid #4caf50',
                 boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '24px',
+                fontSize: `${layoutSizes.fontSize.medium}px`,
                 fontWeight: 'bold',
                 color: card.suit === '♥' || card.suit === '♦' ? '#c41e3a' : '#1a1a2e',
                 position: 'relative',
               }}
             >
-              <div style={{ position: 'absolute', top: '4px', left: '6px', fontSize: '14px', lineHeight: '1' }}>
+              <div style={{ position: 'absolute', top: `${layoutSizes.cardHeight * 0.05}px`, left: `${layoutSizes.cardWidth * 0.1}px`, fontSize: `${layoutSizes.fontSize.small}px`, lineHeight: '1' }}>
                 <div>{card.value}{card.suit}</div>
               </div>
-              <div style={{ fontSize: '26px' }}>{card.suit}</div>
-              <div style={{ position: 'absolute', bottom: '4px', right: '6px', fontSize: '14px', lineHeight: '1', transform: 'rotate(180deg)' }}>
+              <div style={{ fontSize: `${layoutSizes.fontSize.large}px` }}>{card.suit}</div>
+              <div style={{ position: 'absolute', bottom: `${layoutSizes.cardHeight * 0.05}px`, right: `${layoutSizes.cardWidth * 0.1}px`, fontSize: `${layoutSizes.fontSize.small}px`, lineHeight: '1', transform: 'rotate(180deg)' }}>
                 <div>{card.value}{card.suit}</div>
               </div>
             </div>

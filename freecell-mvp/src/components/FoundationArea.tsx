@@ -9,6 +9,15 @@ interface FoundationAreaProps {
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (index: number) => (e: React.DragEvent) => void;
   onTouchEnd?: (e: React.TouchEvent) => void;
+  // Responsive sizing
+  cardWidth?: number;
+  cardHeight?: number;
+  cardGap?: number;
+  fontSize?: {
+    large: number;
+    medium: number;
+    small: number;
+  };
 }
 
 const SUIT_LABELS = ['♠', '♥', '♦', '♣'];
@@ -19,9 +28,13 @@ export const FoundationArea: React.FC<FoundationAreaProps> = ({
   onDragOver,
   onDrop,
   onTouchEnd,
+  cardWidth = 60,
+  cardHeight = 84,
+  cardGap = 8,
+  fontSize = { large: 26, medium: 24, small: 14 },
 }) => {
   return (
-    <div style={{ display: 'flex', gap: '8px' }}>
+    <div style={{ display: 'flex', gap: `${cardGap}px` }}>
       {foundations.map((foundation, index) => {
         const topCard = foundation.length > 0 ? foundation[foundation.length - 1] : null;
 
@@ -40,11 +53,16 @@ export const FoundationArea: React.FC<FoundationAreaProps> = ({
                 card={topCard}
                 onClick={() => onFoundationClick(index)}
                 draggable={false}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
+                fontSize={fontSize}
               />
             ) : (
               <EmptyCell
                 onClick={() => onFoundationClick(index)}
                 label={SUIT_LABELS[index]}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
               />
             )}
           </div>

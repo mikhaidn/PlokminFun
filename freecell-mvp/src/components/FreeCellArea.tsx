@@ -17,6 +17,15 @@ interface FreeCellAreaProps {
   onTouchMove?: (e: React.TouchEvent) => void;
   onTouchEnd?: (e: React.TouchEvent) => void;
   onTouchCancel?: () => void;
+  // Responsive sizing
+  cardWidth?: number;
+  cardHeight?: number;
+  cardGap?: number;
+  fontSize?: {
+    large: number;
+    medium: number;
+    small: number;
+  };
 }
 
 export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
@@ -33,9 +42,13 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
   onTouchMove,
   onTouchEnd,
   onTouchCancel,
+  cardWidth = 60,
+  cardHeight = 84,
+  cardGap = 8,
+  fontSize = { large: 26, medium: 24, small: 14 },
 }) => {
   return (
-    <div style={{ display: 'flex', gap: '8px' }}>
+    <div style={{ display: 'flex', gap: `${cardGap}px` }}>
       {freeCells.map((card, index) => {
         const isDragging = draggingCard?.type === 'freeCell' && draggingCard.index === index;
         const isHighlighted = card ? highlightedCardIds.includes(card.id) : false;
@@ -56,6 +69,9 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
                 isSelected={selectedCard?.type === 'freeCell' && selectedCard.index === index}
                 isHighlighted={isHighlighted}
                 isDragging={isDragging}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
+                fontSize={fontSize}
                 onDragStart={onDragStart ? onDragStart(index) : undefined}
                 onDragEnd={onDragEnd}
                 onTouchStart={onTouchStart ? onTouchStart(index) : undefined}
@@ -64,7 +80,11 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
                 onTouchCancel={onTouchCancel}
               />
             ) : (
-              <EmptyCell onClick={() => onFreeCellClick(index)} />
+              <EmptyCell
+                onClick={() => onFreeCellClick(index)}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
+              />
             )}
           </div>
         );

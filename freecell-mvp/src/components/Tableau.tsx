@@ -18,6 +18,16 @@ interface TableauProps {
   onTouchMove?: (e: React.TouchEvent) => void;
   onTouchEnd?: (e: React.TouchEvent) => void;
   onTouchCancel?: () => void;
+  // Responsive sizing
+  cardWidth?: number;
+  cardHeight?: number;
+  cardGap?: number;
+  cardOverlap?: number;
+  fontSize?: {
+    large: number;
+    medium: number;
+    small: number;
+  };
 }
 
 export const Tableau: React.FC<TableauProps> = ({
@@ -35,9 +45,14 @@ export const Tableau: React.FC<TableauProps> = ({
   onTouchMove,
   onTouchEnd,
   onTouchCancel,
+  cardWidth = 60,
+  cardHeight = 84,
+  cardGap = 8,
+  cardOverlap = 64,
+  fontSize = { large: 26, medium: 24, small: 14 },
 }) => {
   return (
-    <div style={{ display: 'flex', gap: '8px', marginTop: '24px' }}>
+    <div style={{ display: 'flex', gap: `${cardGap}px`, marginTop: `${cardGap * 3}px` }}>
       {tableau.map((column, columnIndex) => (
         <div
           key={`column-${columnIndex}`}
@@ -53,7 +68,11 @@ export const Tableau: React.FC<TableauProps> = ({
           onDrop={onDrop ? onDrop(columnIndex) : undefined}
         >
           {column.length === 0 ? (
-            <EmptyCell onClick={() => onEmptyColumnClick(columnIndex)} />
+            <EmptyCell
+              onClick={() => onEmptyColumnClick(columnIndex)}
+              cardWidth={cardWidth}
+              cardHeight={cardHeight}
+            />
           ) : (
             column.map((card, cardIndex) => {
               const isSelected =
@@ -72,7 +91,7 @@ export const Tableau: React.FC<TableauProps> = ({
                 <div
                   key={card.id}
                   style={{
-                    marginTop: cardIndex === 0 ? '0' : '-64px',
+                    marginTop: cardIndex === 0 ? '0' : `-${cardOverlap}px`,
                   }}
                 >
                   <Card
@@ -81,6 +100,9 @@ export const Tableau: React.FC<TableauProps> = ({
                     isSelected={isSelected}
                     isHighlighted={isHighlighted}
                     isDragging={isDragging}
+                    cardWidth={cardWidth}
+                    cardHeight={cardHeight}
+                    fontSize={fontSize}
                     onDragStart={onDragStart ? onDragStart(columnIndex, cardIndex) : undefined}
                     onDragEnd={onDragEnd}
                     onTouchStart={onTouchStart ? onTouchStart(columnIndex, cardIndex) : undefined}
