@@ -9,7 +9,22 @@ This is a card games collection featuring FreeCell as the first playable game, b
 **Live Demo**: https://mikhaidn.github.io/CardGames/
 - **FreeCell**: https://mikhaidn.github.io/CardGames/freecell/
 
-See `ARCHITECTURE.md` for the long-term vision of extracting reusable libraries for other card games.
+## 📚 Documentation Map
+
+This repository has multiple documentation files for different purposes:
+
+- **CLAUDE.md** (this file) - Implementation guide for AI assistants working with the codebase
+- **ROADMAP.md** - Strategic priorities, what to build next and why
+- **STATUS.md** - Current sprint status, what's being worked on now
+- **ARCHITECTURE.md** - Long-term technical vision for library extraction
+- **freecell-mvp/README.md** - FreeCell-specific documentation
+- **freecell-mvp/TESTING.md** - Manual testing guide
+
+**Quick Start for AI Agents:**
+1. Read **STATUS.md** to see what's currently in progress
+2. Check **ROADMAP.md** for priorities and next tasks
+3. Use **CLAUDE.md** (this file) for implementation details
+4. Consult **ARCHITECTURE.md** for long-term decisions
 
 ## Repository Structure
 
@@ -39,7 +54,9 @@ CardGames/
 │   └── TESTING.md            # Manual testing guide
 │
 ├── index.html                # Root landing page (game selector)
-├── CLAUDE.md                 # This file
+├── CLAUDE.md                 # This file (AI assistant implementation guide)
+├── ROADMAP.md                # Strategic priorities and next steps
+├── STATUS.md                 # Current sprint status and metrics
 └── ARCHITECTURE.md           # Long-term architectural plans
 ```
 
@@ -491,12 +508,19 @@ git push origin main  # Automatic via GitHub Actions
 - `freecell-mvp/src/config/featureFlags.ts` - Feature toggles
 
 ### Documentation
+- `ROADMAP.md` - Strategic priorities and what to build next
+- `STATUS.md` - Current sprint status and active work
+- `CLAUDE.md` - This file (AI assistant implementation guide)
+- `ARCHITECTURE.md` - Long-term architectural vision
 - `freecell-mvp/README.md` - FreeCell app documentation
 - `freecell-mvp/TESTING.md` - Testing guide
-- `ARCHITECTURE.md` - Long-term architectural vision
-- `CLAUDE.md` - This file (AI assistant guide)
 
 ## Notes for AI Assistants
+
+### Before Starting Any Work:
+1. **Read STATUS.md** - See what's currently in progress and what's next
+2. **Check ROADMAP.md** - Understand current priorities and strategic direction
+3. **Review this file** - For implementation details and conventions
 
 ### When Working on This Codebase:
 1. **Always run tests** after making changes to game logic
@@ -505,7 +529,8 @@ git push origin main  # Automatic via GitHub Actions
 4. **Use feature flags** for new optional features
 5. **Write tests first** when possible (TDD approach)
 6. **Update documentation** if making architectural changes
-7. **Test locally** before pushing (`npm run build` should succeed)
+7. **Update STATUS.md** when starting/completing work
+8. **Test locally** before pushing (`npm run build` should succeed)
 
 ### Common Gotchas:
 - The `base` path in vite.config.ts is for production only (GitHub Pages)
