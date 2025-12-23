@@ -27,7 +27,7 @@ jobs:
           node-version: '20'
           cache: 'npm'
           # We now cache the root lockfile which manages all sub-projects
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Install Dependencies
         # This installs everything for the apps AND shared library at once.
