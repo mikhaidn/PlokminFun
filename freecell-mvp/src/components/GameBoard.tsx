@@ -5,6 +5,8 @@ import {
   moveCardFromFreeCell,
   moveCardToFoundation,
   moveCardsToTableau,
+  moveCardFromFoundationToTableau,
+  moveCardFromFoundationToFreeCell,
 } from '../state/gameActions';
 import { findSafeAutoMove } from '../rules/autoComplete';
 import { getLowestPlayableCards } from '../rules/hints';
@@ -25,6 +27,7 @@ import { isRed } from '../rules/validation';
 type SelectedCard =
   | { type: 'tableau'; column: number; cardIndex: number }
   | { type: 'freeCell'; index: number }
+  | { type: 'foundation'; index: number }
   | null;
 
 export const GameBoard: React.FC = () => {
@@ -147,6 +150,8 @@ export const GameBoard: React.FC = () => {
       } else if (selectedCard.type === 'tableau') {
         const numCards = gameState.tableau[selectedCard.column].length - selectedCard.cardIndex;
         newState = moveCardsToTableau(gameState, selectedCard.column, numCards, columnIndex);
+      } else if (selectedCard.type === 'foundation') {
+        newState = moveCardFromFoundationToTableau(gameState, selectedCard.index, columnIndex);
       }
 
       if (newState) {
@@ -170,6 +175,8 @@ export const GameBoard: React.FC = () => {
       } else if (selectedCard.type === 'tableau') {
         const numCards = gameState.tableau[selectedCard.column].length - selectedCard.cardIndex;
         newState = moveCardsToTableau(gameState, selectedCard.column, numCards, columnIndex);
+      } else if (selectedCard.type === 'foundation') {
+        newState = moveCardFromFoundationToTableau(gameState, selectedCard.index, columnIndex);
       }
 
       if (newState) {
@@ -182,15 +189,20 @@ export const GameBoard: React.FC = () => {
   const handleFreeCellClick = (index: number) => {
     if (selectedCard) {
       // Try to move to free cell
+      let newState: GameState | null = null;
+
       if (selectedCard.type === 'tableau') {
         const column = gameState.tableau[selectedCard.column];
         // Only single cards can go to free cells
         if (selectedCard.cardIndex === column.length - 1) {
-          const newState = moveCardToFreeCell(gameState, selectedCard.column, index);
-          if (newState) {
-            setGameState(newState);
-          }
+          newState = moveCardToFreeCell(gameState, selectedCard.column, index);
         }
+      } else if (selectedCard.type === 'foundation') {
+        newState = moveCardFromFoundationToFreeCell(gameState, selectedCard.index, index);
+      }
+
+      if (newState) {
+        setGameState(newState);
       }
       setSelectedCard(null);
     } else if (gameState.freeCells[index]) {
@@ -217,6 +229,12 @@ export const GameBoard: React.FC = () => {
         setGameState(newState);
       }
       setSelectedCard(null);
+    } else {
+      // Select from foundation (if it has cards)
+      const foundation = gameState.foundations[foundationIndex];
+      if (foundation.length > 0) {
+        setSelectedCard({ type: 'foundation', index: foundationIndex });
+      }
     }
   };
 
@@ -258,6 +276,8 @@ export const GameBoard: React.FC = () => {
     } else if (draggingCard.type === 'tableau') {
       const numCards = gameState.tableau[draggingCard.column].length - draggingCard.cardIndex;
       newState = moveCardsToTableau(gameState, draggingCard.column, numCards, columnIndex);
+    } else if (draggingCard.type === 'foundation') {
+      newState = moveCardFromFoundationToTableau(gameState, draggingCard.index, columnIndex);
     }
 
     if (newState) {
@@ -271,15 +291,20 @@ export const GameBoard: React.FC = () => {
     e.preventDefault();
     if (!draggingCard) return;
 
+    let newState: GameState | null = null;
+
     if (draggingCard.type === 'tableau') {
       const column = gameState.tableau[draggingCard.column];
       // Only single cards can go to free cells
       if (draggingCard.cardIndex === column.length - 1) {
-        const newState = moveCardToFreeCell(gameState, draggingCard.column, index);
-        if (newState) {
-          setGameState(newState);
-        }
+        newState = moveCardToFreeCell(gameState, draggingCard.column, index);
       }
+    } else if (draggingCard.type === 'foundation') {
+      newState = moveCardFromFoundationToFreeCell(gameState, draggingCard.index, index);
+    }
+
+    if (newState) {
+      setGameState(newState);
     }
     setDraggingCard(null);
     setSelectedCard(null);
@@ -351,6 +376,8 @@ export const GameBoard: React.FC = () => {
           } else if (draggingCard.type === 'tableau') {
             const numCards = gameState.tableau[draggingCard.column].length - draggingCard.cardIndex;
             newState = moveCardsToTableau(gameState, draggingCard.column, numCards, targetIndex);
+          } else if (draggingCard.type === 'foundation') {
+            newState = moveCardFromFoundationToTableau(gameState, draggingCard.index, targetIndex);
           }
         } else if (targetType === 'freeCell') {
           if (draggingCard.type === 'tableau') {
@@ -358,6 +385,8 @@ export const GameBoard: React.FC = () => {
             if (draggingCard.cardIndex === column.length - 1) {
               newState = moveCardToFreeCell(gameState, draggingCard.column, targetIndex);
             }
+          } else if (draggingCard.type === 'foundation') {
+            newState = moveCardFromFoundationToFreeCell(gameState, draggingCard.index, targetIndex);
           }
         } else if (targetType === 'foundation') {
           if (draggingCard.type === 'freeCell') {
@@ -539,10 +568,17 @@ export const GameBoard: React.FC = () => {
         />
         <FoundationArea
           foundations={gameState.foundations}
+          selectedCard={selectedCard?.type === 'foundation' ? selectedCard : null}
+          draggingCard={draggingCard}
           onFoundationClick={handleFoundationClick}
+          onDragStart={(index) => handleDragStart({ type: 'foundation', index })}
+          onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
           onDrop={handleFoundationDrop}
+          onTouchStart={(index) => handleTouchStart({ type: 'foundation', index })}
+          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchCancel}
           cardWidth={layoutSizes.cardWidth}
           cardHeight={layoutSizes.cardHeight}
           cardGap={layoutSizes.cardGap}
@@ -652,6 +688,9 @@ export const GameBoard: React.FC = () => {
         } else if (draggingCard.type === 'tableau') {
           const column = gameState.tableau[draggingCard.column];
           card = column[draggingCard.cardIndex];
+        } else if (draggingCard.type === 'foundation') {
+          const foundation = gameState.foundations[draggingCard.index];
+          card = foundation.length > 0 ? foundation[foundation.length - 1] : null;
         }
 
         if (!card) return null;

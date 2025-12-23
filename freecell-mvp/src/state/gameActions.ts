@@ -3,7 +3,7 @@ import { type Card } from '../core/types';
 import { canStackOnTableau, canStackOnFoundation } from '../rules/validation';
 import { isValidStack, getMaxMovable } from '../rules/movement';
 
-type MoveSource = 'tableau' | 'freeCell';
+type MoveSource = 'tableau' | 'freeCell' | 'foundation';
 
 /**
  * Creates a deep copy of the game state to ensure immutability.
@@ -109,6 +109,62 @@ export function moveCardToFoundation(
   }
 
   newState.foundations[foundationIndex].push(card);
+  newState.moves++;
+
+  return newState;
+}
+
+/**
+ * Moves a card from a foundation pile to a tableau column.
+ *
+ * @param state - Current game state
+ * @param foundationIndex - Index of the source foundation (0-3)
+ * @param tableauIndex - Index of the target tableau column
+ * @returns New game state or null if move is invalid
+ */
+export function moveCardFromFoundationToTableau(
+  state: GameState,
+  foundationIndex: number,
+  tableauIndex: number
+): GameState | null {
+  const foundation = state.foundations[foundationIndex];
+  if (foundation.length === 0) return null;
+
+  const card = foundation[foundation.length - 1];
+  const targetColumn = state.tableau[tableauIndex];
+  const targetCard = targetColumn.length > 0 ? targetColumn[targetColumn.length - 1] : null;
+
+  if (!canStackOnTableau(card, targetCard)) return null;
+
+  const newState = cloneState(state);
+  newState.foundations[foundationIndex].pop();
+  newState.tableau[tableauIndex].push(card);
+  newState.moves++;
+
+  return newState;
+}
+
+/**
+ * Moves a card from a foundation pile to a free cell.
+ *
+ * @param state - Current game state
+ * @param foundationIndex - Index of the source foundation (0-3)
+ * @param freeCellIndex - Index of the target free cell (0-3)
+ * @returns New game state or null if move is invalid
+ */
+export function moveCardFromFoundationToFreeCell(
+  state: GameState,
+  foundationIndex: number,
+  freeCellIndex: number
+): GameState | null {
+  if (state.freeCells[freeCellIndex] !== null) return null;
+
+  const foundation = state.foundations[foundationIndex];
+  if (foundation.length === 0) return null;
+
+  const newState = cloneState(state);
+  const card = newState.foundations[foundationIndex].pop()!;
+  newState.freeCells[freeCellIndex] = card;
   newState.moves++;
 
   return newState;

@@ -6,7 +6,7 @@ import { EmptyCell } from './EmptyCell';
 interface FreeCellAreaProps {
   freeCells: (CardType | null)[];
   selectedCard: { type: 'freeCell'; index: number } | null;
-  draggingCard: { type: 'tableau'; column: number; cardIndex: number } | { type: 'freeCell'; index: number } | null;
+  draggingCard: { type: 'tableau'; column: number; cardIndex: number } | { type: 'freeCell'; index: number } | { type: 'foundation'; index: number } | null;
   highlightedCardIds?: string[];
   onFreeCellClick: (index: number) => void;
   onDragStart?: (index: number) => (e: React.DragEvent) => void;
