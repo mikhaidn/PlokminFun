@@ -4,10 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a card games collection featuring FreeCell as the first playable game, built with React, TypeScript, and Vite. The codebase follows a modular architecture with clear separation between core logic, game rules, state management, and UI components.
+This is a card games collection featuring **FreeCell** and **Klondike** as playable games, built with React, TypeScript, and Vite in a **monorepo architecture** (npm workspaces). The codebase features a shared component library (@cardgames/shared) with reusable game controls, drag-and-drop interactions, undo/redo system, and card interaction hooks.
 
 **Live Demo**: https://mikhaidn.github.io/CardGames/
 - **FreeCell**: https://mikhaidn.github.io/CardGames/freecell/
+- **Klondike**: https://mikhaidn.github.io/CardGames/klondike/
 
 ## 📚 Documentation Map
 
@@ -31,30 +32,62 @@ This repository has multiple documentation files for different purposes:
 ## Repository Structure
 
 ```
-CardGames/
+CardGames/                    # Monorepo root (npm workspaces)
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml         # GitHub Pages deployment (on push to main)
+│       ├── deploy.yml         # GitHub Pages deployment (builds both games)
 │       └── pr-validation.yml  # CI checks (lint, test, build on PRs)
+│
+├── package.json              # Root workspace config
+├── package-lock.json         # Unified lockfile for all packages
+│
+├── shared/                   # @cardgames/shared library
+│   ├── components/           # Shared React components
+│   │   ├── GameControls.tsx  # New Game, Undo, Redo, Settings, Help buttons
+│   │   └── DraggingCardPreview.tsx # Visual feedback during drag
+│   ├── hooks/                # Shared React hooks
+│   │   ├── useGameHistory.ts # Undo/redo state management
+│   │   └── useCardInteraction.ts # Unified drag-and-drop + click-to-select
+│   ├── utils/                # Shared utilities
+│   │   └── HistoryManager.ts # Generic history management
+│   ├── types/                # Shared TypeScript types
+│   ├── index.ts              # Barrel exports
+│   └── package.json          # Library package config
 │
 ├── freecell-mvp/             # FreeCell game implementation
 │   ├── src/
-│   │   ├── core/             # Game-agnostic card primitives
+│   │   ├── core/             # Game-agnostic card primitives (deck, types, RNG, cardPack)
 │   │   ├── rules/            # FreeCell-specific game rules
 │   │   ├── state/            # Game state management
 │   │   ├── components/       # React UI components
 │   │   ├── config/           # Configuration (feature flags, accessibility)
 │   │   ├── utils/            # Utility functions (responsive layout, accessibility)
-│   │   ├── test/             # Test setup and utilities
+│   │   ├── App.tsx           # Main game component
+│   │   └── main.tsx          # Entry point
+│   ├── public/               # Static assets (app icons, manifest)
+│   ├── package.json          # Dependencies include "@cardgames/shared"
+│   ├── vite.config.ts        # Vite config (base: /CardGames/freecell/)
+│   └── vitest.config.ts      # Test runner config
+│
+├── klondike-mvp/             # Klondike game implementation
+│   ├── src/
+│   │   ├── core/             # Card primitives (deck, types, RNG, cardPack)
+│   │   ├── rules/            # Klondike-specific game rules
+│   │   ├── state/            # Game state management
+│   │   ├── components/       # React UI components
+│   │   ├── config/           # Configuration
+│   │   ├── utils/            # Utility functions
 │   │   ├── App.tsx           # Main game component
 │   │   └── main.tsx          # Entry point
 │   ├── public/               # Static assets
-│   ├── package.json
-│   ├── vite.config.ts        # Vite config (base: /CardGames/freecell/)
-│   ├── vitest.config.ts      # Test runner config
-│   ├── tsconfig.json
-│   ├── README.md             # FreeCell-specific documentation
-│   └── TESTING.md            # Manual testing guide
+│   ├── package.json          # Dependencies include "@cardgames/shared"
+│   ├── vite.config.ts        # Vite config (base: /CardGames/klondike/)
+│   └── vitest.config.ts      # Test runner config
+│
+├── rfcs/                     # Technical design documents (Request for Comments)
+│   ├── 001-undo-redo-system.md
+│   ├── 002-game-sharing-replay.md
+│   └── 003-card-backs-and-animations.md
 │
 ├── index.html                # Root landing page (game selector)
 ├── CLAUDE.md                 # This file (AI assistant implementation guide)
@@ -65,21 +98,50 @@ CardGames/
 
 ## Build & Test Commands
 
+### Monorepo Commands (Root Level)
+
 ```bash
+# Install all dependencies for all packages
+npm install
+
+# Build shared library first (required before building games)
+npm run build:shared
+
+# Build all games
+npm run build:games
+
+# Build everything (shared + games)
+npm run build
+
+# Run tests across all packages
+npm test
+
+# Lint across all packages
+npm run lint
+```
+
+### Individual Package Commands
+
+```bash
+# FreeCell development
 cd freecell-mvp
-
-# Development
 npm run dev          # Start dev server at localhost:5173
+npm run test         # Run FreeCell tests
+npm run lint         # Lint FreeCell code
+npm run build        # Build FreeCell
 
-# Testing
-npm run test         # Run all tests once
-npm run test:watch   # Run tests in watch mode
-npm run test:coverage # Run tests with coverage report
+# Klondike development
+cd klondike-mvp
+npm run dev          # Start dev server at localhost:5173
+npm run test         # Run Klondike tests (1415+ tests)
+npm run lint         # Lint Klondike code
+npm run build        # Build Klondike
 
-# Build & Lint
-npm run build        # TypeScript check + production build
-npm run lint         # ESLint check
-npm run preview      # Preview production build locally
+# Shared library development
+cd shared
+npm run test         # Run shared library tests
+npm run test:watch   # Watch mode for TDD
+npm run test:coverage # Coverage report
 ```
 
 ## Version Management
@@ -606,60 +668,83 @@ Feature flags are defined in `src/config/featureFlags.ts`. Check this file befor
 - [x] GitHub Pages deployment
 - [x] CI/CD workflows
 
-### Phase 2: Beta-Ready Features (In Progress)
+### Phase 2: Beta-Ready Features ✅ MOSTLY COMPLETE
 
-#### 2.1 Undo/Redo
-- [ ] Add `moveHistory: GameState[]` to track states
-- [ ] Implement undo button (pop from history)
-- [ ] Optional: Implement redo with separate stack
-- [ ] Limit history size to prevent memory issues (~100 states)
+#### 2.1 Undo/Redo ✅ COMPLETE (#16)
+- [x] useGameHistory hook with state snapshots
+- [x] Undo/Redo buttons in GameControls component
+- [x] Keyboard shortcuts (Ctrl+Z, Ctrl+Y)
+- [x] History limit configuration (default 100 states)
+- [x] Implemented in both FreeCell and Klondike via @cardgames/shared
 
-#### 2.2 Game Persistence
+#### 2.2 Game Persistence ❌ NOT DONE (Moved to P6 in ROADMAP.md)
 - [ ] Save current game to localStorage on each move
 - [ ] Restore game state on page reload
-- [ ] Save/load game seed for "continue" functionality
+- [ ] "Continue" vs "New Game" dialog
+- [ ] Handle localStorage quota exceeded
 
 #### 2.3 Responsive Layout ✅ COMPLETE
-- [x] Viewport-based dynamic sizing system
-- [x] Implemented responsive breakpoints: mobile (< 600px), tablet (600-900px), desktop (> 900px)
-- [x] Cards scale automatically to fit all screen sizes
-- [x] Maintains aspect ratio and readability
+- [x] Accessibility settings with card size presets (small, medium, large, extra-large)
+- [x] Font size multiplier (1.0x - 2.0x)
+- [x] Cards scale automatically via accessibility controls
 - [x] Responsive header, buttons, and modals
+- [x] One-handed mode (button position: top/bottom)
 
-#### 2.4 Touch Optimization ✅ COMPLETE
-- [x] Touch drag-and-drop support
-- [x] Touch event handlers (`onTouchStart`, `onTouchEnd`, `onTouchMove`)
-- [x] Tap-to-select interaction
-- [x] Disabled browser zoom/scroll during gameplay (`touchAction: 'none'`)
+#### 2.4 Touch Optimization ✅ COMPLETE (via @cardgames/shared)
+- [x] useCardInteraction hook with touch drag-and-drop support
+- [x] Touch event handlers integrated into shared interaction system
+- [x] Tap-to-select interaction (click-to-select fallback)
+- [x] Touch target size controls in accessibility settings
 
-#### 2.5 Basic Polish
-- [ ] Loading state while initializing
-- [ ] Error boundaries for graceful failure
-- [ ] Keyboard shortcuts (U for undo, N for new game, H for hints)
-- [ ] Confirm dialog before starting new game mid-play
+#### 2.5 Basic Polish ✅ COMPLETE
+- [x] GameControls component (shared across both games)
+- [x] Keyboard shortcuts (Ctrl+Z undo, Ctrl+Y redo, N new game, H help)
+- [x] SettingsModal for accessibility options
+- [x] Bug reporter utility (src/utils/bugReport.ts)
 
-### Phase 3: Beta Testing
-- [ ] Test on real devices: iPhone, iPad, Android phone, Android tablet
-- [ ] Gather feedback on usability and bugs
-- [ ] Fix critical issues before wider release
+### Phase 3: Architecture & Library Extraction ✅ COMPLETE
 
-### Phase 4: Nice-to-Have (Post-Beta)
-- [ ] Animations for card movement
-- [ ] Sound effects (optional, with mute)
-- [ ] Game statistics (wins, losses, best times)
-- [ ] Timer and scoring system
-- [ ] Dark mode theme
-- [ ] Share game seed feature
+#### 3.1 Second Game (Klondike) ✅ COMPLETE (#19)
+- [x] Full Klondike Solitaire implementation
+- [x] Draw-1 and Draw-3 modes
+- [x] Stock pile, waste pile, tableau (7 columns), foundations
+- [x] 1415+ comprehensive tests (cardPack, deck, rng, rules, actions, state)
+- [x] Live at https://mikhaidn.github.io/CardGames/klondike/
+
+#### 3.2 Shared Library ✅ COMPLETE (#21)
+- [x] @cardgames/shared extracted
+- [x] GameControls component (New Game, Undo, Redo, Settings, Help)
+- [x] DraggingCardPreview component
+- [x] useGameHistory hook (undo/redo)
+- [x] useCardInteraction hook (drag-and-drop + click-to-select)
+- [x] HistoryManager utility
+- [x] TypeScript types exported
+
+#### 3.3 Monorepo Setup ✅ COMPLETE (#25)
+- [x] npm workspaces configuration
+- [x] Root package.json with workspace scripts
+- [x] Unified package-lock.json
+- [x] Updated CI/CD workflows for monorepo builds
+- [x] Both games deployed from monorepo
+
+### Phase 4: Current Priorities (See ROADMAP.md P5-P7)
+- [ ] RFC-003 Phase 2: Klondike card backs integration
+- [ ] Game persistence to localStorage
+- [ ] Privacy-first analytics (Plausible or Simple Analytics)
+- [ ] Daily challenge system (future)
 
 ## Mobile Deployment Options
 
 ### Current Status
-The game is **live on GitHub Pages** and optimized for mobile:
+Both games are **live on GitHub Pages** and fully optimized for mobile:
+- ✅ **FreeCell**: https://mikhaidn.github.io/CardGames/freecell/
+- ✅ **Klondike**: https://mikhaidn.github.io/CardGames/klondike/
 - ✅ Accessible via web browser on any device
-- ✅ **Responsive layout** - scales for all screen sizes (mobile, tablet, desktop)
-- ✅ **Touch optimized** - drag-and-drop and tap interactions work on touch devices
-- ✅ PWA configured (manifest and service worker via vite-plugin-pwa)
-- ❌ No custom app icons (uses default icons)
+- ✅ **Responsive layout** - accessibility settings provide card sizing and one-handed mode
+- ✅ **Touch optimized** - useCardInteraction hook handles drag-and-drop and tap interactions
+- ✅ **PWA configured** - manifest and service worker via vite-plugin-pwa
+- ✅ **Custom app icons** - 192x192 and 512x512 icons with FreeCell branding
+- ✅ **Installable** - "Add to Home Screen" works on iOS Safari and Android Chrome
 
 ### Option A: PWA (Recommended for Prototyping)
 Progressive Web App - works on both iOS Safari and Android Chrome.
@@ -875,38 +960,57 @@ git push origin main  # Automatic via GitHub Actions
 4. Gather feedback and iterate
 5. Consider native apps only if App Store presence is required
 
-**Current priorities:**
-1. ✅ Core game working and deployed
-2. ✅ Responsive layout for all devices (Phase 2.3)
-3. ✅ Touch optimization (Phase 2.4)
-4. 🔄 Implement undo/redo (Phase 2.1) - **Next priority**
-5. 🔄 Game persistence with localStorage (Phase 2.2)
+**Current priorities (see ROADMAP.md P5-P7):**
+1. ✅ Both games deployed (FreeCell & Klondike)
+2. ✅ Monorepo & shared library complete
+3. ✅ Undo/redo system complete (#16)
+4. 🔄 RFC-003 Phase 2: Klondike card backs - **Current priority**
+5. 🔄 Game persistence with localStorage (P6)
+6. 🔄 Privacy-first analytics (P7)
 
 ## Key Files Reference
 
-### Configuration
-- `freecell-mvp/vite.config.ts` - Build config, base path
-- `freecell-mvp/vitest.config.ts` - Test config
-- `freecell-mvp/tsconfig.json` - TypeScript config
-- `freecell-mvp/eslint.config.js` - Linting rules
-- `.github/workflows/deploy.yml` - Deployment pipeline
-- `.github/workflows/pr-validation.yml` - CI checks
+### Monorepo Configuration
+- `package.json` - Root workspace config (npm workspaces)
+- `package-lock.json` - Unified lockfile for all packages
+- `.github/workflows/deploy.yml` - Deployment pipeline (builds both games)
+- `.github/workflows/pr-validation.yml` - CI checks (lint, test, build)
 
-### Game Logic (Most important for AI assistants)
-- `freecell-mvp/src/core/` - Card primitives (types, deck, RNG)
+### Shared Library (@cardgames/shared) **MOST IMPORTANT**
+- `shared/index.ts` - Barrel exports for all shared code
+- `shared/components/GameControls.tsx` - New Game, Undo, Redo, Settings, Help buttons
+- `shared/components/DraggingCardPreview.tsx` - Visual feedback during drag
+- `shared/hooks/useGameHistory.ts` - Undo/redo state management
+- `shared/hooks/useCardInteraction.ts` - Unified drag-and-drop + click-to-select
+- `shared/utils/HistoryManager.ts` - Generic history management
+- `shared/types/` - Shared TypeScript types
+- `shared/package.json` - Library dependencies
+
+### FreeCell Game
+- `freecell-mvp/src/core/` - Card primitives (types, deck, RNG, cardPack)
 - `freecell-mvp/src/rules/` - FreeCell game rules
 - `freecell-mvp/src/state/` - Game state management
-- `freecell-mvp/src/components/` - React UI components (includes SettingsModal)
-- `freecell-mvp/src/utils/responsiveLayout.ts` - Responsive sizing calculations
-- `freecell-mvp/src/utils/highContrastStyles.ts` - Accessibility color utilities
-- `freecell-mvp/src/config/featureFlags.ts` - Feature toggles
+- `freecell-mvp/src/components/` - React UI components
 - `freecell-mvp/src/config/accessibilitySettings.ts` - Accessibility configuration
+- `freecell-mvp/vite.config.ts` - Build config (base: /CardGames/freecell/)
+- `freecell-mvp/package.json` - Depends on @cardgames/shared
+
+### Klondike Game
+- `klondike-mvp/src/core/` - Card primitives (types, deck, RNG, cardPack)
+- `klondike-mvp/src/rules/` - Klondike game rules (draw-1, draw-3)
+- `klondike-mvp/src/state/` - Game state management
+- `klondike-mvp/src/components/` - React UI components
+- `klondike-mvp/vite.config.ts` - Build config (base: /CardGames/klondike/)
+- `klondike-mvp/package.json` - Depends on @cardgames/shared
 
 ### Documentation
 - `ROADMAP.md` - Strategic priorities and what to build next
 - `STATUS.md` - Current sprint status and active work
 - `CLAUDE.md` - This file (AI assistant implementation guide)
 - `ARCHITECTURE.md` - Long-term architectural vision
+- `rfcs/001-undo-redo-system.md` - Undo/redo RFC
+- `rfcs/002-game-sharing-replay.md` - Game sharing RFC
+- `rfcs/003-card-backs-and-animations.md` - Card backs and flip animations RFC
 - `freecell-mvp/README.md` - FreeCell app documentation
 - `freecell-mvp/TESTING.md` - Testing guide
 
@@ -938,12 +1042,20 @@ git push origin main  # Automatic via GitHub Actions
 
 ### Quick Commands for AI Assistants:
 ```bash
-# Full validation (what CI runs)
-cd freecell-mvp && npm run lint && npm run test && npm run build
+# Full monorepo validation (what CI runs)
+npm run lint && npm test && npm run build
 
-# Quick feedback loop
-cd freecell-mvp && npm run test:watch
+# Work on specific game
+cd freecell-mvp && npm run test:watch   # FreeCell TDD
+cd klondike-mvp && npm run test:watch   # Klondike TDD
+
+# Work on shared library
+cd shared && npm run test:watch
 
 # Check coverage
 cd freecell-mvp && npm run test:coverage
+cd klondike-mvp && npm run test:coverage
+
+# Build for deployment
+npm run build:shared && npm run build:games
 ```
