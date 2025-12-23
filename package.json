@@ -1,0 +1,9 @@
+{
+  "name": "card-games-monorepo",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "freecell-mvp",
+    "klondike-mvp"
+  ]
+}

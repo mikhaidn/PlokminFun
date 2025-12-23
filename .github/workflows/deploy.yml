@@ -26,35 +26,30 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: |
-            freecell-mvp/package-lock.json
-            klondike-mvp/package-lock.json
-            shared/package-lock.json
+          # We now cache the root lockfile which manages all sub-projects
+          cache-dependency-path: package-lock.json
 
-      - name: Install FreeCell dependencies
-        working-directory: freecell-mvp
-        run: npm ci
+      - name: Install Dependencies
+        # This installs everything for the apps AND shared library at once.
+        # It dedupes React automatically because they share a root node_modules.
+        run: npm install
 
-      - name: Build FreeCell
-        working-directory: freecell-mvp
-        run: npm run build
+      - name: Build Shared Library
+        # Build the library first so the apps can consume the latest build
+        run: npm run build -w shared
 
-      - name: Install shared dependencies
-        working-directory: shared
-        run: npm ci
-
-      - name: Install Klondike dependencies
-        working-directory: klondike-mvp
-        run: npm ci
-
-      - name: Build Klondike
-        working-directory: klondike-mvp
-        run: npm run build
+      - name: Build Games
+        # Build both games using the workspace flag
+        run: |
+          npm run build -w freecell-mvp
+          npm run build -w klondike-mvp
 
       - name: Create root landing page
         run: |
           mkdir -p _site
+          # Copy your root index.html
           cp index.html _site/index.html
+          # Copy the dist folders into subdirectories for GH Pages
           cp -r freecell-mvp/dist _site/freecell
           cp -r klondike-mvp/dist _site/klondike
 
