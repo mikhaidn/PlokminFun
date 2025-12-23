@@ -10,10 +10,12 @@
 Consolidate 600-700 lines of duplicate card movement code between FreeCell and Klondike by:
 1. Extracting shared validation rules to `@cardgames/shared`
 2. Migrating both games to use the existing `useCardInteraction` hook
-3. Standardizing move execution patterns
+3. Standardizing on `cardCount` (simplified, no dual representation)
+4. Refactoring FreeCell to use Klondike's generic `moveCards(from, to, count)` pattern
 
-**Estimated Effort:** 5-7 days
+**Estimated Effort:** 6-8 days
 **Risk Level:** Medium (requires careful testing to avoid regressions)
+**Key Simplification:** `cardCount` only (no `cardIndex` support in shared code)
 
 ---
 
@@ -65,51 +67,54 @@ Both games independently implemented:
 
 ## Design Decisions
 
-### Decision 1: Location Type Harmonization
+### Decision 1: Standardize on cardCount (Simplified)
 
 **Problem:** FreeCell uses `cardIndex` (position in column), Klondike uses `cardCount` (number of cards selected).
 
-**Decision:** Support both in shared types, standardize on `cardCount` internally.
+**Decision:** Use `cardCount` exclusively. FreeCell converts at click handlers.
 
 **Rationale:**
-- `cardCount` is more flexible (supports multi-card selection naturally)
-- FreeCell can convert `cardIndex` to `cardCount` at the boundary
-- Klondike already uses `cardCount`, no migration needed
+- **Simpler shared types** - One way to represent selection (not two)
+- **Clearer intent** - "Moving 3 cards" is clearer than "card at index 2"
+- **Matches Klondike** - Proven pattern, no migration needed for Klondike
+- **Minimal FreeCell impact** - Just convert at click handlers (3 lines of code)
 
 **Implementation:**
 
 ```typescript
 // shared/types/GameLocation.ts (NEW FILE)
 export interface GameLocation {
-  // Required fields
+  /** Type of location (tableau column, foundation pile, etc.) */
   type: 'tableau' | 'foundation' | 'waste' | 'stock' | 'freeCell';
-  index: number;  // Column/pile index (0-based)
 
-  // Optional fields (games use as needed)
-  cardCount?: number;   // Number of cards (preferred for new code)
-  cardIndex?: number;   // Card position (legacy, for FreeCell compatibility)
-}
+  /** Index of the column/pile (0-based) */
+  index: number;
 
-// Helper to convert between representations
-export function cardIndexToCount(
-  column: Card[],
-  cardIndex: number
-): number {
-  return column.length - cardIndex;
-}
-
-export function cardCountToIndex(
-  column: Card[],
-  cardCount: number
-): number {
-  return column.length - cardCount;
+  /** Number of cards to move (default: 1 for single card moves) */
+  cardCount?: number;
 }
 ```
 
-**Migration Path:**
-- Phase 1: Both representations supported in shared types
-- Phase 2: FreeCell converts `cardIndex` → `cardCount` at interaction boundaries
-- Phase 3 (future): FreeCell fully migrates to `cardCount` internally
+**FreeCell Click Handler Conversion:**
+
+```typescript
+// FreeCell: Convert cardIndex to cardCount at the boundary
+function handleTableauClick(columnIndex: number, cardIndex: number) {
+  const column = gameState.tableau[columnIndex];
+  const cardCount = column.length - cardIndex;  // Convert once
+
+  handlers.handleCardClick({
+    type: 'tableau',
+    index: columnIndex,
+    cardCount,  // Use cardCount everywhere after this
+  });
+}
+```
+
+**Benefits:**
+- No dual representation in shared code
+- FreeCell internals can stay unchanged (convert only at boundaries)
+- Future games just use `cardCount` directly
 
 ---
 
@@ -490,7 +495,63 @@ describe('GameBoard - Shared Interaction Hook', () => {
 
 ---
 
-### Decision 7: Auto-Move Handling
+### Decision 7: FreeCell Move Execution Pattern
+
+**Problem:** FreeCell has 7 specialized move functions. Should it adopt Klondike's generic `moveCards(from, to, count)` pattern?
+
+**Decision:** YES. Refactor FreeCell to use Klondike's cleaner pattern.
+
+**Rationale:**
+- **Simpler API** - One function instead of seven
+- **Consistent with Klondike** - Same pattern across both games
+- **Easier to maintain** - Test and debug one function
+- **Better for shared code** - Generic location-based moves work naturally
+
+**Current FreeCell Pattern (7 functions):**
+
+```typescript
+moveCardToFreeCell(state, tableauIndex, freeCellIndex)
+moveCardFromFreeCell(state, freeCellIndex, tableauIndex)
+moveCardsToTableau(state, sourceIndex, numCards, targetIndex)
+moveCardToFoundation(state, sourceType, sourceIndex, foundationIndex)
+moveCardFromFoundationToTableau(state, foundationIndex, tableauIndex)
+// ... 2 more functions
+```
+
+**Klondike Pattern (1 function + helpers):**
+
+```typescript
+function moveCards(
+  state: GameState,
+  from: Location,
+  to: Location,
+  cardCount: number = 1
+): GameState | null {
+  const cards = removeCards(state, from, cardCount);
+  if (!cards) return null;
+
+  const newState = addCards(state, to, cards);
+  return applyPostMoveEffects(newState, from, to);
+}
+
+// Generic helpers
+function removeCards(state, location, count): Card[] | null { /* ... */ }
+function addCards(state, location, cards): GameState { /* ... */ }
+```
+
+**Implementation Timeline:**
+- Phase 2: Create FreeCell moveCards wrapper (delegates to old functions)
+- Phase 3: Refactor FreeCell to use generic pattern with helpers
+
+**Benefits:**
+- Consistent API across both games
+- Easier to add new location types (e.g., reserve piles for Spider)
+- Simpler executeMove adapters
+- ~100 lines of FreeCell code simplified
+
+---
+
+### Decision 8: Auto-Move Handling
 
 **Problem:** Should we consolidate auto-move logic too?
 
@@ -1740,9 +1801,9 @@ Related: RFC-004 Phase 2/3
 
 ---
 
-### Phase 3: Cleanup and Optimization (1 day)
+### Phase 3: Refactor FreeCell & Cleanup (2 days)
 
-**Goal:** Remove old code, optimize shared logic, finalize consolidation.
+**Goal:** Refactor FreeCell to use Klondike's generic move pattern, remove old code, optimize, finalize.
 
 #### Step 3.1: Monitor Phase 2 Deployment
 
@@ -1764,7 +1825,174 @@ Related: RFC-004 Phase 2/3
 - [ ] Performance is acceptable
 - [ ] Mobile experience is good
 
-#### Step 3.2: Remove Old Code
+#### Step 3.2: Refactor FreeCell Move Execution (Adopt Klondike Pattern)
+
+**Goal:** Replace FreeCell's 7 specialized move functions with Klondike's generic `moveCards(from, to, count)` pattern.
+
+**File:** `freecell-mvp/src/state/gameActions.ts` (REFACTOR)
+
+**Current Structure (7 functions):**
+```typescript
+moveCardToFreeCell(state, tableauIndex, freeCellIndex)
+moveCardFromFreeCell(state, freeCellIndex, tableauIndex)
+moveCardsToTableau(state, sourceIndex, numCards, targetIndex)
+moveCardToFoundation(state, sourceType, sourceIndex, foundationIndex)
+moveCardFromFoundationToTableau(state, foundationIndex, tableauIndex)
+// ... 2 more
+```
+
+**New Structure (1 function + helpers):**
+
+```typescript
+// freecell-mvp/src/state/gameActions.ts (REFACTORED)
+
+/**
+ * Generic move function (Klondike pattern)
+ * Replaces all 7 specialized functions
+ */
+export function moveCards(
+  state: GameState,
+  from: Location,
+  to: Location,
+  cardCount: number = 1
+): GameState | null {
+  // Validate the move first
+  if (!canMove(state, from, to, cardCount)) {
+    return null;
+  }
+
+  // Remove cards from source
+  const { newState, cards } = removeCards(state, from, cardCount);
+  if (!cards) return null;
+
+  // Add cards to destination
+  const finalState = addCards(newState, to, cards);
+
+  // Increment move counter
+  finalState.moves++;
+
+  return finalState;
+}
+
+/**
+ * Remove cards from a location
+ */
+function removeCards(
+  state: GameState,
+  location: Location,
+  count: number
+): { newState: GameState; cards: Card[] | null } {
+  const newState = cloneState(state);
+
+  switch (location.type) {
+    case 'tableau': {
+      const column = newState.tableau[location.index];
+      if (column.length < count) return { newState, cards: null };
+
+      const cards = column.splice(-count);
+      return { newState, cards };
+    }
+
+    case 'freeCell': {
+      const card = newState.freeCells[location.index];
+      if (!card || count !== 1) return { newState, cards: null };
+
+      newState.freeCells[location.index] = null;
+      return { newState, cards: [card] };
+    }
+
+    case 'foundation': {
+      const foundation = newState.foundations[location.index];
+      if (foundation.length === 0 || count !== 1) {
+        return { newState, cards: null };
+      }
+
+      const card = foundation.pop()!;
+      return { newState, cards: [card] };
+    }
+
+    default:
+      return { newState, cards: null };
+  }
+}
+
+/**
+ * Add cards to a location
+ */
+function addCards(
+  state: GameState,
+  location: Location,
+  cards: Card[]
+): GameState {
+  const newState = cloneState(state);
+
+  switch (location.type) {
+    case 'tableau':
+      newState.tableau[location.index].push(...cards);
+      break;
+
+    case 'freeCell':
+      if (cards.length === 1) {
+        newState.freeCells[location.index] = cards[0];
+      }
+      break;
+
+    case 'foundation':
+      if (cards.length === 1) {
+        newState.foundations[location.index].push(cards[0]);
+      }
+      break;
+  }
+
+  return newState;
+}
+
+/**
+ * Location type for FreeCell
+ */
+type Location = {
+  type: 'tableau' | 'freeCell' | 'foundation';
+  index: number;
+};
+
+// Export legacy functions for backward compatibility (temporary)
+// These will be removed after moveExecution.ts is updated
+export function moveCardToFreeCell(
+  state: GameState,
+  tableauIndex: number,
+  freeCellIndex: number
+): GameState | null {
+  return moveCards(
+    state,
+    { type: 'tableau', index: tableauIndex },
+    { type: 'freeCell', index: freeCellIndex },
+    1
+  );
+}
+
+// ... (similar wrappers for other legacy functions)
+```
+
+**Actions:**
+1. Create `removeCards` helper function
+2. Create `addCards` helper function
+3. Create unified `moveCards` function
+4. Update `moveExecution.ts` to use new `moveCards` function
+5. Keep legacy function wrappers temporarily (for compatibility)
+6. Run tests: `cd freecell-mvp && npm run test`
+7. Verify all tests pass
+8. Remove legacy wrappers once confirmed working
+9. Run tests again
+
+**Acceptance Criteria:**
+- [ ] `moveCards` function implemented with helpers
+- [ ] All move types supported (tableau, freeCell, foundation)
+- [ ] All existing tests pass (no regressions)
+- [ ] Move execution simplified from ~150 lines to ~80 lines
+- [ ] Legacy wrappers can be removed cleanly
+- [ ] TypeScript compiles without errors
+
+#### Step 3.3: Remove Old Code
 
 **Files to Update:**
 
@@ -1809,7 +2037,7 @@ return (
 - [ ] All tests still pass
 - [ ] Both games still work correctly
 
-#### Step 3.3: Optimize Shared Code
+#### Step 3.4: Optimize Shared Code
 
 **Review and optimize:**
 
@@ -1838,7 +2066,7 @@ return (
 - [ ] Code is well-documented
 - [ ] Examples are clear and helpful
 
-#### Step 3.4: Update Documentation
+#### Step 3.5: Update Documentation
 
 **Files to Update:**
 
@@ -1917,7 +2145,7 @@ const { state, handlers } = useCardInteraction({
 - [ ] ROADMAP.md updated
 - [ ] shared/README.md documents all exports
 
-#### Step 3.5: Final Testing
+#### Step 3.6: Final Testing
 
 **Full regression test:**
 
@@ -1944,7 +2172,7 @@ const { state, handlers } = useCardInteraction({
 - [ ] No performance regressions
 - [ ] Mobile experience is excellent
 
-#### Step 3.6: Final Commit
+#### Step 3.7: Final Commit
 
 **Commit Message:**
 
@@ -2185,10 +2413,14 @@ Use this checklist to track progress:
 - [ ] Test on mobile devices
 - [ ] Commit Phase 2
 
-### Phase 3: Cleanup
+### Phase 3: Refactor FreeCell & Cleanup
 - [ ] Monitor deployment for 1 week
+- [ ] Refactor FreeCell to use generic `moveCards(from, to, count)` pattern
+- [ ] Create `removeCards` and `addCards` helper functions
+- [ ] Update FreeCell tests to verify refactored move execution
 - [ ] Remove old code from Klondike GameBoard
 - [ ] Remove old code from FreeCell GameBoard
+- [ ] Remove legacy move function wrappers from FreeCell
 - [ ] Remove `USE_SHARED_INTERACTION_HOOK` feature flag
 - [ ] Optimize shared hook performance
 - [ ] Update CLAUDE.md
