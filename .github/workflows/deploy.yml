@@ -26,9 +26,11 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: freecell-mvp/package-lock.json
+          cache-dependency-path: |
+            freecell-mvp/package-lock.json
+            klondike-mvp/package-lock.json
 
-      - name: Install dependencies
+      - name: Install FreeCell dependencies
         working-directory: freecell-mvp
         run: npm ci
 
@@ -36,11 +38,20 @@ jobs:
         working-directory: freecell-mvp
         run: npm run build
 
+      - name: Install Klondike dependencies
+        working-directory: klondike-mvp
+        run: npm ci
+
+      - name: Build Klondike
+        working-directory: klondike-mvp
+        run: npm run build
+
       - name: Create root landing page
         run: |
           mkdir -p _site
           cp index.html _site/index.html
           cp -r freecell-mvp/dist _site/freecell
+          cp -r klondike-mvp/dist _site/klondike
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
