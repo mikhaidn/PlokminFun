@@ -8,8 +8,6 @@ import { useState, useCallback } from 'react';
 import type {
   CardLocation,
   CardInteractionConfig,
-  CardInteractionState,
-  CardInteractionHandlers,
   UseCardInteractionReturn,
 } from '../types/CardInteraction';
 

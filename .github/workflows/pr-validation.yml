@@ -19,27 +19,57 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: freecell-mvp/package-lock.json
+          cache-dependency-path: |
+            freecell-mvp/package-lock.json
+            klondike-mvp/package-lock.json
+            shared/package-lock.json
 
-      - name: Install dependencies
+      - name: Install FreeCell dependencies
         working-directory: freecell-mvp
         run: npm ci
 
-      - name: Run linter
+      - name: Run FreeCell linter
         working-directory: freecell-mvp
         run: npm run lint
 
-      - name: Run tests
+      - name: Run FreeCell tests
         working-directory: freecell-mvp
         run: npm run test
 
-      - name: Build
+      - name: Build FreeCell
         working-directory: freecell-mvp
         run: npm run build
 
-      - name: Upload build artifacts
+      - name: Install shared dependencies
+        working-directory: shared
+        run: npm ci
+
+      - name: Install Klondike dependencies
+        working-directory: klondike-mvp
+        run: npm ci
+
+      - name: Run Klondike linter
+        working-directory: klondike-mvp
+        run: npm run lint
+
+      - name: Run Klondike tests
+        working-directory: klondike-mvp
+        run: npm run test
+
+      - name: Build Klondike
+        working-directory: klondike-mvp
+        run: npm run build
+
+      - name: Upload FreeCell build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-output
+          name: freecell-build
           path: freecell-mvp/dist
+          retention-days: 7
+
+      - name: Upload Klondike build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: klondike-build
+          path: klondike-mvp/dist
           retention-days: 7

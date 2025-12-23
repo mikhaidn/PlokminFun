@@ -29,6 +29,7 @@ jobs:
           cache-dependency-path: |
             freecell-mvp/package-lock.json
             klondike-mvp/package-lock.json
+            shared/package-lock.json
 
       - name: Install FreeCell dependencies
         working-directory: freecell-mvp
@@ -37,6 +38,10 @@ jobs:
       - name: Build FreeCell
         working-directory: freecell-mvp
         run: npm run build
+
+      - name: Install shared dependencies
+        working-directory: shared
+        run: npm ci
 
       - name: Install Klondike dependencies
         working-directory: klondike-mvp
