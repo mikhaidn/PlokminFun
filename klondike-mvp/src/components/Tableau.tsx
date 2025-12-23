@@ -31,17 +31,23 @@ export const Tableau: React.FC<TableauProps> = ({
         overflow: 'auto',
       }}
     >
-      {tableau.map((column, columnIndex) => (
-        <div
-          key={columnIndex}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'relative',
-            minHeight: `${cardHeight}px`,
-            width: `${cardWidth}px`,
-          }}
-        >
+      {tableau.map((column, columnIndex) => {
+        // Calculate column height based on number of cards and overlap
+        const columnHeight = column.cards.length === 0
+          ? cardHeight
+          : cardHeight + ((column.cards.length - 1) * cardOverlap);
+
+        return (
+          <div
+            key={columnIndex}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              height: `${columnHeight}px`,
+              width: `${cardWidth}px`,
+            }}
+          >
           {column.cards.length === 0 ? (
             <EmptyCell
               cardWidth={cardWidth}
@@ -86,7 +92,8 @@ export const Tableau: React.FC<TableauProps> = ({
             })
           )}
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

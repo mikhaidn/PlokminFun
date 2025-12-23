@@ -1,10 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/CardGames/klondike/',
+  resolve: {
+    alias: {
+      '@cardgames/shared': path.resolve(__dirname, '../shared/index.ts'),
+    },
+  },
   plugins: [
     react(),
     VitePWA({

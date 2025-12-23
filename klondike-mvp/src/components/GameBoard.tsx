@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { type KlondikeGameState, type Location, isGameWon } from '../state/gameState';
 import { drawFromStock, moveCards, autoMoveToFoundations } from '../state/gameActions';
 import { Tableau } from './Tableau';
 import { StockWaste } from './StockWaste';
 import { FoundationArea } from './FoundationArea';
 import { calculateLayoutSizes, type LayoutSizes } from '../utils/responsiveLayout';
+import { GameControls } from '@cardgames/shared';
+import { useGameHistory } from '@cardgames/shared';
 import { version } from '../../package.json';
 
 interface GameBoardProps {
@@ -19,7 +21,21 @@ type SelectedCard =
   | null;
 
 export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame }) => {
-  const [gameState, setGameState] = useState<KlondikeGameState>(initialState);
+  // Use game history for undo/redo functionality
+  const {
+    currentState: gameState,
+    pushState,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    reset: resetHistory,
+  } = useGameHistory<KlondikeGameState>({
+    initialState,
+    maxHistorySize: 100,
+    persistKey: 'klondike-game-history',
+  });
+
   const [selectedCard, setSelectedCard] = useState<SelectedCard>(null);
   const [isWon, setIsWon] = useState(false);
 
@@ -54,7 +70,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
   const handleStockClick = () => {
     const newState = drawFromStock(gameState);
     if (newState !== gameState) {
-      setGameState(newState);
+      pushState(newState);
       setSelectedCard(null);
     }
   };
@@ -95,21 +111,21 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
       if (selectedCard.type === 'waste') {
         const newState = moveCards(gameState, { type: 'waste' }, destination, 1);
         if (newState) {
-          setGameState(newState);
+          pushState(newState);
           setSelectedCard(null);
         }
       } else if (selectedCard.type === 'tableau') {
         const source: Location = { type: 'tableau', index: selectedCard.columnIndex };
         const newState = moveCards(gameState, source, destination, selectedCard.cardCount);
         if (newState) {
-          setGameState(newState);
+          pushState(newState);
           setSelectedCard(null);
         }
       } else if (selectedCard.type === 'foundation') {
         const source: Location = { type: 'foundation', index: selectedCard.index };
         const newState = moveCards(gameState, source, destination, 1);
         if (newState) {
-          setGameState(newState);
+          pushState(newState);
           setSelectedCard(null);
         }
       }
@@ -129,7 +145,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
       if (selectedCard.type === 'waste') {
         const newState = moveCards(gameState, { type: 'waste' }, destination, 1);
         if (newState) {
-          setGameState(newState);
+          pushState(newState);
           setSelectedCard(null);
         }
       } else if (selectedCard.type === 'tableau') {
@@ -138,7 +154,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           const source: Location = { type: 'tableau', index: selectedCard.columnIndex };
           const newState = moveCards(gameState, source, destination, 1);
           if (newState) {
-            setGameState(newState);
+            pushState(newState);
             setSelectedCard(null);
           }
         }
@@ -156,23 +172,63 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
   const handleAutoComplete = () => {
     const newState = autoMoveToFoundations(gameState);
     if (newState !== gameState) {
-      setGameState(newState);
+      pushState(newState);
       setSelectedCard(null);
     }
   };
 
+  // Reset game to initial state
+  const handleResetGame = useCallback(() => {
+    resetHistory();
+    setSelectedCard(null);
+  }, [resetHistory]);
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Z or Cmd+Z for undo
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey && canUndo) {
+        e.preventDefault();
+        undo();
+      }
+      // Ctrl+Y or Ctrl+Shift+Z or Cmd+Shift+Z for redo
+      else if (
+        ((e.ctrlKey || e.metaKey) && e.key === 'y') ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z')
+      ) {
+        if (canRedo) {
+          e.preventDefault();
+          redo();
+        }
+      }
+      // U key for undo (single key shortcut)
+      else if (e.key === 'u' && !e.ctrlKey && !e.metaKey && !e.altKey && canUndo) {
+        e.preventDefault();
+        undo();
+      }
+      // R key for redo (single key shortcut)
+      else if (e.key === 'r' && !e.ctrlKey && !e.metaKey && !e.altKey && canRedo) {
+        e.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo, canUndo, canRedo]);
+
   const buttonHeight = 44; // WCAG AAA minimum touch target
+  const isMobile = window.innerWidth < 600;
 
   return (
     <div
       style={{
         width: '100%',
-        height: '100vh',
+        minHeight: '100vh',
         backgroundColor: '#1e40af',
         display: 'flex',
         flexDirection: 'column',
         padding: '12px',
-        overflow: 'auto',
       }}
     >
       {/* Header */}
@@ -191,33 +247,24 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '4px' }}>
             Klondike Solitaire
           </h1>
-          <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
-            Game #{gameState.seed} • Moves: {gameState.moves}
-          </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button
-            onClick={onNewGame}
-            style={{
-              minHeight: `${buttonHeight}px`,
-              padding: '8px 16px',
-              fontSize: '0.875rem',
-            }}
-          >
-            New Game
-          </button>
-          <button
-            onClick={handleAutoComplete}
-            style={{
-              minHeight: `${buttonHeight}px`,
-              padding: '8px 16px',
-              fontSize: '0.875rem',
-            }}
-          >
-            Auto-Complete
-          </button>
-        </div>
+        <GameControls
+          moves={gameState.moves}
+          seed={gameState.seed}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUndo={undo}
+          onRedo={redo}
+          onReset={handleResetGame}
+          onNewGame={onNewGame}
+          showAutoComplete={true}
+          onAutoComplete={handleAutoComplete}
+          isMobile={isMobile}
+          minButtonHeight={buttonHeight}
+          buttonPadding={isMobile ? '8px 12px' : '8px 16px'}
+          fontSize={isMobile ? 0.8 : 0.875}
+        />
       </div>
 
       {/* Top Row: Stock/Waste and Foundations */}
