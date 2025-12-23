@@ -37,12 +37,14 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
   });
 
   const [selectedCard, setSelectedCard] = useState<SelectedCard>(null);
-  const [isWon, setIsWon] = useState(false);
 
   // Responsive layout sizing
   const [layoutSizes, setLayoutSizes] = useState<LayoutSizes>(() =>
     calculateLayoutSizes(window.innerWidth, window.innerHeight)
   );
+
+  // Derive win state from game state
+  const isWon = isGameWon(gameState);
 
   // Update layout sizes on window resize
   useEffect(() => {
@@ -58,13 +60,6 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
       window.removeEventListener('orientationchange', handleResize);
     };
   }, []);
-
-  // Check win condition
-  useEffect(() => {
-    if (isGameWon(gameState)) {
-      setIsWon(true);
-    }
-  }, [gameState]);
 
   // Handle stock click (draw card)
   const handleStockClick = () => {
