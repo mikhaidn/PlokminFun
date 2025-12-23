@@ -12,10 +12,36 @@
 Implement a card back rendering system that decouples front and back views from card data, enabling face-down cards for Klondike, Spider Solitaire, and future games. This system establishes reusable animation interfaces for card flipping and dealing while maintaining backwards compatibility with FreeCell.
 
 **Key Design Principles:**
+- **Lightweight & Works Everywhere**: CSS-first, targets iPad 2 (2011+), <10KB bundle
+- **Progressive Enhancement**: Card backs work without JavaScript
+- **CardPack-First**: Current cards refactored as the default CardPack (marketplace-ready)
 - **Backwards Compatible**: FreeCell works unchanged (all cards face-up by default)
 - **Opt-In**: Games choose to use card backs by managing `faceUp` state
 - **Decoupled**: Card appearance (front/back) is separate from card data
 - **Extensible**: Foundation for future animations and custom card skins
+
+---
+
+## Performance Budget
+
+### Target Devices
+**Minimum supported:** iPad 2 (2011) / iPad Mini 1 (2012)
+- Safari 9-10
+- 512MB-1GB RAM
+- A5 chip (dual-core 1GHz)
+
+### Performance Targets
+- **FPS**: 30fps minimum, 60fps goal
+- **Bundle Size**: <10KB for card backs only, <50KB for full pack
+- **Rendering**: 52 face-down cards in <16ms (60fps frame)
+- **Animation**: Flip animation smooth on low-end devices
+- **Memory**: Card back patterns <100KB in memory
+
+### Progressive Enhancement
+- **Card backs render without JavaScript** (pure CSS patterns)
+- **Animations are CSS-first** (GPU-accelerated transforms)
+- **JavaScript only for interactivity** (click, drag), not rendering
+- **Graceful degradation** on unsupported browsers
 
 ---
 
@@ -188,18 +214,47 @@ export function Card({
 }
 ```
 
-#### 3. CardSet Interface (Future Extensibility)
+#### 3. CardPack Interface (Native Language)
+
+**Key Decision:** Make CardPack the native interface from day 1, not a future addition.
 
 ```typescript
-// freecell-mvp/src/core/cardSet.ts
+// freecell-mvp/src/core/cardPack.ts
 
 /**
- * CardSet defines the visual appearance of cards.
- * Decouples rendering from card data.
+ * CardPack defines the visual appearance of cards.
+ * All cards (including default) use this interface.
  */
-export interface CardSet {
+export interface CardPackManifest {
   id: string;
   name: string;
+  version: string;
+  author?: string;
+  license?: string;
+
+  // Performance & compatibility metadata
+  requirements: {
+    maxBundleSize: string;      // e.g., "10kb"
+    minSafariVersion?: string;  // e.g., "9.0"
+    requiresJS: boolean;        // Card backs work without JS?
+    gpuAccelerated?: boolean;   // Uses CSS transforms?
+  };
+
+  // Asset information
+  assets: {
+    cardBacks: {
+      type: 'css-pattern' | 'svg' | 'png' | 'custom';
+      estimatedSize: string;  // e.g., "2kb"
+    };
+    cardFronts?: {
+      type: 'default' | 'svg-inline' | 'image-atlas';
+      estimatedSize: string;
+    };
+  };
+}
+
+export interface CardPack {
+  manifest: CardPackManifest;
 
   // Front face rendering
   renderFront: (card: Card, size: CardSize) => React.ReactNode;
@@ -232,10 +287,27 @@ export interface AnimationDefinition {
   animateFn?: (element: HTMLElement, options: AnimationOptions) => Promise<void>;
 }
 
-// Example: Default card set
-export const DEFAULT_CARD_SET: CardSet = {
-  id: 'default',
-  name: 'Classic',
+// Default card pack (current implementation refactored)
+export const DEFAULT_CARD_PACK: CardPack = {
+  manifest: {
+    id: 'default',
+    name: 'Classic',
+    version: '1.0.0',
+    author: 'CardGames Team',
+    license: 'MIT',
+    requirements: {
+      maxBundleSize: '5kb',
+      minSafariVersion: '9.0',
+      requiresJS: false,
+      gpuAccelerated: true,
+    },
+    assets: {
+      cardBacks: {
+        type: 'css-pattern',
+        estimatedSize: '2kb',
+      },
+    },
+  },
   renderFront: (card, size) => (
     <Card card={card} cardWidth={size.width} cardHeight={size.height} faceUp={true} />
   ),
@@ -254,6 +326,13 @@ export const DEFAULT_CARD_SET: CardSet = {
     },
   },
 };
+
+// Hook for using card packs
+export function useCardPack(packId: string = 'default'): CardPack {
+  // v1: Just return default pack
+  // v2: Load from registry based on packId
+  return DEFAULT_CARD_PACK;
+}
 ```
 
 #### 4. Game State Example (Klondike)
@@ -621,22 +700,32 @@ Use `framer-motion` library for flip animations
 
 ## Implementation Plan
 
-### Phase 1: Core Card Back Rendering (2-3 hours)
+### Phase 1: CardPack Interface & Card Back Rendering (3-4 hours)
 **Priority: P1 (Required for Klondike)**
 
-- [ ] **Create `CardBack.tsx` component** (1 hour)
-  - Default blue pattern
-  - Red pattern
-  - Props: `cardWidth`, `cardHeight`, `theme`
+- [ ] **Define `CardPack` interface** (1 hour)
+  - Create `src/core/cardPack.ts`
+  - Define `CardPackManifest`, `CardPack`, `AnimationDefinition` types
+  - Create `useCardPack()` hook
 
-- [ ] **Update `Card.tsx` component** (30 min)
-  - Add `faceUp?: boolean` prop (default `true`)
+- [ ] **Create `CardBack.tsx` component** (1 hour)
+  - Default blue CSS pattern (diamond checkerboard)
+  - Red pattern variant
+  - Props: `cardWidth`, `cardHeight`, `theme`
+  - Ensure works without JavaScript (pure CSS)
+
+- [ ] **Refactor current implementation to use CardPack** (1 hour)
+  - Create `DEFAULT_CARD_PACK` with manifest
+  - Update `Card.tsx` to accept `faceUp?: boolean` prop (default `true`)
   - Render `<CardBack>` when `faceUp={false}`
+  - FreeCell uses `useCardPack('default')`
 
 - [ ] **Write tests** (1 hour)
+  - CardPack interface validation
   - CardBack renders correctly
   - Card renders CardBack when `faceUp={false}`
-  - FreeCell unaffected (no `faceUp` prop passed)
+  - FreeCell unaffected (cards default to face-up)
+  - Bundle size check (<10KB)
 
 ---
 
@@ -842,6 +931,190 @@ Face-up → Edge-on → Face-down
 
 ---
 
+## Appendix: Card Marketplace Specification
+
+### Future Vision: CardPack Registry
+
+**Phase 6+**: Extend CardPack interface to support marketplace distribution.
+
+#### Manifest File Format (marketplace-ready)
+
+```json
+{
+  "id": "bicycle-classic",
+  "name": "Bicycle Playing Cards",
+  "version": "1.0.0",
+  "author": "Bicycle",
+  "license": "CC-BY-4.0",
+  "homepage": "https://example.com/bicycle-cards",
+
+  "requirements": {
+    "maxBundleSize": "50kb",
+    "minSafariVersion": "9.0",
+    "requiresJS": false,
+    "gpuAccelerated": true
+  },
+
+  "assets": {
+    "cardBacks": {
+      "type": "svg",
+      "estimatedSize": "8kb",
+      "files": [
+        {
+          "id": "red-rider",
+          "name": "Red Rider Back",
+          "thumbnail": "./thumbnails/red-rider.png",
+          "pattern": "./patterns/red-rider.svg",
+          "tags": ["classic", "red", "traditional"]
+        },
+        {
+          "id": "blue-rider",
+          "name": "Blue Rider Back",
+          "thumbnail": "./thumbnails/blue-rider.png",
+          "pattern": "./patterns/blue-rider.svg",
+          "tags": ["classic", "blue", "traditional"]
+        }
+      ]
+    },
+    "cardFronts": {
+      "type": "svg-inline",
+      "estimatedSize": "35kb",
+      "atlas": "./fronts/cards.svg",
+      "mapping": "./fronts/mapping.json"
+    }
+  },
+
+  "preview": "./preview.png",
+  "screenshots": [
+    "./screenshots/game-view.png",
+    "./screenshots/detail.png"
+  ]
+}
+```
+
+#### Distribution Options
+
+**Option A: NPM Packages** (Developer-friendly)
+```bash
+npm install @cardgames/bicycle-deck
+```
+
+**Option B: CDN-Hosted** (User-friendly)
+```typescript
+// Load from URL
+await cardRegistry.installFromUrl(
+  'https://cardpacks.cdn.com/bicycle/v1.0.0/manifest.json'
+);
+```
+
+**Option C: Built-In Registry** (Curated)
+```typescript
+const OFFICIAL_PACKS = [
+  { id: 'default', name: 'Classic', builtin: true },
+  { id: 'high-contrast', name: 'High Contrast', builtin: true },
+];
+
+const COMMUNITY_PACKS = [
+  { id: 'bicycle', url: '...', verified: true },
+  { id: 'vintage', url: '...', verified: false },
+];
+```
+
+#### CardPack Registry Interface (Future)
+
+```typescript
+// Future marketplace API
+interface CardPackRegistry {
+  // Discovery
+  listPacks(): CardPackManifest[];
+  searchPacks(query: string, tags?: string[]): CardPackManifest[];
+
+  // Installation
+  installPack(packId: string): Promise<void>;
+  uninstallPack(packId: string): Promise<void>;
+  validatePack(manifest: CardPackManifest): ValidationResult;
+
+  // Usage
+  getInstalledPacks(): CardPackManifest[];
+  setActivePack(packId: string): void;
+  getActivePack(): CardPack;
+}
+
+interface ValidationResult {
+  valid: boolean;
+  errors?: string[];
+  warnings?: string[];
+  estimatedBundleSize: number;
+}
+```
+
+#### Compatibility Validation
+
+Before loading a pack, validate compatibility:
+
+```typescript
+function validateCardPack(manifest: CardPackManifest): ValidationResult {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  // Check bundle size
+  const totalSize = parseBundleSize(manifest.requirements.maxBundleSize);
+  if (totalSize > 100 * 1024) {
+    errors.push(`Bundle size ${totalSize} exceeds limit (100KB)`);
+  }
+
+  // Check Safari version
+  const minVersion = manifest.requirements.minSafariVersion;
+  if (minVersion && parseFloat(minVersion) > parseFloat(navigator.safariVersion)) {
+    errors.push(`Requires Safari ${minVersion}, current: ${navigator.safariVersion}`);
+  }
+
+  // Check asset sizes
+  const backSize = parseBundleSize(manifest.assets.cardBacks.estimatedSize);
+  if (backSize > 10 * 1024) {
+    warnings.push(`Card backs (${backSize}) exceed recommended 10KB`);
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    warnings,
+    estimatedBundleSize: totalSize,
+  };
+}
+```
+
+#### Installation Flow
+
+```typescript
+async function installCardPack(packId: string): Promise<void> {
+  // 1. Fetch manifest
+  const manifest = await fetchManifest(packId);
+
+  // 2. Validate compatibility
+  const validation = validateCardPack(manifest);
+  if (!validation.valid) {
+    throw new Error(`Invalid pack: ${validation.errors.join(', ')}`);
+  }
+
+  // 3. Show warnings to user
+  if (validation.warnings.length > 0) {
+    await confirmWarnings(validation.warnings);
+  }
+
+  // 4. Download assets
+  await downloadAssets(manifest);
+
+  // 5. Register pack
+  await registry.register(manifest);
+
+  // 6. Persist to localStorage
+  saveInstalledPacks();
+}
+```
+
+---
+
 ## Decision
 
 **Status:** PROPOSED (awaiting review)
@@ -859,9 +1132,9 @@ Face-up → Edge-on → Face-down
 4. Update STATUS.md when work begins
 
 **Estimated Timeline:**
-- Phase 1: 2-3 hours
-- Phase 2: 2-3 hours
-- **Total: 4-6 hours (half day)**
+- Phase 1: 3-4 hours (CardPack interface + card backs)
+- Phase 2: 2-3 hours (Klondike integration)
+- **Total: 5-7 hours (1 day)**
 
 ---
 

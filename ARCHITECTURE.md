@@ -119,6 +119,110 @@ const { dragProps, dropProps } = useDragDrop({
 
 ---
 
+### 📦 `packages/card-packs` (Card Appearance System)
+**Purpose**: Visual theming and customization for playing cards. Enables card backs, custom designs, and future marketplace.
+
+**What belongs here:**
+```typescript
+// Card pack interface (from RFC-003)
+
+// ✅ CardPack manifest and types
+- CardPackManifest interface (versioning, compatibility metadata)
+- CardPack interface (rendering functions, animations)
+- AnimationDefinition types
+
+// ✅ Default card pack
+- DEFAULT_CARD_PACK (current card implementation)
+- CSS patterns for card backs (blue, red, etc.)
+- Front face rendering (current Card.tsx logic)
+
+// ✅ CardPack registry (future)
+- CardPackRegistry interface
+- Pack validation and compatibility checks
+- Pack installation/loading from CDN or NPM
+
+// ✅ React hooks
+- useCardPack(packId) - Get active card pack
+- useCardPackRegistry() - Marketplace integration
+```
+
+**Design Principles:**
+- **Lightweight & Works Everywhere**: CSS-first, targets iPad 2 (2011+)
+- **Progressive Enhancement**: Card backs work without JavaScript
+- **CardPack-First**: Current cards ARE the default CardPack (marketplace-ready from day 1)
+- **Performance Budget**: <10KB per card back pack, <50KB for full pack
+
+**Public API:**
+```typescript
+// packages/card-packs/src/index.ts
+export interface CardPackManifest {
+  id: string;
+  name: string;
+  version: string;
+  author?: string;
+  license?: string;
+  requirements: {
+    maxBundleSize: string;
+    minSafariVersion?: string;
+    requiresJS: boolean;
+    gpuAccelerated?: boolean;
+  };
+  assets: {
+    cardBacks: {
+      type: 'css-pattern' | 'svg' | 'png' | 'custom';
+      estimatedSize: string;
+    };
+    cardFronts?: {
+      type: 'default' | 'svg-inline' | 'image-atlas';
+      estimatedSize: string;
+    };
+  };
+}
+
+export interface CardPack {
+  manifest: CardPackManifest;
+  renderFront: (card: Card, size: CardSize) => React.ReactNode;
+  renderBack: (size: CardSize, theme?: string) => React.ReactNode;
+  animations?: {
+    flip?: AnimationDefinition;
+    deal?: AnimationDefinition;
+    collect?: AnimationDefinition;
+  };
+}
+
+// Hook for using card packs
+export function useCardPack(packId?: string): CardPack;
+
+// Default card pack (includes current Card and CardBack components)
+export const DEFAULT_CARD_PACK: CardPack;
+```
+
+**Future: Card Marketplace (Phase 6+)**
+```typescript
+// Marketplace registry interface
+export interface CardPackRegistry {
+  listPacks(): CardPackManifest[];
+  searchPacks(query: string, tags?: string[]): CardPackManifest[];
+  installPack(packId: string): Promise<void>;
+  uninstallPack(packId: string): Promise<void>;
+  validatePack(manifest: CardPackManifest): ValidationResult;
+  getInstalledPacks(): CardPackManifest[];
+  setActivePack(packId: string): void;
+  getActivePack(): CardPack;
+}
+
+// Distribution options
+// - NPM packages: @cardgames/bicycle-deck
+// - CDN-hosted: https://cardpacks.cdn.com/bicycle/v1.0.0/
+// - Built-in registry: Curated official + community packs
+```
+
+**References:**
+- See **RFC-003** for full specification
+- See **CLAUDE.md** for implementation guide
+
+---
+
 ### 📦 `apps/freecell` (FreeCell Game)
 **Purpose**: FreeCell-specific implementation using the libraries.
 

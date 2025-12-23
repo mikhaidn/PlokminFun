@@ -1,15 +1,19 @@
 # Project Status
 
-**Last Updated:** 2025-12-22
-**Current Phase:** P0 - Mobile Optimization
-**Next Milestone:** PWA + Touch Ready
+**Last Updated:** 2025-12-23
+**Current Phase:** P0 - Architecture & Design
+**Next Milestone:** Card Backs System (RFC-003)
 
 ---
 
 ## 🎯 Current Sprint
 
 ### Active Work
-- [ ] **NEXT:** Responsive CSS layout for mobile/tablet/desktop
+- [x] **RFC-003:** Card Backs and Flip Animations (design complete, awaiting approval)
+  - Defines CardPack interface (marketplace-ready from day 1)
+  - Performance budget: iPad 2+ support, CSS-first, <10KB
+  - Backwards compatible with FreeCell
+  - Unblocks Klondike and Spider Solitaire development
 
 ### Blocked/Waiting
 - None
@@ -17,6 +21,13 @@
 ---
 
 ## ✅ Recently Completed
+
+### Week of 2025-12-23
+- [x] RFC-003: Card Backs and Flip Animations specification
+  - CardPack interface with manifest metadata
+  - Performance budget (iPad 2+, CSS-first, <10KB)
+  - Marketplace specification (future Phase 6+)
+  - Updated ARCHITECTURE.md with CardPack vision
 
 ### Week of 2025-12-22
 - [x] PWA setup and configuration (vite-plugin-pwa, service worker, manifest)
@@ -117,7 +128,14 @@
 
 ## 📋 Next 3 Tasks
 
-1. **Responsive CSS** (6-8 hours) ⬅️ CURRENT
+1. **RFC-003 Approval & Implementation** (5-7 hours) ⬅️ CURRENT
+   - Review and approve RFC-003
+   - Implement CardPack interface (Phase 1)
+   - Create CardBack component with CSS patterns
+   - Refactor current cards to use DEFAULT_CARD_PACK
+   - Validate Klondike integration (Phase 2)
+
+2. **Responsive CSS** (6-8 hours)
    - Add viewport meta tag
    - CSS breakpoints for mobile/tablet/desktop
    - Scale cards based on screen size
