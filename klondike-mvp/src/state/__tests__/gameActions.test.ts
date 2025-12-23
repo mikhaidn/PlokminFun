@@ -1,7 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { drawFromStock, moveCards, autoMoveToFoundations } from '../gameActions';
 import { createInitialState, type Location } from '../gameState';
-import type { Card } from '../../core/types';
 
 describe('drawFromStock', () => {
   test('draws one card from stock to waste', () => {
