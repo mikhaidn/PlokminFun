@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { initializeGame, checkWinCondition, type GameState } from '../state/gameState';
 import {
   moveCardToFreeCell,
@@ -23,7 +23,6 @@ import {
   getMinButtonHeight,
 } from '../config/accessibilitySettings';
 import { isRed } from '../rules/validation';
-import { useGameHistory } from '../hooks/useGameHistory';
 
 type SelectedCard =
   | { type: 'tableau'; column: number; cardIndex: number }
@@ -33,22 +32,8 @@ type SelectedCard =
 
 export const GameBoard: React.FC = () => {
   const [seed, setSeed] = useState<number>(() => Date.now());
-
-  // Use game history for undo/redo functionality
-  const {
-    currentState: gameState,
-    pushState,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-    reset: resetHistory,
-  } = useGameHistory<GameState>({
-    initialState: initializeGame(seed),
-    maxHistorySize: 100,
-    persistKey: 'freecell-game-history',
-  });
-
+  const [prevSeed, setPrevSeed] = useState(seed);
+  const [gameState, setGameState] = useState<GameState>(() => initializeGame(seed));
   const [selectedCard, setSelectedCard] = useState<SelectedCard>(null);
   const [draggingCard, setDraggingCard] = useState<SelectedCard>(null);
   const [showHints, setShowHints] = useState(false);
@@ -108,6 +93,13 @@ export const GameBoard: React.FC = () => {
     saveAccessibilitySettings(newSettings);
   };
 
+  // Reset game when seed changes (recommended pattern for derived state)
+  if (prevSeed !== seed) {
+    setPrevSeed(seed);
+    setGameState(initializeGame(seed));
+    setSelectedCard(null);
+  }
+
   // Derive win condition from game state
   const showWin = useMemo(() => checkWinCondition(gameState), [gameState]);
 
@@ -137,52 +129,18 @@ export const GameBoard: React.FC = () => {
         }
 
         if (newState) {
-          pushState(newState);
+          setGameState(newState);
         }
       }
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [gameState, draggingCard, selectedCard, pushState]);
-
-  // Keyboard shortcuts for undo/redo
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ctrl+Z or Cmd+Z for undo
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey && canUndo) {
-        e.preventDefault();
-        undo();
-      }
-      // Ctrl+Y or Ctrl+Shift+Z or Cmd+Shift+Z for redo
-      else if (
-        ((e.ctrlKey || e.metaKey) && e.key === 'y') ||
-        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z')
-      ) {
-        if (canRedo) {
-          e.preventDefault();
-          redo();
-        }
-      }
-      // U key for undo (single key shortcut)
-      else if (e.key === 'u' && !e.ctrlKey && !e.metaKey && !e.altKey && canUndo) {
-        e.preventDefault();
-        undo();
-      }
-      // R key for redo (single key shortcut)
-      else if (e.key === 'r' && !e.ctrlKey && !e.metaKey && !e.altKey && canRedo) {
-        e.preventDefault();
-        redo();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo, canUndo, canRedo]);
+  }, [gameState, draggingCard, selectedCard]);
 
   // Calculate highlighted cards for hints
   const highlightedCardIds = showHints ? getLowestPlayableCards(gameState) : [];
 
-  const handleTableauClick = useCallback((columnIndex: number, cardIndex: number) => {
+  const handleTableauClick = (columnIndex: number, cardIndex: number) => {
     if (selectedCard) {
       // Try to move selected card to tableau
       let newState: GameState | null = null;
@@ -197,7 +155,7 @@ export const GameBoard: React.FC = () => {
       }
 
       if (newState) {
-        pushState(newState);
+        setGameState(newState);
         setSelectedCard(null);
       } else {
         setSelectedCard(null);
@@ -206,7 +164,7 @@ export const GameBoard: React.FC = () => {
       // Select this card/stack
       setSelectedCard({ type: 'tableau', column: columnIndex, cardIndex });
     }
-  }, [selectedCard, gameState, pushState]);
+  };
 
   const handleEmptyColumnClick = (columnIndex: number) => {
     if (selectedCard) {
@@ -222,7 +180,7 @@ export const GameBoard: React.FC = () => {
       }
 
       if (newState) {
-        pushState(newState);
+        setGameState(newState);
       }
       setSelectedCard(null);
     }
@@ -244,7 +202,7 @@ export const GameBoard: React.FC = () => {
       }
 
       if (newState) {
-        pushState(newState);
+        setGameState(newState);
       }
       setSelectedCard(null);
     } else if (gameState.freeCells[index]) {
@@ -268,7 +226,7 @@ export const GameBoard: React.FC = () => {
       }
 
       if (newState) {
-        pushState(newState);
+        setGameState(newState);
       }
       setSelectedCard(null);
     } else {
@@ -280,17 +238,14 @@ export const GameBoard: React.FC = () => {
     }
   };
 
-  const handleNewGame = useCallback(() => {
-    const newSeed = Date.now();
-    setSeed(newSeed);
-    resetHistory(initializeGame(newSeed));
-    setSelectedCard(null);
-  }, [resetHistory]);
+  const handleNewGame = () => {
+    setSeed(Date.now());
+  };
 
-  const handleResetGame = useCallback(() => {
-    resetHistory();
+  const handleResetGame = () => {
+    setGameState(initializeGame(seed));
     setSelectedCard(null);
-  }, [resetHistory]);
+  };
 
   // Drag-and-drop handlers
   const handleDragStart = (source: SelectedCard) => (e: React.DragEvent) => {
@@ -326,7 +281,7 @@ export const GameBoard: React.FC = () => {
     }
 
     if (newState) {
-      pushState(newState);
+      setGameState(newState);
     }
     setDraggingCard(null);
     setSelectedCard(null);
@@ -349,7 +304,7 @@ export const GameBoard: React.FC = () => {
     }
 
     if (newState) {
-      pushState(newState);
+      setGameState(newState);
     }
     setDraggingCard(null);
     setSelectedCard(null);
@@ -372,7 +327,7 @@ export const GameBoard: React.FC = () => {
     }
 
     if (newState) {
-      pushState(newState);
+      setGameState(newState);
     }
     setDraggingCard(null);
     setSelectedCard(null);
@@ -445,7 +400,7 @@ export const GameBoard: React.FC = () => {
         }
 
         if (newState) {
-          pushState(newState);
+          setGameState(newState);
         }
       }
     }
@@ -486,44 +441,6 @@ export const GameBoard: React.FC = () => {
     >
       <span>Moves: {gameState.moves}</span>
       <button
-        onClick={undo}
-        disabled={!canUndo}
-        style={{
-          padding: buttonPadding,
-          minHeight: `${minButtonHeight}px`,
-          cursor: canUndo ? 'pointer' : 'not-allowed',
-          backgroundColor: 'white',
-          color: 'black',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          fontSize: `${fontSize}em`,
-          opacity: canUndo ? 1 : 0.5,
-        }}
-        title="Undo last move (U or Ctrl+Z)"
-        aria-label="Undo last move"
-      >
-        ↶ Undo
-      </button>
-      <button
-        onClick={redo}
-        disabled={!canRedo}
-        style={{
-          padding: buttonPadding,
-          minHeight: `${minButtonHeight}px`,
-          cursor: canRedo ? 'pointer' : 'not-allowed',
-          backgroundColor: 'white',
-          color: 'black',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          fontSize: `${fontSize}em`,
-          opacity: canRedo ? 1 : 0.5,
-        }}
-        title="Redo move (R or Ctrl+Y)"
-        aria-label="Redo move"
-      >
-        ↷ Redo
-      </button>
-      <button
         onClick={() => setShowSettings(true)}
         style={{
           padding: buttonPadding,
@@ -536,7 +453,6 @@ export const GameBoard: React.FC = () => {
           fontSize: `${fontSize}em`,
         }}
         title="Game Settings"
-        aria-label="Game Settings"
       >
         ⚙️ Settings
       </button>
