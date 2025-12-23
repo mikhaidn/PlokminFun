@@ -1,7 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import {
   isRed,
-  hasAlternatingColors,
   canPlaceOnTableau,
   canPlaceOnEmptyTableau,
   canPlaceOnFoundation,
@@ -28,38 +27,6 @@ describe('isRed', () => {
   test('identifies clubs as not red', () => {
     const card: Card = { suit: '♣', value: '10', rank: 10, id: '10♣' };
     expect(isRed(card)).toBe(false);
-  });
-});
-
-describe('hasAlternatingColors', () => {
-  test('returns true for red on black', () => {
-    const red: Card = { suit: '♥', value: '7', rank: 7, id: '7♥' };
-    const black: Card = { suit: '♠', value: '8', rank: 8, id: '8♠' };
-    expect(hasAlternatingColors(red, black)).toBe(true);
-  });
-
-  test('returns true for black on red', () => {
-    const black: Card = { suit: '♣', value: '5', rank: 5, id: '5♣' };
-    const red: Card = { suit: '♦', value: '6', rank: 6, id: '6♦' };
-    expect(hasAlternatingColors(black, red)).toBe(true);
-  });
-
-  test('returns false for red on red', () => {
-    const red1: Card = { suit: '♥', value: '7', rank: 7, id: '7♥' };
-    const red2: Card = { suit: '♦', value: '8', rank: 8, id: '8♦' };
-    expect(hasAlternatingColors(red1, red2)).toBe(false);
-  });
-
-  test('returns false for black on black', () => {
-    const black1: Card = { suit: '♠', value: 'Q', rank: 12, id: 'Q♠' };
-    const black2: Card = { suit: '♣', value: 'K', rank: 13, id: 'K♣' };
-    expect(hasAlternatingColors(black1, black2)).toBe(false);
-  });
-
-  test('returns false for same suit', () => {
-    const card1: Card = { suit: '♥', value: '5', rank: 5, id: '5♥' };
-    const card2: Card = { suit: '♥', value: '6', rank: 6, id: '6♥' };
-    expect(hasAlternatingColors(card1, card2)).toBe(false);
   });
 });
 

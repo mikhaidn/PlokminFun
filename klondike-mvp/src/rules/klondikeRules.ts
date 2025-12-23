@@ -1,4 +1,10 @@
 import type { Card } from '../core/types';
+import {
+  isRed,
+  canStackDescending,
+  canStackOnFoundation,
+  isValidTableauSequence as sharedIsValidTableauSequence,
+} from '@cardgames/shared';
 
 /**
  * Klondike Solitaire Rules
@@ -7,19 +13,8 @@ import type { Card } from '../core/types';
  * Foundation building: Same suit, ascending rank (A → K)
  */
 
-/**
- * Check if a card is red
- */
-export function isRed(card: Card): boolean {
-  return card.suit === '♥' || card.suit === '♦';
-}
-
-/**
- * Check if two cards have alternating colors
- */
-export function hasAlternatingColors(card1: Card, card2: Card): boolean {
-  return isRed(card1) !== isRed(card2);
-}
+// Re-export isRed for use in UI components
+export { isRed };
 
 /**
  * Check if a card can be placed on another card in the tableau
@@ -29,10 +24,8 @@ export function hasAlternatingColors(card1: Card, card2: Card): boolean {
  * - Alternating colors (red on black, black on red)
  */
 export function canPlaceOnTableau(cardToPlace: Card, targetCard: Card): boolean {
-  return (
-    cardToPlace.rank === targetCard.rank - 1 && // Descending rank
-    hasAlternatingColors(cardToPlace, targetCard) // Alternating colors
-  );
+  // Klondike: Descending rank, alternating colors
+  return canStackDescending(cardToPlace, targetCard, { allowEmpty: false });
 }
 
 /**
@@ -53,17 +46,8 @@ export function canPlaceOnEmptyTableau(card: Card): boolean {
  * - Ace starts the foundation
  */
 export function canPlaceOnFoundation(cardToPlace: Card, foundation: Card[]): boolean {
-  // Empty foundation: only Ace can start
-  if (foundation.length === 0) {
-    return cardToPlace.rank === 1; // Ace
-  }
-
-  const topCard = foundation[foundation.length - 1];
-
-  return (
-    cardToPlace.suit === topCard.suit && // Same suit
-    cardToPlace.rank === topCard.rank + 1 // Ascending rank
-  );
+  // Klondike: Ace→King same suit foundation
+  return canStackOnFoundation(cardToPlace, foundation);
 }
 
 /**
@@ -74,17 +58,5 @@ export function canPlaceOnFoundation(cardToPlace: Card, foundation: Card[]): boo
  * - Alternating colors
  */
 export function isValidTableauSequence(cards: Card[]): boolean {
-  if (cards.length <= 1) return true;
-
-  for (let i = 0; i < cards.length - 1; i++) {
-    const current = cards[i];
-    const next = cards[i + 1];
-
-    // Check descending rank and alternating colors
-    if (!canPlaceOnTableau(next, current)) {
-      return false;
-    }
-  }
-
-  return true;
+  return sharedIsValidTableauSequence(cards);
 }
