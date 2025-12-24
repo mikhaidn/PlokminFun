@@ -986,6 +986,8 @@ git push origin main  # Automatic via GitHub Actions
 - `shared/types/` - Shared TypeScript types
 - `shared/package.json` - Library dependencies
 
+**Note**: All redundant local copies of shared components/hooks have been removed from individual games. Both FreeCell and Klondike now exclusively import from `@cardgames/shared`.
+
 ### FreeCell Game
 - `freecell-mvp/src/core/` - Card primitives (types, deck, RNG, cardPack)
 - `freecell-mvp/src/rules/` - FreeCell game rules
@@ -1025,11 +1027,12 @@ git push origin main  # Automatic via GitHub Actions
 1. **Always run tests** after making changes to game logic
 2. **Check ESLint** before committing (`npm run lint`)
 3. **Don't mutate state** - all state updates must be immutable
-4. **Use feature flags** for new optional features
-5. **Write tests first** when possible (TDD approach)
-6. **Update documentation** if making architectural changes
-7. **Update STATUS.md** when starting/completing work
-8. **Test locally** before pushing (`npm run build` should succeed)
+4. **Use shared library** - Import GameControls, useGameHistory, useCardInteraction, and HistoryManager from `@cardgames/shared`, never create local copies
+5. **Use feature flags** for new optional features
+6. **Write tests first** when possible (TDD approach)
+7. **Update documentation** if making architectural changes
+8. **Update STATUS.md** when starting/completing work
+9. **Test locally** before pushing (`npm run build` should succeed)
 
 ### Common Gotchas:
 - The `base` path in vite.config.ts is for production only (GitHub Pages)
