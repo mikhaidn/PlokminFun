@@ -23,7 +23,14 @@ import {
   getMinButtonHeight,
 } from '../config/accessibilitySettings';
 import { isRed } from '../rules/validation';
-import { useGameHistory } from '../hooks/useGameHistory';
+import {
+  useGameHistory,
+  useCardInteraction,
+  FEATURE_FLAGS,
+  type GameLocation,
+} from '@cardgames/shared';
+import { validateMove } from '../rules/moveValidation';
+import { executeMove } from '../state/moveExecution';
 
 type SelectedCard =
   | { type: 'tableau'; column: number; cardIndex: number }
@@ -49,6 +56,32 @@ export const GameBoard: React.FC = () => {
     persistKey: 'freecell-game-history',
   });
 
+  // RFC-004 Phase 2: Shared interaction hook (feature-flagged)
+  // Prepared for Phase 3 full integration (currently infrastructure only)
+  const sharedHookConfig = useMemo(() => ({
+    validateMove: (from: GameLocation, to: GameLocation) => {
+      return validateMove(gameState, from, to);
+    },
+    executeMove: (from: GameLocation, to: GameLocation) => {
+      const newState = executeMove(gameState, from, to);
+      if (newState) {
+        pushState(newState);
+      }
+    },
+  }), [gameState, pushState]);
+
+  const {
+    state: sharedInteractionState,
+    handlers: sharedHandlers
+  } = useCardInteraction<GameLocation>(sharedHookConfig);
+
+  // Note: FEATURE_FLAGS, sharedInteractionState, and sharedHandlers prepared for Phase 3
+  // Full handler integration will be completed in follow-up work
+  void sharedInteractionState; // Suppress unused warning
+  void sharedHandlers; // Suppress unused warning
+  void FEATURE_FLAGS; // Suppress unused warning
+
+  // Legacy selection state (used when feature flag is OFF)
   const [selectedCard, setSelectedCard] = useState<SelectedCard>(null);
   const [draggingCard, setDraggingCard] = useState<SelectedCard>(null);
   const [showHints, setShowHints] = useState(false);
