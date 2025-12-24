@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { Card } from '../Card';
+import { Card } from '@cardgames/shared';
 import type { Card as CardType } from '../../core/types';
 
 const testCard: CardType = {
