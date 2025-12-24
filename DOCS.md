@@ -13,6 +13,7 @@
 
 ### For AI Agents
 - **[AI_GUIDE.md](AI_GUIDE.md)** ⭐ Essential rules, commands, and gotchas (~150 lines)
+- **[NPM_SCRIPTS.md](NPM_SCRIPTS.md)** - Complete npm command reference
 
 ### Current Work
 - **[STATUS.md](STATUS.md)** - Sprint status (updated weekly)

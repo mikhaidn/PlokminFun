@@ -22,10 +22,13 @@ CardGames/
 
 **Essential commands:**
 ```bash
-npm test              # Run all tests
-npm run lint          # Check code quality
-npm run build         # Build everything
+npm run validate      # Full check: lint + test + build (what CI runs)
+npm run dev:klondike  # Start Klondike dev server
+npm run dev:freecell  # Start FreeCell dev server
+npm run rfc:list      # List all RFCs
 ```
+
+💡 **Full command reference:** [NPM_SCRIPTS.md](NPM_SCRIPTS.md)
 
 ---
 
@@ -61,7 +64,7 @@ gameState.moves++;
 
 ### 3. **Run Tests Before Committing**
 ```bash
-npm run lint && npm test && npm run build
+npm run validate  # Runs: lint + test + build (exactly what CI runs)
 ```
 
 ### 4. **Check STATUS.md Before Starting Work**
@@ -74,15 +77,19 @@ npm run lint && npm test && npm run build
 
 ### Development Workflow
 ```bash
-# Work on specific game
-cd freecell-mvp && npm run dev        # Start dev server
-cd freecell-mvp && npm run test:watch # TDD mode
+# Start dev server (from repo root)
+npm run dev:freecell   # Or npm run dev:klondike
 
-# Work on shared library
-cd shared && npm run test:watch
+# TDD mode
+npm run test:watch     # All packages in watch mode
 
 # Full monorepo validation (what CI runs)
-npm run lint && npm test && npm run build
+npm run validate       # Shortcut for: lint + test + build
+
+# RFC management
+npm run rfc:list       # List all RFCs
+npm run rfc:new 006 "Feature Name"  # Create new RFC
+npm run rfc:status 005 APPROVED     # Update RFC status
 ```
 
 ### Finding Information

@@ -14,6 +14,7 @@
 | 002 | Game Sharing & Replay | 📝 Proposed | [README](002-game-sharing/) | motivation, solution, alternatives, implementation |
 | 003 | Card Backs & Animations | 🔄 In Progress | [README](003-card-backs/) | motivation, solution, implementation (phases), testing |
 | 004 | Movement Mechanics | 📋 Draft | [README](004-movement-mechanics/) | motivation, solution, implementation (phases), decisions |
+| 005 | Unified Game Builder | 📝 Proposed | [README](005-unified-game-builder/) | motivation, solution, alternatives, implementation, testing, risks, decisions |
 
 ---
 
@@ -151,12 +152,12 @@ grep -r "your topic" rfcs/
 
 ## 📊 RFC Statistics
 
-- **Total RFCs:** 4
+- **Total RFCs:** 5
 - **Implemented:** 1 (RFC-001)
 - **In Progress:** 1 (RFC-003)
-- **Proposed:** 2 (RFC-002, RFC-004)
-- **Average sections per RFC:** 4-6
-- **Max lines per RFC:** ~800 (split across sections)
+- **Proposed:** 3 (RFC-002, RFC-004, RFC-005)
+- **Average sections per RFC:** 5-7
+- **Max lines per RFC:** ~1000 (split across sections)
 
 ---
 
