@@ -1,7 +1,7 @@
 # CardGames Roadmap
 
-**Last Updated:** 2025-12-23
-**Current Status:** Both FreeCell and Klondike live, monorepo complete, focusing on user growth and polish
+**Last Updated:** 2025-12-24
+**Current Status:** RFC-005 planning complete, unified game builder path defined
 
 ---
 
@@ -11,9 +11,11 @@
 Build the best collection of classic card games on the web - mobile-first, accessible, and delightful.
 
 ### Current Focus
-**Phase: Polish & User Growth**
+**Phase: RFC-005 - Unified Game Builder**
 
-We have TWO working games (FreeCell and Klondike), a monorepo architecture, shared component library, and comprehensive accessibility features. The technical foundation is solid. Now we need to focus on user retention (persistence, daily challenges) and understanding our users (analytics).
+We have TWO working games (FreeCell and Klondike), a monorepo architecture, shared component library, and comprehensive accessibility features. RFC-003 Phase 2 (card backs) is complete with RFC-005 compatibility.
+
+**Strategic pivot:** Instead of adding features to individual games, we're investing in a unified game builder system (RFC-005) that will make adding new games take <1 day instead of 3-4 days, and allow UI improvements to benefit all games at once.
 
 ---
 
@@ -45,32 +47,76 @@ We have TWO working games (FreeCell and Klondike), a monorepo architecture, shar
 - ✅ Shared hooks (useGameHistory, useCardInteraction)
 - ✅ Both games using shared library
 
+**P4: Polish & Visual Feedback** ✅ COMPLETE
+- ✅ RFC-003 Phase 1: CardPack interface, CardBack component
+- ✅ RFC-003 Phase 2: Klondike card backs integration
+- ✅ isCardFaceUp() helper with RFC-005 compatibility
+- ✅ 25 comprehensive card display tests
+- ✅ All 179 Klondike tests passing
+
 ---
 
-### 🔥 P5: Polish & Visual Feedback (Current)
-**Goal:** Complete card back integration and improve visual experience
+### 🚀 P5: RFC-005 Unified Game Builder (Current)
+**Goal:** Create config-driven game builder for rapid game development
 
 **Why this now:**
-- RFC-003 Phase 1 is complete (CardPack interface, CardBack component)
-- Klondike stock pile needs face-down cards for proper gameplay feel
-- Sets foundation for flip animations in future phases
-- Small scope, high visual impact
+- Adding new games currently takes 3-4 days (1200+ lines of duplicated code)
+- UI improvements must be implemented separately for each game
+- Strong foundation in place (70-75% toward unified builder already)
+- RFC-003 Phase 2 implemented with RFC-005 compatibility patterns
 
-**Tasks:**
-- [ ] **RFC-003 Phase 2: Klondike Card Backs** (2-3 hours) ⬅️ CURRENT
-  - Update Klondike game state to track faceUp status
-  - Implement isCardFaceUp(state, location, index) helper
-  - Render card backs for stock pile
-  - Add visual regression tests
+**Strategic Impact:**
+- New games: 3-4 days → <1 day
+- UI improvements: Apply once, benefit all games
+- Code duplication: Reduced by 70%
+- New game (Spider): ~150 lines of config vs 1200+ lines of code
+
+**Phase 1: UI Prototype** (Week 1, 2-3 days) ⬅️ CURRENT
+- [ ] Day 1: Animation experiments
+  - Card drag with spring physics (framer-motion or react-spring)
+  - Card flip animation (3D rotateY)
+  - Win celebration (confetti + cascade)
+- [ ] Day 2: Mobile interactions
+  - Smart tap-to-move (auto-execute if 1 valid move, highlight if multiple)
+  - Test on iOS Safari, Android Chrome, iPad
+  - Validate 60fps performance, touch target sizes (44x44px min)
+- [ ] Day 3: Documentation
+  - Create docs/architecture/ui-requirements.md
+  - Document animation callbacks, component lifecycle hooks
+  - Performance requirements (60fps, <100ms touch response)
+
+**Phase 2: Unification** (Weeks 2-5)
+- [ ] Week 2: Standardize move execution
+  - Define GameActions<TState> interface
+  - Create createMoveExecutor() helper
+  - Migrate Klondike and FreeCell to GameActions
+- [ ] Week 3: Create game config system
+  - Define GameConfig<TState> interface
+  - Create game factory (createGame())
+  - Build config files for existing games
+- [ ] Weeks 4-5: Generic components
+  - GenericGameBoard, GenericTableau
+  - Migrate both games to use generic components
+
+**Phase 3: Perfect UI** (Weeks 6-10)
+- [ ] Animation system integration
+- [ ] Smart tap-to-move implementation
+- [ ] Accessibility features (keyboard navigation, screen reader)
+- [ ] Unified settings modal
+- [ ] Theme system
+
+**Validation** (Week 11)
+- [ ] Build Spider Solitaire in <1 day to validate system
 
 **Success Metrics:**
-- ✅ Stock pile shows card backs
-- ✅ Card flips when moved to waste
-- ✅ Tests validate faceUp state transitions
+- ✅ All existing tests pass after migration
+- ✅ Spider built in <1 day using new system
+- ✅ Zero regressions in existing games
+- ✅ 60fps animations on mid-range devices
 
 ---
 
-### 🎯 P6: User Retention (Next Priority)
+### 🎯 P6: User Retention
 **Goal:** Keep users coming back by saving their progress
 
 **Why this next:**
