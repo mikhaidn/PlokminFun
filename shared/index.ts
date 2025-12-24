@@ -52,3 +52,19 @@ export type { LayoutSizes } from './utils/responsiveLayout';
 // Config
 export { FEATURE_FLAGS } from './config/featureFlags';
 export type { FeatureFlags, FeatureFlagKey } from './config/featureFlags';
+
+// RFC-005 Draft Types (future unified game builder)
+// NOTE: These are DRAFT interfaces to guide current development
+// Not yet implemented - use for planning and ensuring compatibility
+export type {
+  GameActions,
+  GameConfig,
+  GameMetadata,
+  GameLayout,
+  GameRules,
+  CardDisplayConfig,
+  GameFeatureFlags,
+  GameSetting,
+  AnimationConfig,
+  GameStateFromConfig,
+} from './types/GameConfig';
