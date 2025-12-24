@@ -1,6 +1,6 @@
 # Documentation Restructuring - Summary
 
-**Date:** 2024-12-24
+**Date:** 2025-12-24
 **Goal:** Simplify agent onboarding by splitting large monolithic docs into bite-sized, focused files
 
 ---
