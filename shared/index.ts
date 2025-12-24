@@ -18,7 +18,9 @@ export type {
   CardInteractionHandlers,
   UseCardInteractionReturn,
 } from './types/CardInteraction';
-export type { Card, Suit, Value } from './types/Card';
+// Note: Card type not exported to avoid conflict with Card component
+// Games should import Card type from their local core/types
+export type { Suit, Value } from './types/Card';
 export { SUITS, VALUES } from './types/Card';
 export type { GameLocation } from './types/GameLocation';
 export { cardIndexToCount, cardCountToIndex } from './types/GameLocation';
