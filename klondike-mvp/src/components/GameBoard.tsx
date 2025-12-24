@@ -9,8 +9,10 @@ import {
   GameControls,
   useGameHistory,
   useCardInteraction,
+  DraggingCardPreview,
   type GameLocation,
 } from '@cardgames/shared';
+import { Card } from './Card';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 import { version } from '../../package.json';
@@ -144,6 +146,66 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
     });
   }, [sharedHandlers]);
 
+  // =============================================================================
+  // Drag and touch handlers
+  // =============================================================================
+
+  /**
+   * Drag start handler - creates location and delegates to shared handler
+   */
+  const handleDragStart = useCallback((location: GameLocation) => (e: React.DragEvent) => {
+    sharedHandlers.handleDragStart(location)(e);
+  }, [sharedHandlers]);
+
+  /**
+   * Drag end handler
+   */
+  const handleDragEnd = useCallback(() => {
+    sharedHandlers.handleDragEnd();
+  }, [sharedHandlers]);
+
+  /**
+   * Drag over handler
+   */
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    sharedHandlers.handleDragOver(e);
+  }, [sharedHandlers]);
+
+  /**
+   * Drop handler - creates location and delegates to shared handler
+   */
+  const handleDrop = useCallback((location: GameLocation) => (e: React.DragEvent) => {
+    sharedHandlers.handleDrop(location)(e);
+  }, [sharedHandlers]);
+
+  /**
+   * Touch start handler
+   */
+  const handleTouchStart = useCallback((location: GameLocation) => (e: React.TouchEvent) => {
+    sharedHandlers.handleTouchStart(location)(e);
+  }, [sharedHandlers]);
+
+  /**
+   * Touch move handler
+   */
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    sharedHandlers.handleTouchMove(e);
+  }, [sharedHandlers]);
+
+  /**
+   * Touch end handler
+   */
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    sharedHandlers.handleTouchEnd(e);
+  }, [sharedHandlers]);
+
+  /**
+   * Touch cancel handler
+   */
+  const handleTouchCancel = useCallback(() => {
+    sharedHandlers.handleTouchCancel();
+  }, [sharedHandlers]);
+
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -245,6 +307,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           onWasteClick={handleWasteClick}
           isWasteSelected={sharedInteractionState.selectedCard?.type === 'waste'}
           layoutSizes={layoutSizes}
+          draggingCard={sharedInteractionState.draggingCard}
+          onDragStart={() => handleDragStart({ type: 'waste', index: 0, cardCount: 1 })}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDrop={() => handleDrop({ type: 'waste', index: 0 })}
+          onTouchStart={() => handleTouchStart({ type: 'waste', index: 0, cardCount: 1 })}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchCancel}
         />
 
         <FoundationArea
@@ -256,6 +327,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
               : null
           }
           layoutSizes={layoutSizes}
+          draggingCard={sharedInteractionState.draggingCard}
+          onDragStart={(index) => handleDragStart({ type: 'foundation', index, cardCount: 1 })}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDrop={(index) => handleDrop({ type: 'foundation', index })}
+          onTouchStart={(index) => handleTouchStart({ type: 'foundation', index, cardCount: 1 })}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchCancel}
         />
       </div>
 
@@ -273,6 +353,19 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
         }
         layoutSizes={layoutSizes}
         gameState={gameState}
+        draggingCard={sharedInteractionState.draggingCard}
+        onDragStart={(columnIndex, _cardIndex, cardCount) =>
+          handleDragStart({ type: 'tableau', index: columnIndex, cardCount })
+        }
+        onDragEnd={handleDragEnd}
+        onDragOver={handleDragOver}
+        onDrop={(columnIndex) => handleDrop({ type: 'tableau', index: columnIndex })}
+        onTouchStart={(columnIndex, _cardIndex, cardCount) =>
+          handleTouchStart({ type: 'tableau', index: columnIndex, cardCount })
+        }
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
       />
 
       {/* Win Modal */}
@@ -319,6 +412,43 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           </div>
         </div>
       )}
+
+      {/* Touch drag preview */}
+      <DraggingCardPreview
+        position={sharedInteractionState.touchPosition}
+        isActive={sharedInteractionState.touchDragging}
+        cardWidth={layoutSizes.cardWidth}
+        cardHeight={layoutSizes.cardHeight}
+      >
+        {sharedInteractionState.draggingCard && (() => {
+          const { type, index, cardCount } = sharedInteractionState.draggingCard;
+          let card = null;
+
+          if (type === 'waste' && gameState.waste.length > 0) {
+            card = gameState.waste[gameState.waste.length - 1];
+          } else if (type === 'tableau' && gameState.tableau[index]) {
+            const column = gameState.tableau[index];
+            const startIndex = column.cards.length - (cardCount ?? 1);
+            card = column.cards[startIndex];
+          } else if (type === 'foundation' && gameState.foundations[index].length > 0) {
+            const foundation = gameState.foundations[index];
+            card = foundation[foundation.length - 1];
+          }
+
+          if (!card) return null;
+
+          return (
+            <Card
+              card={card}
+              faceUp={true}
+              isSelected={true}
+              cardWidth={layoutSizes.cardWidth}
+              cardHeight={layoutSizes.cardHeight}
+              fontSize={layoutSizes.fontSize}
+            />
+          );
+        })()}
+      </DraggingCardPreview>
 
       {/* Footer */}
       <div
