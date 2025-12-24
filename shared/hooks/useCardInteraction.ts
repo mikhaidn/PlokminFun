@@ -7,6 +7,7 @@
 import { useState, useCallback } from 'react';
 import type {
   CardLocation,
+  GameLocation,
   CardInteractionConfig,
   UseCardInteractionReturn,
 } from '../types/CardInteraction';
@@ -19,16 +20,23 @@ import type {
  *
  * @example
  * ```tsx
- * const { state, handlers } = useCardInteraction({
+ * // Using GameLocation (recommended for new code)
+ * import type { GameLocation } from '@cardgames/shared';
+ *
+ * const { state, handlers } = useCardInteraction<GameLocation>({
  *   validateMove: (from, to) => isValidMove(gameState, from, to),
  *   executeMove: (from, to) => performMove(gameState, from, to),
  *   getCardAtLocation: (loc) => getCard(gameState, loc),
  * });
  *
- * <Card onClick={() => handlers.handleCardClick(location)} />
+ * <Card onClick={() => handlers.handleCardClick({
+ *   type: 'tableau',
+ *   index: 3,
+ *   cardCount: 2
+ * })} />
  * ```
  */
-export function useCardInteraction<TLocation extends CardLocation>(
+export function useCardInteraction<TLocation extends CardLocation = GameLocation>(
   config: CardInteractionConfig<TLocation>
 ): UseCardInteractionReturn<TLocation> {
   const { validateMove, executeMove } = config;

@@ -17,6 +17,8 @@ export type {
 } from './types/CardInteraction';
 export type { Card, Suit, Value } from './types/Card';
 export { SUITS, VALUES } from './types/Card';
+export type { GameLocation } from './types/GameLocation';
+export { cardIndexToCount, cardCountToIndex } from './types/GameLocation';
 
 // Hooks
 export { useGameHistory } from './hooks/useGameHistory.ts';
@@ -37,3 +39,7 @@ export {
 
 // Utilities
 export { HistoryManager } from './utils/HistoryManager.ts';
+
+// Config
+export { FEATURE_FLAGS } from './config/featureFlags';
+export type { FeatureFlags, FeatureFlagKey } from './config/featureFlags';

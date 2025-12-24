@@ -3,9 +3,13 @@
  * Used by both FreeCell and Klondike (and future games)
  */
 
+import type { GameLocation } from './GameLocation';
+
 /**
  * Base interface for card locations in any card game.
  * Games extend this with their specific location types.
+ *
+ * @deprecated Use GameLocation instead. This is kept for backward compatibility.
  */
 export interface CardLocation {
   type: string;  // Game-specific (e.g., 'tableau', 'freeCell', 'foundation', 'waste', 'stock')
@@ -13,6 +17,11 @@ export interface CardLocation {
   cardIndex?: number;  // Index of card within the pile
   cardCount?: number;  // Number of cards to move (for stacks)
 }
+
+/**
+ * Type alias for GameLocation (preferred type for new code)
+ */
+export type { GameLocation };
 
 /**
  * Configuration for the card interaction hook.
