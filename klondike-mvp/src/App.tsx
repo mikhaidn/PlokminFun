@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { SettingsProvider } from '@cardgames/shared';
 import { GameBoard } from './components/GameBoard';
+import { AnimationExperiments } from './components/AnimationExperiments';
 import { createInitialState } from './state/gameState';
 
 function App() {
@@ -10,14 +12,24 @@ function App() {
     setGameKey((prev) => prev + 1);
   };
 
+  // RFC-005 Phase 1: Animation experiments mode
+  // Access via: ?experiments=true
+  const showExperiments = new URLSearchParams(window.location.search).get('experiments') === 'true';
+
+  if (showExperiments) {
+    return <AnimationExperiments />;
+  }
+
   return (
-    <div style={{ width: '100%', height: '100vh' }}>
-      <GameBoard
-        key={gameKey}
-        initialState={createInitialState(seed)}
-        onNewGame={handleNewGame}
-      />
-    </div>
+    <SettingsProvider>
+      <div style={{ width: '100%', height: '100vh' }}>
+        <GameBoard
+          key={gameKey}
+          initialState={createInitialState(seed)}
+          onNewGame={handleNewGame}
+        />
+      </div>
+    </SettingsProvider>
   );
 }
 

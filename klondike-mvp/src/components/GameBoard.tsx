@@ -4,6 +4,7 @@ import { drawFromStock, autoMoveToFoundations } from '../state/gameActions';
 import { Tableau } from './Tableau';
 import { StockWaste } from './StockWaste';
 import { FoundationArea } from './FoundationArea';
+import { SettingsModal } from './SettingsModal';
 import {
   GameControls,
   useGameHistory,
@@ -61,6 +62,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
   const [layoutSizes, setLayoutSizes] = useState<LayoutSizes>(() =>
     calculateLayoutSizes(window.innerWidth, window.innerHeight)
   );
+
+  // Settings modal state
+  const [showSettings, setShowSettings] = useState(false);
 
   // Derive win state from game state
   const isWon = isGameWon(gameState);
@@ -285,6 +289,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           onRedo={redo}
           onReset={handleResetGame}
           onNewGame={onNewGame}
+          showSettings={true}
+          onSettings={() => setShowSettings(true)}
           showAutoComplete={true}
           onAutoComplete={handleAutoComplete}
           isMobile={isMobile}
@@ -416,6 +422,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           </div>
         </div>
       )}
+
+      {/* Settings Modal */}
+      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
 
       {/* Touch drag preview */}
       <DraggingCardPreview

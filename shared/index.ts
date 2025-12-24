@@ -30,6 +30,12 @@ export { useGameHistory } from './hooks/useGameHistory.ts';
 export type { UseGameHistoryOptions, UseGameHistoryResult } from './hooks/useGameHistory.ts';
 export { useCardInteraction } from './hooks/useCardInteraction';
 
+// Settings (RFC-005 Phase 1 Day 2)
+export type { GameSettings } from './types/GameSettings';
+export { DEFAULT_GAME_SETTINGS, applyAccessibilityOverrides } from './types/GameSettings';
+export { loadSettings, saveSettings, migrateOldSettings, resetSettings } from './utils/settingsStorage';
+export { SettingsProvider, SettingsContext, useSettings } from './contexts/SettingsContext';
+
 // Rules
 export {
   isRed,
