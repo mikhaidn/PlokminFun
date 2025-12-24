@@ -1,22 +1,19 @@
 # Project Status
 
-**Last Updated:** 2025-12-23
-**Current Phase:** P4 - Library Extraction & Polish (COMPLETE)
-**Next Milestone:** User Growth & Feature Polish
+**Last Updated:** 2025-12-24
+**Current Phase:** P5 - RFC-005 Planning & Implementation
+**Next Milestone:** Unified Game Builder (RFC-005)
 
 ---
 
 ## 🎯 Current Sprint
 
 ### Active Work
-- [x] **RFC-003 Phase 1:** CardPack Interface & Card Backs (COMPLETED)
-  - ✅ CardBack.tsx component with CSS patterns (blue/red themes)
-  - ✅ CardPack interface with manifest metadata
-  - ✅ faceUp prop added to Card component
-  - ✅ DEFAULT_CARD_PACK_MANIFEST and DEFAULT_FLIP_ANIMATION
-  - ✅ 31 new tests (all 191 tests passing)
-  - ✅ Backwards compatible (FreeCell unchanged)
-  - ✅ Build and lint passing
+- [ ] **RFC-005 Phase 1:** UI Prototype (Next)
+  - Prototype animations (card drag, flip, win celebration)
+  - Test smart tap-to-move on mobile devices
+  - Document UI requirements for unified system
+  - Validate 60fps performance on mid-range devices
 
 ### Blocked/Waiting
 - None
@@ -24,6 +21,36 @@
 ---
 
 ## ✅ Recently Completed
+
+### Week of 2025-12-24
+
+**MAJOR MILESTONE: RFC-005 Planning & RFC-003 Phase 2 Complete 🎉**
+
+- [x] **RFC-005 Draft Interfaces**
+  - Created complete GameActions<TState> interface for unified system
+  - Created GameConfig<TState> for config-driven game builder
+  - CardDisplayConfig integration with RFC-003 card backs
+  - isCardFaceUp() as key method for card display logic
+  - All interfaces exported from @cardgames/shared
+  - Comprehensive documentation for future compatibility
+
+- [x] **RFC-005 Compatibility Guide**
+  - docs/architecture/rfc-005-compatibility.md (380 lines)
+  - How to implement features with RFC-005 patterns today
+  - Zero-refactoring migration path documented
+  - Design patterns and testing strategies
+  - Code examples for Klondike implementation
+
+- [x] **RFC-003 Phase 2: Klondike Card Backs Integration**
+  - Created klondike-mvp/src/state/cardDisplay.ts (RFC-005 compatible)
+  - isCardFaceUp() using GameLocation from @cardgames/shared
+  - Helper functions matching GameActions interface signatures
+  - 25 new comprehensive tests (all passing)
+  - Updated Tableau.tsx to use RFC-005 compatible helpers
+  - Stock pile: face-down cards (CardBack component)
+  - Waste pile: face-up cards (Card component)
+  - Tableau: mixed face-up/down based on faceUpCount
+  - All 179 tests passing, build successful
 
 ### Week of 2025-12-23
 
@@ -103,9 +130,9 @@
 - **Uptime:** 100% (GitHub Pages)
 
 ### Code Quality
-- **Tests:** 1600+ tests passing across monorepo
+- **Tests:** 1625+ tests passing across monorepo
   - FreeCell: 95%+ coverage on core logic
-  - Klondike: 1415+ tests (comprehensive coverage)
+  - Klondike: 179 tests including 25 card display tests (comprehensive coverage)
   - Shared: Full coverage on utilities and hooks
 - **Linting:** All files pass ESLint
 - **TypeScript:** Strict mode, zero errors
@@ -133,7 +160,7 @@
 - [ ] No game persistence (refreshing page loses progress)
 - [ ] No daily challenge (no retention mechanism)
 - [ ] No analytics (flying blind)
-- [ ] Klondike card backs not integrated (RFC-003 Phase 2 in progress)
+- [x] ~~Klondike card backs not integrated~~ ✅ FIXED: RFC-003 Phase 2 complete
 
 ### Low Priority
 - [ ] No flip animations for cards (polish, not critical)
@@ -171,10 +198,10 @@
 
 ### Klondike
 - **Status:** ✅ Live and Playable (#19)
-- **Features:** Core gameplay (draw-1 and draw-3), undo/redo, shared interaction system, comprehensive test coverage
+- **Features:** Core gameplay (draw-1 and draw-3), card backs (stock face-down), undo/redo, shared interaction system, comprehensive test coverage (179 tests)
 - **URL:** https://mikhaidn.github.io/CardGames/klondike/
-- **Missing:** Card backs integration (RFC-003 Phase 2), flip animations, daily challenge
-- **Next:** Integrate card backs for stock pile face-down cards
+- **Missing:** Flip animations, daily challenge, game persistence
+- **Next:** Game persistence (localStorage)
 
 ### Spider Solitaire
 - **Status:** ⏸️ Planned (Future)
@@ -184,13 +211,14 @@
 
 ## 📋 Next 3 Tasks
 
-1. **RFC-003 Phase 2: Klondike Card Backs Integration** (2-3 hours) ⬅️ CURRENT
-   - Update Klondike game state to track faceUp status for stock pile
-   - Implement helper function: isCardFaceUp(state, location, index)
-   - Update Klondike rendering to pass faceUp prop to Card component
-   - Stock pile (face-down) → Waste pile (face-up) behavior
-   - Validate card backs work correctly in real game
-   - Add visual tests for card back display
+1. **RFC-005 Phase 1: UI Prototype** (2-3 days) ⬅️ CURRENT
+   - **Day 1:** Animation experiments (card drag with spring physics, flip animation, win celebration)
+   - **Day 2:** Mobile interactions (smart tap-to-move, test on real devices, measure 60fps)
+   - **Day 3:** Documentation (create docs/architecture/ui-requirements.md)
+   - Prototype in Klondike (branch: prototype/ui-exploration)
+   - Install framer-motion or react-spring for animations
+   - Test touch target sizes (min 44x44px)
+   - Deliverable: Working animations + mobile patterns validated + requirements doc
 
 2. **Game Persistence** (4-6 hours)
    - Auto-save game state to localStorage on each move
@@ -199,14 +227,16 @@
    - Handle localStorage quota exceeded
    - Add tests for save/restore logic
    - Implement for both FreeCell and Klondike
+   - RFC-005 compatible: Store state using same format GameActions will use
 
-3. **Privacy-First Analytics** (2-3 hours)
-   - Add Plausible or Simple Analytics
-   - Track: games played, completion rate, device types, game mode (draw-1 vs draw-3)
-   - No personal data collection
-   - GDPR-compliant
-   - Add to both games
-   - Document in CLAUDE.md
+3. **RFC-005 Phase 2: Standardize Move Execution** (Week 2-5)
+   - Define GameActions interface (validateMove, executeMove, getCardAt, etc.)
+   - Create moveExecution.ts helper (createMoveExecutor)
+   - Migrate Klondike to GameActions interface
+   - Migrate FreeCell to GameActions interface
+   - Create GameConfig interface and config files
+   - Build generic components (GenericGameBoard, GenericTableau)
+   - All tests passing, visual regression testing
 
 ---
 

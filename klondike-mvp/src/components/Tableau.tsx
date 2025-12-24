@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, EmptyCell, type LayoutSizes } from '@cardgames/shared';
-import { type TableauColumn, type KlondikeGameState, isCardFaceUp } from '../state/gameState';
+import { Card, EmptyCell, type LayoutSizes, type GameLocation } from '@cardgames/shared';
+import { type TableauColumn, type KlondikeGameState } from '../state/gameState';
+import { isCardFaceUp } from '../state/cardDisplay';
 
 interface TableauProps {
   tableau: TableauColumn[];
@@ -77,11 +78,9 @@ export const Tableau: React.FC<TableauProps> = ({
             />
           ) : (
             column.cards.map((card, cardIndex) => {
-              const faceUp = isCardFaceUp(
-                gameState,
-                { type: 'tableau', index: columnIndex },
-                cardIndex
-              );
+              // RFC-005 compatible: uses GameLocation from @cardgames/shared
+              const location: GameLocation = { type: 'tableau', index: columnIndex };
+              const faceUp = isCardFaceUp(gameState, location, cardIndex);
 
               // Check if this card is part of selection or dragging
               const isSelected =
