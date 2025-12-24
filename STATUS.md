@@ -9,11 +9,11 @@
 ## 🎯 Current Sprint
 
 ### Active Work
-- [ ] **RFC-005 Phase 1:** UI Prototype (Next)
-  - Prototype animations (card drag, flip, win celebration)
-  - Test smart tap-to-move on mobile devices
-  - Document UI requirements for unified system
-  - Validate 60fps performance on mid-range devices
+- [ ] **RFC-005 Phase 1:** UI Prototype with Settings Integration (In Progress)
+  - ✅ Day 1 Complete: Animation experiments (spring drag, flip, win celebration)
+  - Day 2: Mobile interactions + settings UI
+  - Day 3: Documentation
+  - **Critical:** Build settings toggles for all features (user-configurable, not forced)
 
 ### Blocked/Waiting
 - None
@@ -211,25 +211,28 @@
 
 ## 📋 Next 3 Tasks
 
-1. **RFC-005 Phase 1: UI Prototype** (2-3 days) ⬅️ CURRENT
-   - **Day 1:** Animation experiments (card drag with spring physics, flip animation, win celebration)
-   - **Day 2:** Mobile interactions (smart tap-to-move, test on real devices, measure 60fps)
-   - **Day 3:** Documentation (create docs/architecture/ui-requirements.md)
-   - Prototype in Klondike (branch: prototype/ui-exploration)
-   - Install framer-motion or react-spring for animations
-   - Test touch target sizes (min 44x44px)
-   - Deliverable: Working animations + mobile patterns validated + requirements doc
+1. **RFC-005 Phase 1: UI Prototype + Settings** (2-3 days) ⬅️ CURRENT
+   - ✅ **Day 1 DONE:** Animation experiments (framer-motion, spring physics, flip, confetti)
+   - **Day 2:** Settings UI + Smart Tap-to-Move
+     - Add animation settings: level (full/reduced/none), win celebration (on/off)
+     - Add interaction settings: smart tap-to-move (on/off), drag physics
+     - Implement smart tap-to-move with toggle
+     - Test on real devices (iOS Safari, Android Chrome, iPad)
+     - Validate 60fps, touch targets (44x44px), response time (<100ms)
+   - **Day 3:** Documentation
+     - Create docs/architecture/ui-requirements.md
+     - Document settings system integration
+     - Performance requirements and accessibility considerations
+   - **Critical:** All features must be user-configurable, not forced
 
-2. **Game Persistence** (4-6 hours)
-   - Auto-save game state to localStorage on each move
-   - Restore game state on page reload
-   - "Continue" vs "New Game" option on startup
-   - Handle localStorage quota exceeded
-   - Add tests for save/restore logic
-   - Implement for both FreeCell and Klondike
-   - RFC-005 compatible: Store state using same format GameActions will use
+2. **Settings System Enhancement** (2-3 hours)
+   - Extend existing settings modal with animation/interaction preferences
+   - Add to both FreeCell and Klondike
+   - Persist to localStorage (integrate with existing accessibility settings)
+   - Respect prefers-reduced-motion media query
+   - Test settings persistence across page reloads
 
-3. **RFC-005 Phase 2: Standardize Move Execution** (Week 2-5)
+3. **RFC-005 Phase 2: Standardize Move Execution** (Weeks 2-5)
    - Define GameActions interface (validateMove, executeMove, getCardAt, etc.)
    - Create moveExecution.ts helper (createMoveExecutor)
    - Migrate Klondike to GameActions interface
