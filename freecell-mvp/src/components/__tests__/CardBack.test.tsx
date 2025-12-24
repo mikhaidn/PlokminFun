@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { CardBack } from '../CardBack';
+import { CardBack } from '@cardgames/shared';
 
 describe('CardBack', () => {
   test('renders with correct dimensions', () => {
