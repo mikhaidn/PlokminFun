@@ -13,7 +13,13 @@
     "build:games": "npm run build -ws --if-present",
     "test": "npm test -ws --if-present",
     "lint": "npm run lint -ws --if-present",
-    "build": "npm run build:shared && npm run build:games"
+    "build": "npm run build:shared && npm run build:games",
+    "docs": "cat DOCS.md",
+    "docs:ai": "cat AI_GUIDE.md",
+    "docs:rfcs": "cat rfcs/INDEX.md",
+    "docs:deployment": "cat docs/deployment/README.md",
+    "docs:accessibility": "cat docs/accessibility/README.md",
+    "docs:games": "cat docs/games/README.md"
   },
   "dependencies": {
     "react": "^18.2.0",
