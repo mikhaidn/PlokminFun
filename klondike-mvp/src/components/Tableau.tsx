@@ -10,6 +10,15 @@ interface TableauProps {
   selectedColumn: { columnIndex: number; cardCount: number } | null;
   layoutSizes: LayoutSizes;
   gameState: KlondikeGameState;
+  draggingCard?: { type: string; index: number; cardCount?: number } | null;
+  onDragStart?: (columnIndex: number, cardIndex: number, cardCount: number) => (e: React.DragEvent) => void;
+  onDragEnd?: () => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (columnIndex: number) => (e: React.DragEvent) => void;
+  onTouchStart?: (columnIndex: number, cardIndex: number, cardCount: number) => (e: React.TouchEvent) => void;
+  onTouchMove?: (e: React.TouchEvent) => void;
+  onTouchEnd?: (e: React.TouchEvent) => void;
+  onTouchCancel?: () => void;
 }
 
 export const Tableau: React.FC<TableauProps> = ({
@@ -18,6 +27,15 @@ export const Tableau: React.FC<TableauProps> = ({
   selectedColumn,
   layoutSizes,
   gameState,
+  draggingCard,
+  onDragStart,
+  onDragEnd,
+  onDragOver,
+  onDrop,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+  onTouchCancel,
 }) => {
   const { cardWidth, cardHeight, cardOverlap, fontSize } = layoutSizes;
 
@@ -47,6 +65,10 @@ export const Tableau: React.FC<TableauProps> = ({
               height: `${columnHeight}px`,
               width: `${cardWidth}px`,
             }}
+            data-drop-target-type="tableau"
+            data-drop-target-index={columnIndex}
+            onDragOver={onDragOver}
+            onDrop={onDrop ? onDrop(columnIndex) : undefined}
           >
           {column.cards.length === 0 ? (
             <EmptyCell
@@ -63,10 +85,18 @@ export const Tableau: React.FC<TableauProps> = ({
                 cardIndex
               );
 
-              // Check if this card is part of selection
+              // Check if this card is part of selection or dragging
               const isSelected =
                 selectedColumn?.columnIndex === columnIndex &&
                 cardIndex >= column.cards.length - selectedColumn.cardCount;
+
+              const isDragging =
+                draggingCard?.type === 'tableau' &&
+                draggingCard?.index === columnIndex &&
+                cardIndex >= column.cards.length - (draggingCard?.cardCount ?? 1);
+
+              const cardCount = column.cards.length - cardIndex;
+              const canDrag = faceUp; // Only face-up cards can be dragged
 
               return (
                 <div
@@ -86,6 +116,14 @@ export const Tableau: React.FC<TableauProps> = ({
                     cardHeight={cardHeight}
                     fontSize={fontSize}
                     isSelected={isSelected}
+                    isDragging={isDragging}
+                    draggable={canDrag}
+                    onDragStart={canDrag && onDragStart ? onDragStart(columnIndex, cardIndex, cardCount) : undefined}
+                    onDragEnd={onDragEnd}
+                    onTouchStart={canDrag && onTouchStart ? onTouchStart(columnIndex, cardIndex, cardCount) : undefined}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                    onTouchCancel={onTouchCancel}
                   />
                 </div>
               );

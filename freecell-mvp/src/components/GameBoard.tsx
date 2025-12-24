@@ -1,19 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { initializeGame, checkWinCondition, type GameState } from '../state/gameState';
-import {
-  moveCardToFreeCell,
-  moveCardFromFreeCell,
-  moveCardToFoundation,
-  moveCardsToTableau,
-  moveCardFromFoundationToTableau,
-  moveCardFromFoundationToFreeCell,
-} from '../state/gameActions';
+import { moveCardToFoundation } from '../state/gameActions';
 import { findSafeAutoMove } from '../rules/autoComplete';
 import { getLowestPlayableCards } from '../rules/hints';
 import { FreeCellArea } from './FreeCellArea';
 import { FoundationArea } from './FoundationArea';
 import { Tableau } from './Tableau';
 import { SettingsModal } from './SettingsModal';
+import { Card } from './Card';
 import { calculateLayoutSizes, type LayoutSizes } from '../utils/responsiveLayout';
 import {
   type AccessibilitySettings,
@@ -22,10 +16,10 @@ import {
   getSettingsFromMode,
   getMinButtonHeight,
 } from '../config/accessibilitySettings';
-import { isRed } from '../rules/validation';
 import {
   useGameHistory,
   useCardInteraction,
+  DraggingCardPreview,
   type GameLocation,
 } from '@cardgames/shared';
 import { validateMove } from '../rules/moveValidation';
@@ -74,13 +68,8 @@ export const GameBoard: React.FC = () => {
     handlers: sharedHandlers
   } = useCardInteraction<GameLocation>(sharedHookConfig);
 
-  const [draggingCard, setDraggingCard] = useState<SelectedCard>(null);
   const [showHints, setShowHints] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-
-  // Touch drag-and-drop state
-  const [touchDragging, setTouchDragging] = useState(false);
-  const [touchPosition, setTouchPosition] = useState<{ x: number; y: number } | null>(null);
 
   // Accessibility settings
   const [accessibilitySettings, setAccessibilitySettings] = useState<AccessibilitySettings>(() =>
@@ -137,7 +126,7 @@ export const GameBoard: React.FC = () => {
 
   // Auto-move cards to foundations
   useEffect(() => {
-    if (draggingCard || sharedInteractionState.selectedCard) return;
+    if (sharedInteractionState.draggingCard || sharedInteractionState.selectedCard) return;
 
     const timer = setTimeout(() => {
       const autoMove = findSafeAutoMove(gameState);
@@ -167,7 +156,7 @@ export const GameBoard: React.FC = () => {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [gameState, draggingCard, sharedInteractionState.selectedCard, pushState]);
+  }, [gameState, sharedInteractionState.draggingCard, sharedInteractionState.selectedCard, pushState]);
 
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
@@ -267,8 +256,8 @@ export const GameBoard: React.FC = () => {
   }, [sharedHandlers]);
 
   // Convert GameLocation to SelectedCard for child components
-  const displaySelectedCard: SelectedCard = React.useMemo(() => {
-    const loc = sharedInteractionState.selectedCard;
+  // Convert GameLocation to SelectedCard format for display
+  const convertLocationToSelected = useCallback((loc: GameLocation | null): SelectedCard => {
     if (!loc) return null;
 
     if (loc.type === 'tableau') {
@@ -283,170 +272,69 @@ export const GameBoard: React.FC = () => {
       return { type: 'foundation', index: loc.index };
     }
     return null;
-  }, [sharedInteractionState.selectedCard, gameState.tableau]);
+  }, [gameState.tableau]);
 
-  // Drag-and-drop handlers
+  const displaySelectedCard: SelectedCard = React.useMemo(() =>
+    convertLocationToSelected(sharedInteractionState.selectedCard),
+    [sharedInteractionState.selectedCard, convertLocationToSelected]
+  );
+
+  const displayDraggingCard: SelectedCard = React.useMemo(() =>
+    convertLocationToSelected(sharedInteractionState.draggingCard),
+    [sharedInteractionState.draggingCard, convertLocationToSelected]
+  );
+
+  // Wrapper functions to convert SelectedCard to GameLocation and call shared handlers
   const handleDragStart = (source: SelectedCard) => (e: React.DragEvent) => {
     if (!source) return;
-    setDraggingCard(source);
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', JSON.stringify(source));
+    const location: GameLocation = source.type === 'tableau'
+      ? { type: 'tableau', index: source.column, cardIndex: source.cardIndex }
+      : { type: source.type, index: source.index };
+    sharedHandlers.handleDragStart(location)(e);
   };
 
   const handleDragEnd = () => {
-    setDraggingCard(null);
+    sharedHandlers.handleDragEnd();
   };
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    sharedHandlers.handleDragOver(e);
   };
 
   const handleTableauDrop = (columnIndex: number) => (e: React.DragEvent) => {
-    e.preventDefault();
-    if (!draggingCard) return;
-
-    let newState: GameState | null = null;
-
-    if (draggingCard.type === 'freeCell') {
-      newState = moveCardFromFreeCell(gameState, draggingCard.index, columnIndex);
-    } else if (draggingCard.type === 'tableau') {
-      const numCards = gameState.tableau[draggingCard.column].length - draggingCard.cardIndex;
-      newState = moveCardsToTableau(gameState, draggingCard.column, numCards, columnIndex);
-    } else if (draggingCard.type === 'foundation') {
-      newState = moveCardFromFoundationToTableau(gameState, draggingCard.index, columnIndex);
-    }
-
-    if (newState) {
-      pushState(newState);
-    }
-    setDraggingCard(null);
+    const location: GameLocation = { type: 'tableau', index: columnIndex };
+    sharedHandlers.handleDrop(location)(e);
   };
 
   const handleFreeCellDrop = (index: number) => (e: React.DragEvent) => {
-    e.preventDefault();
-    if (!draggingCard) return;
-
-    let newState: GameState | null = null;
-
-    if (draggingCard.type === 'tableau') {
-      const column = gameState.tableau[draggingCard.column];
-      // Only single cards can go to free cells
-      if (draggingCard.cardIndex === column.length - 1) {
-        newState = moveCardToFreeCell(gameState, draggingCard.column, index);
-      }
-    } else if (draggingCard.type === 'foundation') {
-      newState = moveCardFromFoundationToFreeCell(gameState, draggingCard.index, index);
-    }
-
-    if (newState) {
-      pushState(newState);
-    }
-    setDraggingCard(null);
+    const location: GameLocation = { type: 'freeCell', index };
+    sharedHandlers.handleDrop(location)(e);
   };
 
   const handleFoundationDrop = (foundationIndex: number) => (e: React.DragEvent) => {
-    e.preventDefault();
-    if (!draggingCard) return;
-
-    let newState: GameState | null = null;
-
-    if (draggingCard.type === 'freeCell') {
-      newState = moveCardToFoundation(gameState, 'freeCell', draggingCard.index, foundationIndex);
-    } else if (draggingCard.type === 'tableau') {
-      const column = gameState.tableau[draggingCard.column];
-      // Only single cards can go to foundations
-      if (draggingCard.cardIndex === column.length - 1) {
-        newState = moveCardToFoundation(gameState, 'tableau', draggingCard.column, foundationIndex);
-      }
-    }
-
-    if (newState) {
-      pushState(newState);
-    }
-    setDraggingCard(null);
+    const location: GameLocation = { type: 'foundation', index: foundationIndex };
+    sharedHandlers.handleDrop(location)(e);
   };
 
   // Touch handlers
   const handleTouchStart = (source: SelectedCard) => (e: React.TouchEvent) => {
     if (!source) return;
-    e.preventDefault(); // Prevent scrolling
-    setTouchDragging(true);
-    setDraggingCard(source);
-    const touch = e.touches[0];
-    setTouchPosition({ x: touch.clientX, y: touch.clientY });
+    const location: GameLocation = source.type === 'tableau'
+      ? { type: 'tableau', index: source.column, cardIndex: source.cardIndex }
+      : { type: source.type, index: source.index };
+    sharedHandlers.handleTouchStart(location)(e);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchDragging) return;
-    e.preventDefault(); // Prevent scrolling
-    const touch = e.touches[0];
-    setTouchPosition({ x: touch.clientX, y: touch.clientY });
+    sharedHandlers.handleTouchMove(e);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchDragging || !draggingCard) {
-      setTouchDragging(false);
-      setTouchPosition(null);
-      return;
-    }
-
-    const touch = e.changedTouches[0];
-    const element = document.elementFromPoint(touch.clientX, touch.clientY);
-
-    if (element) {
-      // Find the drop target by checking data attributes
-      const dropTarget = element.closest('[data-drop-target]');
-      if (dropTarget) {
-        const targetType = dropTarget.getAttribute('data-drop-type');
-        const targetIndex = parseInt(dropTarget.getAttribute('data-drop-index') || '0');
-
-        let newState: GameState | null = null;
-
-        if (targetType === 'tableau') {
-          if (draggingCard.type === 'freeCell') {
-            newState = moveCardFromFreeCell(gameState, draggingCard.index, targetIndex);
-          } else if (draggingCard.type === 'tableau') {
-            const numCards = gameState.tableau[draggingCard.column].length - draggingCard.cardIndex;
-            newState = moveCardsToTableau(gameState, draggingCard.column, numCards, targetIndex);
-          } else if (draggingCard.type === 'foundation') {
-            newState = moveCardFromFoundationToTableau(gameState, draggingCard.index, targetIndex);
-          }
-        } else if (targetType === 'freeCell') {
-          if (draggingCard.type === 'tableau') {
-            const column = gameState.tableau[draggingCard.column];
-            if (draggingCard.cardIndex === column.length - 1) {
-              newState = moveCardToFreeCell(gameState, draggingCard.column, targetIndex);
-            }
-          } else if (draggingCard.type === 'foundation') {
-            newState = moveCardFromFoundationToFreeCell(gameState, draggingCard.index, targetIndex);
-          }
-        } else if (targetType === 'foundation') {
-          if (draggingCard.type === 'freeCell') {
-            newState = moveCardToFoundation(gameState, 'freeCell', draggingCard.index, targetIndex);
-          } else if (draggingCard.type === 'tableau') {
-            const column = gameState.tableau[draggingCard.column];
-            if (draggingCard.cardIndex === column.length - 1) {
-              newState = moveCardToFoundation(gameState, 'tableau', draggingCard.column, targetIndex);
-            }
-          }
-        }
-
-        if (newState) {
-          pushState(newState);
-        }
-      }
-    }
-
-    setTouchDragging(false);
-    setDraggingCard(null);
-    setTouchPosition(null);
+    sharedHandlers.handleTouchEnd(e);
   };
 
   const handleTouchCancel = () => {
-    setTouchDragging(false);
-    setDraggingCard(null);
-    setTouchPosition(null);
+    sharedHandlers.handleTouchCancel();
   };
 
   // Responsive sizing for UI elements (with accessibility overrides)
@@ -619,7 +507,7 @@ export const GameBoard: React.FC = () => {
         <FreeCellArea
           freeCells={gameState.freeCells}
           selectedCard={displaySelectedCard?.type === 'freeCell' ? displaySelectedCard : null}
-          draggingCard={draggingCard}
+          draggingCard={displayDraggingCard}
           highlightedCardIds={highlightedCardIds}
           onFreeCellClick={handleFreeCellClick}
           onDragStart={(index) => handleDragStart({ type: 'freeCell', index })}
@@ -639,7 +527,7 @@ export const GameBoard: React.FC = () => {
         <FoundationArea
           foundations={gameState.foundations}
           selectedCard={displaySelectedCard?.type === 'foundation' ? displaySelectedCard : null}
-          draggingCard={draggingCard}
+          draggingCard={displayDraggingCard}
           onFoundationClick={handleFoundationClick}
           onDragStart={(index) => handleDragStart({ type: 'foundation', index })}
           onDragEnd={handleDragEnd}
@@ -661,7 +549,7 @@ export const GameBoard: React.FC = () => {
         <Tableau
         tableau={gameState.tableau}
         selectedCard={displaySelectedCard?.type === 'tableau' ? displaySelectedCard : null}
-        draggingCard={draggingCard}
+        draggingCard={displayDraggingCard}
         highlightedCardIds={highlightedCardIds}
         onCardClick={handleTableauClick}
         onEmptyColumnClick={handleEmptyColumnClick}
@@ -751,84 +639,38 @@ export const GameBoard: React.FC = () => {
       />
 
       {/* Touch drag preview */}
-      {touchDragging && touchPosition && draggingCard && (() => {
-        let card = null;
-        if (draggingCard.type === 'freeCell') {
-          card = gameState.freeCells[draggingCard.index];
-        } else if (draggingCard.type === 'tableau') {
-          const column = gameState.tableau[draggingCard.column];
-          card = column[draggingCard.cardIndex];
-        } else if (draggingCard.type === 'foundation') {
-          const foundation = gameState.foundations[draggingCard.index];
-          card = foundation.length > 0 ? foundation[foundation.length - 1] : null;
-        }
+      <DraggingCardPreview
+        position={sharedInteractionState.touchPosition}
+        isActive={sharedInteractionState.touchDragging}
+        cardWidth={layoutSizes.cardWidth}
+        cardHeight={layoutSizes.cardHeight}
+      >
+        {displayDraggingCard && (() => {
+          let card = null;
+          if (displayDraggingCard.type === 'freeCell') {
+            card = gameState.freeCells[displayDraggingCard.index];
+          } else if (displayDraggingCard.type === 'tableau') {
+            const column = gameState.tableau[displayDraggingCard.column];
+            card = column[displayDraggingCard.cardIndex];
+          } else if (displayDraggingCard.type === 'foundation') {
+            const foundation = gameState.foundations[displayDraggingCard.index];
+            card = foundation.length > 0 ? foundation[foundation.length - 1] : null;
+          }
 
-        if (!card) return null;
+          if (!card) return null;
 
-        const red = isRed(card);
-        const textColor = modeSettings.highContrastMode
-          ? (red ? '#ff0000' : '#000000')
-          : (red ? '#c41e3a' : '#1a1a2e');
-        const borderWidth = modeSettings.highContrastMode ? '4px' : '2px';
-
-        return (
-          <div
-            style={{
-              position: 'fixed',
-              left: touchPosition.x - (layoutSizes.cardWidth / 2),
-              top: touchPosition.y - (layoutSizes.cardHeight / 2),
-              pointerEvents: 'none',
-              zIndex: 1000,
-              opacity: 0.8,
-            }}
-          >
-            <div
-              style={{
-                width: `${layoutSizes.cardWidth}px`,
-                height: `${layoutSizes.cardHeight}px`,
-                borderRadius: `${layoutSizes.cardWidth * 0.1}px`,
-                backgroundColor: 'white',
-                border: `${borderWidth} solid #4caf50`,
-                boxShadow: modeSettings.highContrastMode
-                  ? '0 4px 12px rgba(0,0,0,0.5)'
-                  : '0 4px 8px rgba(0,0,0,0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: `${layoutSizes.fontSize.medium}px`,
-                fontWeight: 'bold',
-                color: textColor,
-                position: 'relative',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: `${layoutSizes.cardHeight * 0.05}px`,
-                  left: `${layoutSizes.cardWidth * 0.1}px`,
-                  fontSize: `${layoutSizes.fontSize.small}px`,
-                  lineHeight: '1',
-                }}
-              >
-                <div>{card.value}{card.suit}</div>
-              </div>
-              <div style={{ fontSize: `${layoutSizes.fontSize.large}px` }}>{card.suit}</div>
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: `${layoutSizes.cardHeight * 0.05}px`,
-                  right: `${layoutSizes.cardWidth * 0.1}px`,
-                  fontSize: `${layoutSizes.fontSize.small}px`,
-                  lineHeight: '1',
-                  transform: 'rotate(180deg)',
-                }}
-              >
-                <div>{card.value}{card.suit}</div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+          return (
+            <Card
+              card={card}
+              isSelected={true}
+              cardWidth={layoutSizes.cardWidth}
+              cardHeight={layoutSizes.cardHeight}
+              fontSize={layoutSizes.fontSize}
+              highContrastMode={modeSettings.highContrastMode}
+            />
+          );
+        })()}
+      </DraggingCardPreview>
     </div>
   );
 };

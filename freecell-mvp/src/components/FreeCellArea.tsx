@@ -59,9 +59,8 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
         return (
           <div
             key={`freecell-${index}`}
-            data-drop-target="true"
-            data-drop-type="freeCell"
-            data-drop-index={index}
+            data-drop-target-type="freeCell"
+            data-drop-target-index={index}
             onDragOver={onDragOver}
             onDrop={onDrop ? onDrop(index) : undefined}
           >

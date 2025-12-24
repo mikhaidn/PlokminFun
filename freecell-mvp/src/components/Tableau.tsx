@@ -64,9 +64,8 @@ export const Tableau: React.FC<TableauProps> = ({
             flexDirection: 'column',
             minHeight: '100px',
           }}
-          data-drop-target="true"
-          data-drop-type="tableau"
-          data-drop-index={columnIndex}
+          data-drop-target-type="tableau"
+          data-drop-target-index={columnIndex}
           onDragOver={onDragOver}
           onDrop={onDrop ? onDrop(columnIndex) : undefined}
         >

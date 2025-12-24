@@ -12,6 +12,15 @@ interface StockWasteProps {
   onWasteClick: () => void;
   isWasteSelected: boolean;
   layoutSizes: LayoutSizes;
+  draggingCard?: { type: string } | null;
+  onDragStart?: () => (e: React.DragEvent) => void;
+  onDragEnd?: () => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: () => (e: React.DragEvent) => void;
+  onTouchStart?: () => (e: React.TouchEvent) => void;
+  onTouchMove?: (e: React.TouchEvent) => void;
+  onTouchEnd?: (e: React.TouchEvent) => void;
+  onTouchCancel?: () => void;
 }
 
 export const StockWaste: React.FC<StockWasteProps> = ({
@@ -21,6 +30,15 @@ export const StockWaste: React.FC<StockWasteProps> = ({
   onWasteClick,
   isWasteSelected,
   layoutSizes,
+  draggingCard,
+  onDragStart,
+  onDragEnd,
+  onDragOver,
+  onDrop,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+  onTouchCancel,
 }) => {
   const { cardWidth, cardHeight, cardGap, fontSize } = layoutSizes;
 
@@ -58,6 +76,10 @@ export const StockWaste: React.FC<StockWasteProps> = ({
           height: `${cardHeight}px`,
           cursor: waste.length > 0 ? 'pointer' : 'default',
         }}
+        data-drop-target-type="waste"
+        data-drop-target-index={0}
+        onDragOver={onDragOver}
+        onDrop={onDrop ? onDrop() : undefined}
         onClick={onWasteClick}
       >
         {waste.length > 0 ? (
@@ -68,6 +90,14 @@ export const StockWaste: React.FC<StockWasteProps> = ({
             cardHeight={cardHeight}
             fontSize={fontSize}
             isSelected={isWasteSelected}
+            isDragging={draggingCard?.type === 'waste'}
+            draggable={true}
+            onDragStart={onDragStart ? onDragStart() : undefined}
+            onDragEnd={onDragEnd}
+            onTouchStart={onTouchStart ? onTouchStart() : undefined}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onTouchCancel={onTouchCancel}
           />
         ) : (
           <EmptyCell

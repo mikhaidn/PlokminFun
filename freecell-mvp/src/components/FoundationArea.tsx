@@ -72,9 +72,8 @@ export const FoundationArea: React.FC<FoundationAreaProps> = ({
         return (
           <div
             key={`foundation-${index}`}
-            data-drop-target="true"
-            data-drop-type="foundation"
-            data-drop-index={index}
+            data-drop-target-type="foundation"
+            data-drop-target-index={index}
             onDragOver={onDragOver}
             onDrop={onDrop ? onDrop(index) : undefined}
             onTouchEnd={onTouchEnd}
