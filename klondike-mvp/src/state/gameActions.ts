@@ -372,3 +372,73 @@ function getFoundationIndex(card: Card): number {
   const suits = ['♠', '♥', '♦', '♣'];
   return suits.indexOf(card.suit);
 }
+
+/**
+ * Get all valid destination locations for a card/stack from a source location.
+ * Used for smart tap-to-move on mobile (RFC-005 Phase 2).
+ *
+ * @param state Current game state
+ * @param from Source location
+ * @param cardCount Number of cards to move (default: 1 for single card)
+ * @returns Array of valid destination locations
+ *
+ * @example
+ * // User taps a card in tableau column 3
+ * const destinations = getValidMoves(state, { type: 'tableau', index: 3 });
+ * // Returns: [{ type: 'foundation', index: 0 }, { type: 'tableau', index: 5 }]
+ *
+ * // If only one destination, smart tap can auto-execute the move
+ * if (destinations.length === 1) {
+ *   moveCards(state, from, destinations[0]);
+ * }
+ */
+export function getValidMoves(
+  state: KlondikeGameState,
+  from: Location,
+  cardCount: number = 1
+): Location[] {
+  const validMoves: Location[] = [];
+
+  // Can't move from stock (must draw first)
+  if (from.type === 'stock') {
+    return validMoves;
+  }
+
+  // Get source cards to determine what we're trying to move
+  const sourceCards = getCardsToMove(state, from, cardCount);
+  if (!sourceCards || sourceCards.length === 0) {
+    return validMoves;
+  }
+
+  // Check all tableau columns
+  for (let i = 0; i < 7; i++) {
+    const destination: Location = { type: 'tableau', index: i };
+
+    // Skip source column if moving from tableau
+    if (from.type === 'tableau' && from.index === i) {
+      continue;
+    }
+
+    if (canMove(state, from, destination, cardCount)) {
+      validMoves.push(destination);
+    }
+  }
+
+  // Check all foundations (only for single cards)
+  if (cardCount === 1) {
+    for (let i = 0; i < 4; i++) {
+      const destination: Location = { type: 'foundation', index: i };
+
+      // Skip source foundation if moving from foundation
+      if (from.type === 'foundation' && from.index === i) {
+        continue;
+      }
+
+      if (canMove(state, from, destination, cardCount)) {
+        validMoves.push(destination);
+      }
+    }
+  }
+
+  return validMoves;
+}

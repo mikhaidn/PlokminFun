@@ -220,3 +220,139 @@ export function moveCardsToTableau(
 
   return newState;
 }
+
+/**
+ * Source location type for getValidMoves.
+ * Describes where the card is being moved from.
+ */
+export interface SourceLocation {
+  type: 'tableau' | 'freeCell' | 'foundation';
+  index: number;
+}
+
+/**
+ * Destination location type for getValidMoves.
+ * Describes where the card can be moved to.
+ */
+export interface DestinationLocation {
+  type: 'tableau' | 'freeCell' | 'foundation';
+  index: number;
+}
+
+/**
+ * Get all valid destination locations for a card from a source location.
+ * Used for smart tap-to-move on mobile (RFC-005 Phase 2).
+ *
+ * @param state - Current game state
+ * @param from - Source location (tableau column, free cell, or foundation)
+ * @returns Array of valid destination locations
+ *
+ * @example
+ * // User taps a card in tableau column 3
+ * const destinations = getValidMoves(state, { type: 'tableau', index: 3 });
+ * // Returns: [{ type: 'foundation', index: 0 }, { type: 'freeCell', index: 1 }, ...]
+ *
+ * // If only one destination, smart tap can auto-execute the move
+ * if (destinations.length === 1) {
+ *   // Auto-execute move
+ * }
+ */
+export function getValidMoves(
+  state: GameState,
+  from: SourceLocation
+): DestinationLocation[] {
+  const validMoves: DestinationLocation[] = [];
+
+  // Get the card we're trying to move
+  let card: Card | null = null;
+  let numCards = 1; // Default to moving 1 card
+
+  if (from.type === 'tableau') {
+    const column = state.tableau[from.index];
+    if (column.length === 0) return validMoves;
+    card = column[column.length - 1];
+
+    // For tableau, check if we can move multiple cards as a sequence
+    const emptyFreeCells = state.freeCells.filter(c => c === null).length;
+    const emptyColumns = state.tableau.filter((col, idx) => col.length === 0 && idx !== from.index).length;
+    const maxMovable = getMaxMovable(emptyFreeCells, emptyColumns);
+
+    // Try to move as many valid cards as possible
+    let validSequenceCount = 1;
+    for (let i = column.length - 1; i > 0 && validSequenceCount < maxMovable; i--) {
+      const subset = column.slice(i - 1);
+      if (isValidStack(subset)) {
+        validSequenceCount = subset.length;
+      } else {
+        break;
+      }
+    }
+    numCards = validSequenceCount;
+  } else if (from.type === 'freeCell') {
+    card = state.freeCells[from.index];
+    if (!card) return validMoves;
+  } else if (from.type === 'foundation') {
+    const foundation = state.foundations[from.index];
+    if (foundation.length === 0) return validMoves;
+    card = foundation[foundation.length - 1];
+  }
+
+  if (!card) return validMoves;
+
+  // Check all tableau columns
+  for (let i = 0; i < 8; i++) {
+    // Skip source column if moving from tableau
+    if (from.type === 'tableau' && from.index === i) {
+      continue;
+    }
+
+    const targetColumn = state.tableau[i];
+    const targetCard = targetColumn.length > 0 ? targetColumn[targetColumn.length - 1] : null;
+
+    // For single card moves
+    if (numCards === 1 && canStackOnTableau(card, targetCard)) {
+      validMoves.push({ type: 'tableau', index: i });
+    }
+    // For multi-card moves from tableau
+    else if (from.type === 'tableau' && numCards > 1) {
+      const sourceColumn = state.tableau[from.index];
+      const startIndex = sourceColumn.length - numCards;
+      const cardsToMove = sourceColumn.slice(startIndex);
+      const bottomCard = cardsToMove[0];
+
+      if (canStackOnTableau(bottomCard, targetCard)) {
+        // Verify we have enough free cells/columns for the move
+        const result = moveCardsToTableau(state, from.index, numCards, i);
+        if (result !== null) {
+          validMoves.push({ type: 'tableau', index: i });
+        }
+      }
+    }
+  }
+
+  // Check all foundations (only single cards)
+  if (numCards === 1) {
+    for (let i = 0; i < 4; i++) {
+      // Skip source foundation if moving from foundation
+      if (from.type === 'foundation' && from.index === i) {
+        continue;
+      }
+
+      const foundation = state.foundations[i];
+      if (canStackOnFoundation(card, foundation)) {
+        validMoves.push({ type: 'foundation', index: i });
+      }
+    }
+  }
+
+  // Check all free cells (only single cards, and not if moving from free cell to free cell)
+  if (numCards === 1 && from.type !== 'freeCell') {
+    for (let i = 0; i < 4; i++) {
+      if (state.freeCells[i] === null) {
+        validMoves.push({ type: 'freeCell', index: i });
+      }
+    }
+  }
+
+  return validMoves;
+}
