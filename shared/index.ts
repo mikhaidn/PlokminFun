@@ -56,10 +56,29 @@ export { getCardColors, getCardBoxShadow } from './utils/highContrastStyles';
 export type { CardColors } from './utils/highContrastStyles';
 export { calculateLayoutSizes, getResponsiveFontSizes } from './utils/responsiveLayout';
 export type { LayoutSizes } from './utils/responsiveLayout';
+export {
+  AnimationQueue,
+  createAnimationDelay,
+  createMoveAnimation,
+  createFlipAnimation,
+} from './utils/animationQueue';
+export type { QueuedAnimation } from './utils/animationQueue';
+export {
+  LifecycleHookExecutor,
+  createHookExecutor,
+  executeMoveWithHooks,
+  initializeGameWithHooks,
+  undoWithHooks,
+  redoWithHooks,
+} from './utils/lifecycleHooks';
 
 // Config
 export { FEATURE_FLAGS } from './config/featureFlags';
 export type { FeatureFlags, FeatureFlagKey } from './config/featureFlags';
+
+// Core (RFC-005 Phase 2 Week 3)
+export { createGame, defineGameConfig, createGameRegistry, supportsFeature } from './core/createGame';
+export type { GameFactoryProps, GameInstance } from './core/createGame';
 
 // RFC-005 Draft Types (future unified game builder)
 // NOTE: These are DRAFT interfaces to guide current development
@@ -74,5 +93,6 @@ export type {
   GameFeatureFlags,
   GameSetting,
   AnimationConfig,
+  GameLifecycleHooks,
   GameStateFromConfig,
 } from './types/GameConfig';

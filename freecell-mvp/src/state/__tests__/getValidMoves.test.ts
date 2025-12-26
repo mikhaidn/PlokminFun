@@ -113,8 +113,7 @@ describe('getValidMoves', () => {
         let result = null;
 
         if (to.type === 'tableau') {
-          // For tableau, get the number of cards that can be moved
-          const column = state.tableau[from.index];
+          // For tableau, move 1 card
           result = moveCardsToTableau(state, from.index, 1, to.index);
         } else if (to.type === 'freeCell') {
           result = moveCardToFreeCell(state, from.index, to.index);

@@ -274,6 +274,70 @@ export interface AnimationConfig {
     cascade?: boolean;
     sound?: boolean;
   };
+
+  /** Card flip animation duration in ms */
+  flipDuration?: number;
+
+  /** Auto-move animation duration in ms */
+  autoMoveDuration?: number;
+}
+
+/**
+ * GameLifecycleHooks
+ *
+ * Hooks for responding to game lifecycle events.
+ * Used to coordinate animations, sound effects, and other side effects.
+ *
+ * @template TState - The game-specific state type
+ */
+export interface GameLifecycleHooks<TState> {
+  /**
+   * Called before a move is executed.
+   * Useful for starting animations or preventing interaction.
+   */
+  onBeforeMove?(state: TState, from: GameLocation, to: GameLocation): void;
+
+  /**
+   * Called after a move is executed successfully.
+   * Useful for playing animations or sound effects.
+   */
+  onAfterMove?(oldState: TState, newState: TState, from: GameLocation, to: GameLocation): void;
+
+  /**
+   * Called when a move is invalid.
+   * Useful for showing error feedback or playing error sounds.
+   */
+  onInvalidMove?(state: TState, from: GameLocation, to: GameLocation): void;
+
+  /**
+   * Called when a card is flipped (face-up/face-down state changes).
+   * Useful for playing flip animations.
+   */
+  onCardFlip?(state: TState, location: GameLocation, index: number, faceUp: boolean): void;
+
+  /**
+   * Called when the game is won.
+   * Useful for triggering celebration animations.
+   */
+  onGameWon?(state: TState): void;
+
+  /**
+   * Called when a new game is initialized.
+   * Useful for resetting animations and UI state.
+   */
+  onGameStart?(state: TState): void;
+
+  /**
+   * Called when undo is triggered.
+   * Useful for playing reverse animations.
+   */
+  onUndo?(oldState: TState, newState: TState): void;
+
+  /**
+   * Called when redo is triggered.
+   * Useful for replaying animations.
+   */
+  onRedo?(oldState: TState, newState: TState): void;
 }
 
 /**
@@ -359,6 +423,9 @@ export interface GameConfig<TState> {
 
   /** Animation configuration (Phase 3) */
   animations?: AnimationConfig;
+
+  /** Lifecycle hooks for animations and side effects (Phase 2 Week 3) */
+  hooks?: GameLifecycleHooks<TState>;
 }
 
 /**
