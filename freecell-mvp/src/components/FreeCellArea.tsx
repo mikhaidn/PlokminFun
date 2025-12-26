@@ -81,6 +81,8 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
                 onTouchCancel={onTouchCancel}
+                data-drop-target-type="freeCell"
+                data-drop-target-index={index}
               />
             ) : (
               <EmptyCell

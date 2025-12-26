@@ -72,6 +72,8 @@ export const FoundationArea: React.FC<FoundationAreaProps> = ({
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
                 onTouchCancel={onTouchCancel}
+                data-drop-target-type="foundation"
+                data-drop-target-index={index}
               />
             ) : (
               <EmptyCell

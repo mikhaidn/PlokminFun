@@ -121,6 +121,8 @@ export const Tableau: React.FC<TableauProps> = ({
                     onTouchMove={onTouchMove}
                     onTouchEnd={onTouchEnd}
                     onTouchCancel={onTouchCancel}
+                    data-drop-target-type="tableau"
+                    data-drop-target-index={columnIndex}
                   />
                 </div>
               );
