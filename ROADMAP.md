@@ -1,7 +1,7 @@
 # CardGames Roadmap
 
-**Last Updated:** 2025-12-24
-**Current Status:** RFC-005 planning complete, unified game builder path defined
+**Last Updated:** 2025-12-26
+**Current Status:** RFC-005 Phase 1 in progress, shared component consolidation complete
 
 ---
 
@@ -43,7 +43,7 @@ We have TWO working games (FreeCell and Klondike), a monorepo architecture, shar
 **P3: Library Extraction** ✅ COMPLETE
 - ✅ Monorepo setup (#25) - npm workspaces
 - ✅ @cardgames/shared library (#21)
-- ✅ Shared components (GameControls, DraggingCardPreview)
+- ✅ Shared components (7 total: Card, CardBack, EmptyCell, GameControls, DraggingCardPreview, SettingsModal, FoundationArea)
 - ✅ Shared hooks (useGameHistory, useCardInteraction)
 - ✅ Both games using shared library
 
@@ -72,18 +72,20 @@ We have TWO working games (FreeCell and Klondike), a monorepo architecture, shar
 - New game (Spider): ~150 lines of config vs 1200+ lines of code
 
 **Phase 1: UI Prototype** (Week 1, 2-3 days) ⬅️ CURRENT
-- [ ] Day 1: Animation experiments
-  - Card drag with spring physics (framer-motion or react-spring)
+- [x] Day 1: Animation experiments ✅ COMPLETE
+  - Card drag with spring physics (framer-motion)
   - Card flip animation (3D rotateY)
   - Win celebration (confetti + cascade)
-- [ ] Day 2: Mobile interactions
-  - Smart tap-to-move (auto-execute if 1 valid move, highlight if multiple)
+- [x] Day 2 (partial): Settings UI + Shared component consolidation ✅
+  - Created unified SettingsModal with animation/interaction controls
+  - Moved SettingsModal and FoundationArea to @cardgames/shared
+  - Both games using shared components (~560 lines deduplicated)
+- [ ] Day 2-3: Mobile interactions + documentation (IN PROGRESS)
+  - Smart tap-to-move implementation and testing
   - Test on iOS Safari, Android Chrome, iPad
   - Validate 60fps performance, touch target sizes (44x44px min)
-- [ ] Day 3: Documentation
   - Create docs/architecture/ui-requirements.md
   - Document animation callbacks, component lifecycle hooks
-  - Performance requirements (60fps, <100ms touch response)
 
 **Phase 2: Unification** (Weeks 2-5)
 - [ ] Week 2: Standardize move execution
