@@ -12,6 +12,7 @@ export { SettingsModal } from './components/SettingsModal';
 export { FoundationArea } from './components/FoundationArea';
 export { GenericTableau } from './components/GenericTableau';
 export type { GenericTableauProps, TableauCard, TableauColumnData } from './components/GenericTableau';
+export { WinCelebration } from './components/WinCelebration';
 
 // Types
 export type { GameControlsProps } from './types/GameControls.ts';
@@ -33,6 +34,12 @@ export { cardIndexToCount, cardCountToIndex } from './types/GameLocation';
 export { useGameHistory } from './hooks/useGameHistory.ts';
 export type { UseGameHistoryOptions, UseGameHistoryResult } from './hooks/useGameHistory.ts';
 export { useCardInteraction } from './hooks/useCardInteraction';
+export { useGameAnimations } from './hooks/useGameAnimations';
+export type {
+  AnimationState,
+  AnimationHandlers,
+  UseGameAnimationsReturn,
+} from './hooks/useGameAnimations';
 
 // Settings (RFC-005 Phase 1 Day 2)
 export type { GameSettings } from './types/GameSettings';

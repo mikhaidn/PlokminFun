@@ -2,9 +2,11 @@
  * Dragging card preview component
  * Renders a card following the cursor/touch during drag operations
  * Used by both FreeCell and Klondike
+ * Enhanced with framer-motion for smooth physics-based animations
  */
 
 import React from 'react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 interface DraggingCardPreviewProps {
   /** Current touch/mouse position (null if not dragging) */
@@ -27,6 +29,15 @@ interface DraggingCardPreviewProps {
 
   /** Optional opacity (defaults to 0.8) */
   opacity?: number;
+
+  /** Optional spring physics configuration */
+  springConfig?: {
+    stiffness: number;
+    damping: number;
+  };
+
+  /** Whether to use spring physics (defaults to true) */
+  useSpring?: boolean;
 }
 
 /**
@@ -60,21 +71,42 @@ export const DraggingCardPreview: React.FC<DraggingCardPreviewProps> = ({
   children,
   zIndex = 1000,
   opacity = 0.8,
+  springConfig = { stiffness: 300, damping: 25 },
+  useSpring: enableSpring = true,
 }) => {
   // Don't render if not dragging or no position
   if (!isActive || !position || !children) {
     return null;
   }
 
-  const previewStyle: React.CSSProperties = {
-    position: 'fixed',
-    left: position.x - cardWidth / 2,
-    top: position.y - cardHeight / 2,
-    pointerEvents: 'none', // Don't block drop targets
-    zIndex,
-    opacity,
-    transition: 'none', // Instant position updates for smooth dragging
-  };
+  // Use framer-motion spring physics for smooth dragging
+  const x = useMotionValue(position.x - cardWidth / 2);
+  const y = useMotionValue(position.y - cardHeight / 2);
 
-  return <div style={previewStyle}>{children}</div>;
+  // Apply spring physics if enabled
+  const springX = useSpring(x, enableSpring ? springConfig : { stiffness: 1000, damping: 50 });
+  const springY = useSpring(y, enableSpring ? springConfig : { stiffness: 1000, damping: 50 });
+
+  // Update motion values when position changes
+  React.useEffect(() => {
+    if (position) {
+      x.set(position.x - cardWidth / 2);
+      y.set(position.y - cardHeight / 2);
+    }
+  }, [position, cardWidth, cardHeight, x, y]);
+
+  return (
+    <motion.div
+      style={{
+        position: 'fixed',
+        left: enableSpring ? springX : x,
+        top: enableSpring ? springY : y,
+        pointerEvents: 'none', // Don't block drop targets
+        zIndex,
+        opacity,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
 };
