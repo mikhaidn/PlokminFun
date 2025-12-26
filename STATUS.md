@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2025-12-24
+**Last Updated:** 2025-12-26
 **Current Phase:** P5 - RFC-005 Planning & Implementation
 **Next Milestone:** Unified Game Builder (RFC-005)
 
@@ -11,8 +11,8 @@
 ### Active Work
 - [ ] **RFC-005 Phase 1:** UI Prototype with Settings Integration (In Progress)
   - ✅ Day 1 Complete: Animation experiments (spring drag, flip, win celebration)
-  - Day 2: Mobile interactions + settings UI
-  - Day 3: Documentation
+  - ✅ Day 2 Complete: Settings UI + Shared component consolidation
+  - Day 3: Mobile interactions + documentation
   - **Critical:** Build settings toggles for all features (user-configurable, not forced)
 
 ### Blocked/Waiting
@@ -21,6 +21,30 @@
 ---
 
 ## ✅ Recently Completed
+
+### Week of 2025-12-26
+
+**RFC-005 Shared Component Consolidation 🎉**
+
+- [x] **SettingsModal → Shared Library**
+  - Moved Klondike's advanced SettingsModal to @cardgames/shared
+  - Unified settings UI with animation/interaction controls
+  - Both games now use shared SettingsModal component
+  - Wrapped both games with SettingsProvider for global settings
+  - ~470 lines of duplicate code eliminated
+
+- [x] **FoundationArea → Shared Library**
+  - Created unified FoundationArea component
+  - Works for FreeCell, Klondike, and future solitaire games
+  - Standardized foundation pile rendering across all games
+  - ~90 lines of duplicate code eliminated
+
+- [x] **Shared Library Expansion**
+  - 7 shared components total (was 5)
+  - Settings work consistently across all games
+  - Foundation rendering standardized
+  - All tests passing (415 total)
+  - Build successful, linter clean
 
 ### Week of 2025-12-24
 
@@ -130,13 +154,14 @@
 - **Uptime:** 100% (GitHub Pages)
 
 ### Code Quality
-- **Tests:** 1625+ tests passing across monorepo
-  - FreeCell: 95%+ coverage on core logic
+- **Tests:** 415 tests passing across monorepo (159 + 179 + 77)
+  - FreeCell: 159 tests, 95%+ coverage on core logic
   - Klondike: 179 tests including 25 card display tests (comprehensive coverage)
-  - Shared: Full coverage on utilities and hooks
+  - Shared: 77 tests, full coverage on utilities and hooks
 - **Linting:** All files pass ESLint
 - **TypeScript:** Strict mode, zero errors
 - **Build:** ✅ Monorepo builds succeed (shared → games)
+- **Shared Components:** 7 components (Card, CardBack, EmptyCell, GameControls, DraggingCardPreview, SettingsModal, FoundationArea)
 
 ### User Metrics
 - **DAU:** 0 (no tracking yet)
