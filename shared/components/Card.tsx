@@ -30,6 +30,11 @@ interface CardProps {
   };
   // Accessibility
   highContrastMode?: boolean;
+  // Drop target data attributes (for touch drag-and-drop)
+  'data-drop-target-type'?: string;
+  'data-drop-target-index'?: number;
+  'data-drop-target-card-index'?: number;
+  'data-drop-target-card-count'?: number;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -53,6 +58,10 @@ export const Card: React.FC<CardProps> = ({
   cardHeight = 84,
   fontSize = { large: 26, medium: 24, small: 14 },
   highContrastMode = false,
+  'data-drop-target-type': dropTargetType,
+  'data-drop-target-index': dropTargetIndex,
+  'data-drop-target-card-index': dropTargetCardIndex,
+  'data-drop-target-card-count': dropTargetCardCount,
 }) => {
   // If face-down, render CardBack component
   if (!faceUp) {
@@ -118,6 +127,10 @@ export const Card: React.FC<CardProps> = ({
       onTouchCancel={onTouchCancel}
       draggable={draggable && onClick !== undefined}
       title={`${card.value}${card.suit}`}
+      data-drop-target-type={dropTargetType}
+      data-drop-target-index={dropTargetIndex}
+      data-drop-target-card-index={dropTargetCardIndex}
+      data-drop-target-card-count={dropTargetCardCount}
     >
       <div style={{ position: 'absolute', top: `${cardHeight * 0.05}px`, left: `${cardWidth * 0.1}px`, fontSize: `${fontSize.small}px`, lineHeight: '1' }}>
         <div>{card.value}{card.suit}</div>

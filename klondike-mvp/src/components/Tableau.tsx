@@ -50,9 +50,11 @@ export const Tableau: React.FC<TableauProps> = ({
     >
       {tableau.map((column, columnIndex) => {
         // Calculate column height based on number of cards and overlap
-        const columnHeight = column.cards.length === 0
+        // Add extra space below for easier mobile drop targeting
+        const baseColumnHeight = column.cards.length === 0
           ? cardHeight
           : cardHeight + ((column.cards.length - 1) * cardOverlap);
+        const columnHeight = baseColumnHeight + 300; // Add 300px drop zone below cards
 
         return (
           <div
@@ -61,8 +63,9 @@ export const Tableau: React.FC<TableauProps> = ({
               display: 'flex',
               flexDirection: 'column',
               position: 'relative',
-              height: `${columnHeight}px`,
+              minHeight: `${columnHeight}px`, // Expanded hitbox for easier mobile dropping
               width: `${cardWidth}px`,
+              flex: 1, // Fill available vertical space
             }}
             data-drop-target-type="tableau"
             data-drop-target-index={columnIndex}
@@ -121,6 +124,8 @@ export const Tableau: React.FC<TableauProps> = ({
                     onTouchMove={onTouchMove}
                     onTouchEnd={onTouchEnd}
                     onTouchCancel={onTouchCancel}
+                    data-drop-target-type="tableau"
+                    data-drop-target-index={columnIndex}
                   />
                 </div>
               );

@@ -467,8 +467,8 @@ export const GameBoard: React.FC = () => {
     </div>
   );
 
-  // Version indicator (for deployment verification)
-  const BUILD_VERSION = '2025-12-26-v2'; // Update this with each significant fix
+  // Version indicator (auto-generated from git at build time)
+  const BUILD_VERSION = __BUILD_VERSION__;
 
   return (
     <div

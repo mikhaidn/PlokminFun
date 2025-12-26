@@ -95,6 +95,8 @@ export const FoundationArea: React.FC<FoundationAreaProps> = ({
                 cardHeight={cardHeight}
                 fontSize={fontSize}
                 highContrastMode={highContrastMode}
+                data-drop-target-type="foundation"
+                data-drop-target-index={index}
               />
             ) : (
               <EmptyCell

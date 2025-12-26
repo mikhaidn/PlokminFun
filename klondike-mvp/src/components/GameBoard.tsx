@@ -17,7 +17,6 @@ import {
 } from '@cardgames/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
-import { version } from '../../package.json';
 
 interface GameBoardProps {
   initialState: KlondikeGameState;
@@ -473,7 +472,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           textAlign: 'center',
         }}
       >
-        v{version}
+        v{__BUILD_VERSION__}
       </div>
     </div>
   );

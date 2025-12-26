@@ -95,6 +95,8 @@ export const StockWaste: React.FC<StockWasteProps> = ({
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
             onTouchCancel={onTouchCancel}
+            data-drop-target-type="waste"
+            data-drop-target-index={0}
           />
         ) : (
           <EmptyCell

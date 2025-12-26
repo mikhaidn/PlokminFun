@@ -2,10 +2,20 @@ import react from '@vitejs/plugin-react'
 import {defineConfig, type UserConfig} from 'vite'
 import {VitePWA} from 'vite-plugin-pwa'
 import path from 'path'
+import { execSync } from 'child_process'
+
+// Get git commit hash and build timestamp
+const gitHash = execSync('git rev-parse --short HEAD').toString().trim()
+const buildDate = new Date().toISOString().split('T')[0]
+const buildVersion = `${buildDate}-${gitHash}`
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/CardGames/freecell/',
+  define: {
+    '__BUILD_VERSION__': JSON.stringify(buildVersion),
+    '__GIT_HASH__': JSON.stringify(gitHash),
+  },
   resolve: {
     preserveSymlinks: true, // This tells Vite to follow the symlinks NPM created
     alias: {
