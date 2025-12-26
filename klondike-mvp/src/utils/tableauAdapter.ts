@@ -5,7 +5,7 @@
  * This allows Klondike to use the shared GenericTableau component (RFC-005)
  */
 
-import type { TableauColumnData, type GameLocation } from '@cardgames/shared';
+import type { TableauColumnData, GameLocation } from '@cardgames/shared';
 import type { KlondikeGameState, TableauColumn } from '../state/gameState';
 import { isCardFaceUp } from '../state/cardDisplay';
 

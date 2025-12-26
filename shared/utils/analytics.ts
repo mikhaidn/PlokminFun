@@ -117,14 +117,14 @@ export function getDeviceType(): 'mobile' | 'tablet' | 'desktop' {
 /**
  * Helper to get platform (best guess from user agent)
  */
-export function getPlatform(): string {
+export function getPlatform(): 'ios' | 'android' | 'windows' | 'macos' | 'linux' | undefined {
   const ua = navigator.userAgent.toLowerCase();
   if (ua.includes('iphone') || ua.includes('ipad')) return 'ios';
   if (ua.includes('android')) return 'android';
   if (ua.includes('mac')) return 'macos';
   if (ua.includes('win')) return 'windows';
   if (ua.includes('linux')) return 'linux';
-  return 'unknown';
+  return undefined; // Unknown platforms return undefined
 }
 
 /**

@@ -29,6 +29,12 @@ jobs:
         # Shared must be built first so the games can reference the build
         run: npm run build -w shared
 
+      - name: TypeScript Type Check
+        # Catch type errors before building (faster feedback)
+        run: |
+          npx tsc --noEmit -p klondike-mvp/tsconfig.json
+          npx tsc --noEmit -p freecell-mvp/tsconfig.json
+
       - name: Lint and Test (Workspaces)
         # Using -ws runs the command in all workspaces that have that script
         run: |
