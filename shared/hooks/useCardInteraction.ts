@@ -46,6 +46,8 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
   const [draggingCard, setDraggingCard] = useState<TLocation | null>(null);
   const [touchDragging, setTouchDragging] = useState(false);
   const [touchPosition, setTouchPosition] = useState<{ x: number; y: number } | null>(null);
+  const [touchStartLocation, setTouchStartLocation] = useState<TLocation | null>(null);
+  const [touchStartPosition, setTouchStartPosition] = useState<{ x: number; y: number } | null>(null);
 
   /**
    * Compare two locations for equality
@@ -164,17 +166,21 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
 
   /**
    * Touch start handler (mobile)
+   *
+   * Strategy: Don't immediately start dragging. Instead, track the touch
+   * and only start dragging if the user moves their finger significantly.
+   * If they release without moving, treat it as a tap (click-to-select).
    */
   const handleTouchStart = useCallback(
     (location: TLocation) => {
       return (e: React.TouchEvent) => {
-        e.preventDefault(); // Prevent scrolling while dragging
+        e.preventDefault(); // Prevent scrolling
 
         const touch = e.touches[0];
-        setDraggingCard(location);
-        setTouchDragging(true);
+        // Store touch start location and position, but don't start dragging yet
+        setTouchStartLocation(location);
+        setTouchStartPosition({ x: touch.clientX, y: touch.clientY });
         setTouchPosition({ x: touch.clientX, y: touch.clientY });
-        setSelectedCard(null); // Clear selection when touch drag starts
       };
     },
     []
@@ -182,65 +188,98 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
 
   /**
    * Touch move handler (mobile)
+   *
+   * If the user moves their finger more than a threshold distance,
+   * start the drag operation. Otherwise, keep it as a potential tap.
    */
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!touchDragging) return;
+    if (!touchStartLocation || !touchStartPosition) return;
 
     e.preventDefault(); // Prevent scrolling
 
     const touch = e.touches[0];
-    setTouchPosition({ x: touch.clientX, y: touch.clientY });
-  }, [touchDragging]);
+    const currentPos = { x: touch.clientX, y: touch.clientY };
+
+    // Calculate distance moved
+    const dx = currentPos.x - touchStartPosition.x;
+    const dy = currentPos.y - touchStartPosition.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Movement threshold: 10 pixels
+    // If moved more than threshold, start dragging
+    const DRAG_THRESHOLD = 10;
+
+    if (!touchDragging && distance > DRAG_THRESHOLD) {
+      // Start drag
+      setDraggingCard(touchStartLocation);
+      setTouchDragging(true);
+      setSelectedCard(null); // Clear selection when drag starts
+    }
+
+    // Update touch position for drag preview
+    setTouchPosition(currentPos);
+  }, [touchStartLocation, touchStartPosition, touchDragging]);
 
   /**
    * Touch end handler (mobile)
    *
-   * Finds the drop target using document.elementFromPoint
-   * and executes the move if valid
+   * If dragging: Find drop target and execute move
+   * If tapping: Select the card (click-to-select behavior)
    */
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
-      if (!touchDragging || !draggingCard) {
-        // Clear state even if no active drag
+      if (!touchStartLocation) {
+        // No touch started, clear state
         setTouchDragging(false);
         setDraggingCard(null);
         setTouchPosition(null);
+        setTouchStartLocation(null);
+        setTouchStartPosition(null);
         return;
       }
 
       e.preventDefault();
 
-      const touch = e.changedTouches[0];
-      const dropElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      // If we were dragging, handle drop
+      if (touchDragging && draggingCard) {
+        const touch = e.changedTouches[0];
+        const dropElement = document.elementFromPoint(touch.clientX, touch.clientY);
 
-      if (dropElement) {
-        // Find drop target from data attributes
-        const targetType = dropElement.getAttribute('data-drop-target-type');
-        const targetIndex = dropElement.getAttribute('data-drop-target-index');
-        const targetCardIndex = dropElement.getAttribute('data-drop-target-card-index');
-        const targetCardCount = dropElement.getAttribute('data-drop-target-card-count');
+        if (dropElement) {
+          // Find drop target from data attributes
+          const targetType = dropElement.getAttribute('data-drop-target-type');
+          const targetIndex = dropElement.getAttribute('data-drop-target-index');
+          const targetCardIndex = dropElement.getAttribute('data-drop-target-card-index');
+          const targetCardCount = dropElement.getAttribute('data-drop-target-card-count');
 
-        if (targetType !== null) {
-          const dropLocation: TLocation = {
-            type: targetType,
-            index: targetIndex !== null ? parseInt(targetIndex, 10) : undefined,
-            cardIndex: targetCardIndex !== null ? parseInt(targetCardIndex, 10) : undefined,
-            cardCount: targetCardCount !== null ? parseInt(targetCardCount, 10) : undefined,
-          } as TLocation;
+          if (targetType !== null) {
+            const dropLocation: TLocation = {
+              type: targetType,
+              index: targetIndex !== null ? parseInt(targetIndex, 10) : undefined,
+              cardIndex: targetCardIndex !== null ? parseInt(targetCardIndex, 10) : undefined,
+              cardCount: targetCardCount !== null ? parseInt(targetCardCount, 10) : undefined,
+            } as TLocation;
 
-          // Try to execute the move
-          if (validateMove(draggingCard, dropLocation)) {
-            executeMove(draggingCard, dropLocation);
+            // Try to execute the move
+            if (validateMove(draggingCard, dropLocation)) {
+              executeMove(draggingCard, dropLocation);
+            }
           }
         }
+      } else {
+        // No dragging occurred - this was a tap
+        // Treat as click-to-select
+        handleCardClick(touchStartLocation);
       }
 
-      // Clear touch drag state
+      // Clear touch state
       setTouchDragging(false);
       setDraggingCard(null);
       setTouchPosition(null);
+      setTouchStartLocation(null);
+      setTouchStartPosition(null);
     },
-    [touchDragging, draggingCard, validateMove, executeMove]
+    [touchDragging, draggingCard, touchStartLocation, validateMove, executeMove, handleCardClick]
   );
 
   /**
@@ -250,6 +289,8 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
     setTouchDragging(false);
     setDraggingCard(null);
     setTouchPosition(null);
+    setTouchStartLocation(null);
+    setTouchStartPosition(null);
   }, []);
 
   // Return state and handlers
