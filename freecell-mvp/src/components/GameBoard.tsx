@@ -467,6 +467,9 @@ export const GameBoard: React.FC = () => {
     </div>
   );
 
+  // Version indicator (for deployment verification)
+  const BUILD_VERSION = '2025-12-26-v2'; // Update this with each significant fix
+
   return (
     <div
       style={{
@@ -493,7 +496,17 @@ export const GameBoard: React.FC = () => {
             gap: isMobile ? '12px' : '0',
           }}
         >
-          <h1 style={{ margin: 0, fontSize: titleSize }}>FreeCell</h1>
+          <div>
+            <h1 style={{ margin: 0, fontSize: titleSize }}>FreeCell</h1>
+            <div style={{
+              fontSize: '0.7em',
+              opacity: 0.6,
+              marginTop: '4px',
+              fontFamily: 'monospace'
+            }}>
+              v{BUILD_VERSION}
+            </div>
+          </div>
           {!buttonsAtBottom && buttonControls}
         </div>
 

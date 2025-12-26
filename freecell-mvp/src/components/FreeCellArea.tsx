@@ -76,6 +76,7 @@ export const FreeCellArea: React.FC<FreeCellAreaProps> = ({
                 highContrastMode={highContrastMode}
                 onDragStart={onDragStart ? onDragStart(index) : undefined}
                 onDragEnd={onDragEnd}
+                onDragOver={onDragOver}
                 onTouchStart={onTouchStart ? onTouchStart(index) : undefined}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
