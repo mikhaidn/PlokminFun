@@ -309,24 +309,39 @@ describe('useCardInteraction', () => {
   });
 
   describe('touch interactions', () => {
-    it('should start touch drag on touch start', () => {
+    it('should start touch drag on touch start + move', () => {
       const { result } = renderHook(() => useCardInteraction(config));
 
       const location: TestLocation = { type: 'pile', index: 0 };
-      const mockEvent = {
+      const touchStartEvent = {
         touches: [{ clientX: 100, clientY: 200 }],
         preventDefault: vi.fn(),
       } as unknown as React.TouchEvent;
 
+      const touchMoveEvent = {
+        touches: [{ clientX: 150, clientY: 250 }], // Move more than threshold
+        preventDefault: vi.fn(),
+      } as unknown as React.TouchEvent;
+
+      // Start touch
       act(() => {
         const handler = result.current.handlers.handleTouchStart(location);
-        handler(mockEvent);
+        handler(touchStartEvent);
       });
 
+      // Initially not dragging yet
+      expect(result.current.state.draggingCard).toBeNull();
+      expect(result.current.state.touchDragging).toBe(false);
+
+      // Move to trigger drag
+      act(() => {
+        result.current.handlers.handleTouchMove(touchMoveEvent);
+      });
+
+      // Now dragging
       expect(result.current.state.draggingCard).toEqual(location);
       expect(result.current.state.touchDragging).toBe(true);
-      expect(result.current.state.touchPosition).toEqual({ x: 100, y: 200 });
-      expect(mockEvent.preventDefault).toHaveBeenCalled();
+      expect(result.current.state.touchPosition).toEqual({ x: 150, y: 250 });
     });
 
     it('should update touch position on touch move', () => {
@@ -375,6 +390,11 @@ describe('useCardInteraction', () => {
         preventDefault: vi.fn(),
       } as unknown as React.TouchEvent;
 
+      const touchMoveEvent = {
+        touches: [{ clientX: 130, clientY: 230 }], // Move to trigger drag
+        preventDefault: vi.fn(),
+      } as unknown as React.TouchEvent;
+
       const touchEndEvent = {
         changedTouches: [{ clientX: 150, clientY: 250 }],
         preventDefault: vi.fn(),
@@ -384,6 +404,11 @@ describe('useCardInteraction', () => {
       act(() => {
         const handler = result.current.handlers.handleTouchStart(from);
         handler(touchStartEvent);
+      });
+
+      // Move to trigger drag
+      act(() => {
+        result.current.handlers.handleTouchMove(touchMoveEvent);
       });
 
       // End touch at target
@@ -415,6 +440,11 @@ describe('useCardInteraction', () => {
         preventDefault: vi.fn(),
       } as unknown as React.TouchEvent;
 
+      const touchMoveEvent = {
+        touches: [{ clientX: 130, clientY: 230 }], // Move to trigger drag
+        preventDefault: vi.fn(),
+      } as unknown as React.TouchEvent;
+
       const touchEndEvent = {
         changedTouches: [{ clientX: 150, clientY: 250 }],
         preventDefault: vi.fn(),
@@ -424,6 +454,11 @@ describe('useCardInteraction', () => {
       act(() => {
         const handler = result.current.handlers.handleTouchStart(from);
         handler(touchStartEvent);
+      });
+
+      // Move to trigger drag
+      act(() => {
+        result.current.handlers.handleTouchMove(touchMoveEvent);
       });
 
       // End touch at invalid target
@@ -445,10 +480,20 @@ describe('useCardInteraction', () => {
         preventDefault: vi.fn(),
       } as unknown as React.TouchEvent;
 
+      const touchMoveEvent = {
+        touches: [{ clientX: 150, clientY: 250 }], // Move to trigger drag
+        preventDefault: vi.fn(),
+      } as unknown as React.TouchEvent;
+
       // Start touch drag
       act(() => {
         const handler = result.current.handlers.handleTouchStart(location);
         handler(touchStartEvent);
+      });
+
+      // Move to trigger drag
+      act(() => {
+        result.current.handlers.handleTouchMove(touchMoveEvent);
       });
 
       expect(result.current.state.touchDragging).toBe(true);
@@ -479,6 +524,11 @@ describe('useCardInteraction', () => {
         preventDefault: vi.fn(),
       } as unknown as React.TouchEvent;
 
+      const touchMoveEvent = {
+        touches: [{ clientX: 250, clientY: 350 }], // Move to trigger drag
+        preventDefault: vi.fn(),
+      } as unknown as React.TouchEvent;
+
       const touchEndEvent = {
         changedTouches: [{ clientX: 300, clientY: 400 }],
         preventDefault: vi.fn(),
@@ -488,6 +538,11 @@ describe('useCardInteraction', () => {
       act(() => {
         const handler = result.current.handlers.handleTouchStart(from);
         handler(touchStartEvent);
+      });
+
+      // Move to trigger drag
+      act(() => {
+        result.current.handlers.handleTouchMove(touchMoveEvent);
       });
 
       // End touch
