@@ -1,20 +1,20 @@
 # Project Status
 
 **Last Updated:** 2025-12-26
-**Current Phase:** P5 - RFC-005 Planning & Implementation
-**Next Milestone:** Unified Game Builder (RFC-005)
+**Current Phase:** P5 - RFC-005 Phase 3 - Perfect UI
+**Next Milestone:** Delightful mobile experience for active users
 
 ---
 
 ## 🎯 Current Sprint
 
 ### Active Work
-- [ ] **RFC-005 Phase 2, Weeks 4-5:** Create Generic Components (Ready to Start)
-  - Build GenericGameBoard component
-  - Build GenericTableau component
-  - Migrate Klondike to use generic components
-  - Migrate FreeCell to use generic components
-  - **Goal:** Config-driven game rendering
+- [ ] **RFC-005 Phase 3: Perfect UI** (Focused on grandma-friendly polish)
+  - Smart tap-to-move (one-tap play on mobile, getValidMoves already done!)
+  - Card flip animations (3D transforms for Klondike stock reveal)
+  - Win celebration (confetti + smooth cascade)
+  - Analytics event structure (foundation for future Plausible integration)
+  - **Goal:** Smooth, delightful experience for current users
 
 ### Blocked/Waiting
 - None
@@ -24,6 +24,23 @@
 ## ✅ Recently Completed
 
 ### Week of 2025-12-26
+
+**MILESTONE: RFC-005 Phase 2 Complete - Generic Components & Unification 🎉**
+
+- [x] **RFC-005 Phase 2 Weeks 4-5: Create Generic Components** ✅ COMPLETE
+  - Built GenericTableau component in shared library
+  - Migrated Klondike to use GenericTableau (absolute positioning)
+  - Migrated FreeCell to use GenericTableau (margin positioning)
+  - Fixed Klondike scrolling issue (removed unnecessary overflow: auto)
+  - Added 8 comprehensive tests for GenericTableau
+  - Created tableau adapters for both games
+  - **Deliverables:**
+    - shared/components/GenericTableau.tsx: Flexible tableau renderer
+    - shared/components/__tests__/GenericTableau.test.tsx: Component tests
+    - klondike-mvp/src/utils/tableauAdapter.ts: Klondike adapter
+    - freecell-mvp/src/utils/tableauAdapter.ts: FreeCell adapter
+  - **Impact:** ~200 lines of duplicate code eliminated, foundation ready for new games
+  - **Test Results:** All 145 shared tests passing, zero regressions
 
 **MILESTONE: RFC-005 Phase 2 Week 3 Complete - Game Config System Created 🎉**
 
@@ -205,14 +222,14 @@
 - **Uptime:** 100% (GitHub Pages)
 
 ### Code Quality
-- **Tests:** 440 tests passing across monorepo (172 + 191 + 77)
+- **Tests:** 508 tests passing across monorepo (172 + 191 + 145)
   - FreeCell: 172 tests including 12 getValidMoves tests, 95%+ coverage on core logic
   - Klondike: 191 tests including 12 getValidMoves tests and 25 card display tests
-  - Shared: 77 tests, full coverage on utilities and hooks
+  - Shared: 145 tests, full coverage on utilities, hooks, and components
 - **Linting:** All files pass ESLint
 - **TypeScript:** Strict mode, zero errors
 - **Build:** ✅ Monorepo builds succeed (shared → games)
-- **Shared Components:** 7 components (Card, CardBack, EmptyCell, GameControls, DraggingCardPreview, SettingsModal, FoundationArea)
+- **Shared Components:** 8 components (Card, CardBack, EmptyCell, GameControls, DraggingCardPreview, SettingsModal, FoundationArea, GenericTableau)
 
 ### User Metrics
 - **DAU:** 0 (no tracking yet)
@@ -287,14 +304,23 @@
 
 ## 📋 Next 3 Tasks
 
-1. **RFC-005 Phase 2, Weeks 4-5: Generic Components** (10-12 days) ⬅️ CURRENT
-   - Define GameActions interface (validateMove, executeMove, getCardAt, etc.)
-   - Create moveExecution.ts helper (createMoveExecutor)
-   - Migrate Klondike to GameActions interface
-   - Migrate FreeCell to GameActions interface
-   - Create GameConfig interface and config files
-   - Build generic components (GenericGameBoard, GenericTableau)
-   - All tests passing, visual regression testing
+1. **Smart Tap-to-Move** (1-2 days) ⬅️ NEXT
+   - One-tap card movement on mobile (getValidMoves already implemented!)
+   - Highlight valid destinations when multiple options
+   - Auto-execute when only one valid move
+   - Makes mobile play much easier for grandma
+
+2. **Card Flip Animations** (2-3 days)
+   - 3D CSS transforms for Klondike stock pile reveals
+   - Smooth, delightful card flips (not jarring)
+   - Configurable duration (300ms default)
+   - Works on mobile devices (tested on real hardware)
+
+3. **Analytics Event Structure + Win Celebration** (1-2 days)
+   - Define GameEvent type (game_start, game_won, card_moved, etc.)
+   - Create useAnalytics hook (no-op implementation for now)
+   - Add confetti effect for wins (react-confetti)
+   - Ready to plug into Plausible when needed
 
 ---
 

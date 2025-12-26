@@ -10,6 +10,8 @@ export { CardBack } from './components/CardBack';
 export { EmptyCell } from './components/EmptyCell';
 export { SettingsModal } from './components/SettingsModal';
 export { FoundationArea } from './components/FoundationArea';
+export { GenericTableau } from './components/GenericTableau';
+export type { GenericTableauProps, TableauCard, TableauColumnData } from './components/GenericTableau';
 
 // Types
 export type { GameControlsProps } from './types/GameControls.ts';
@@ -71,6 +73,14 @@ export {
   undoWithHooks,
   redoWithHooks,
 } from './utils/lifecycleHooks';
+export {
+  trackEvent,
+  trackPageView,
+  getDeviceType,
+  getPlatform,
+  enrichEventProperties,
+} from './utils/analytics';
+export type { GameEventType, GameEventProperties } from './utils/analytics';
 
 // Config
 export { FEATURE_FLAGS } from './config/featureFlags';

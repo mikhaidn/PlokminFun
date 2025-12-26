@@ -33,8 +33,10 @@ CardGames/
 
 ### Essential Commands
 ```bash
+npm run validate      # Full check: typecheck + lint + test + build (what CI runs)
+npm run typecheck     # Fast type checking (no build)
+npm run lint:fix      # Auto-fix lint issues (unused imports, spacing, etc.)
 npm test              # Run all tests
-npm run lint          # Check code quality
 npm run build         # Build everything
 ```
 
@@ -58,9 +60,15 @@ const newState = { ...gameState, moves: gameState.moves + 1 };
 gameState.moves++;
 ```
 
-### 3. Run Tests Before Committing
+### 3. Run Validation Before Committing
 ```bash
-npm run lint && npm test && npm run build
+npm run validate      # Runs: typecheck + lint + test + build (same as CI)
+npm run lint:fix      # If lint fails, auto-fix most issues
+```
+
+**Pro tip:** Install pre-commit hooks to catch issues automatically:
+```bash
+npm run setup-hooks   # One-time setup, blocks bad commits
 ```
 
 ### 4. Read Code Before Modifying
@@ -76,6 +84,7 @@ npm run lint && npm test && npm run build
 | **Current work** | [STATUS.md](STATUS.md) |
 | **Priorities** | [ROADMAP.md](ROADMAP.md) |
 | **Design decisions** | [rfcs/INDEX.md](rfcs/INDEX.md) |
+| **Validation/CI** | [scripts/README.md](scripts/README.md) |
 | **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | **Deployment** | [docs/deployment/README.md](docs/deployment/README.md) |
 | **Game rules** | [docs/games/](docs/games/) |
@@ -93,15 +102,19 @@ npm run lint && npm test && npm run build
 
 ### Development Workflow
 ```bash
-# Work on specific game
-cd freecell-mvp && npm run dev        # Start dev server
-cd freecell-mvp && npm run test:watch # TDD mode
+# First-time setup (recommended)
+npm run setup-hooks    # Install pre-commit validation
 
-# Work on shared library
-cd shared && npm run test:watch
+# Work on specific game (from repo root)
+npm run dev:freecell   # Or npm run dev:klondike
+npm run test:watch     # TDD mode (all workspaces)
+
+# Quick validation
+npm run typecheck      # Fast type checking (no build)
+npm run lint:fix       # Auto-fix lint issues
 
 # Full validation (what CI runs)
-npm run lint && npm test && npm run build
+npm run validate       # Runs: typecheck + lint + test + build
 ```
 
 ### Adding New Features

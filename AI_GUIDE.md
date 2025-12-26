@@ -62,9 +62,10 @@ const newState = { ...gameState, moves: gameState.moves + 1 };
 gameState.moves++;
 ```
 
-### 3. **Run Tests Before Committing**
+### 3. **Run Validation Before Committing**
 ```bash
-npm run validate  # Runs: lint + test + build (exactly what CI runs)
+npm run validate   # Runs: typecheck + lint + test + build (exactly what CI runs)
+npm run lint:fix   # Auto-fix most lint issues (unused imports, spacing, etc.)
 ```
 
 ### 4. **Check STATUS.md Before Starting Work**
@@ -77,14 +78,21 @@ npm run validate  # Runs: lint + test + build (exactly what CI runs)
 
 ### Development Workflow
 ```bash
+# First-time setup (recommended)
+npm run setup-hooks    # Install pre-commit validation
+
 # Start dev server (from repo root)
 npm run dev:freecell   # Or npm run dev:klondike
 
 # TDD mode
 npm run test:watch     # All packages in watch mode
 
+# Quick validation
+npm run typecheck      # Fast type checking (no build)
+npm run lint:fix       # Auto-fix lint issues
+
 # Full monorepo validation (what CI runs)
-npm run validate       # Shortcut for: lint + test + build
+npm run validate       # Runs: typecheck + lint + test + build
 
 # RFC management
 npm run rfc:list       # List all RFCs
