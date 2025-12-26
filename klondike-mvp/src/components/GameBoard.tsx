@@ -3,8 +3,6 @@ import { type KlondikeGameState, isGameWon } from '../state/gameState';
 import { drawFromStock, autoMoveToFoundations } from '../state/gameActions';
 import { Tableau } from './Tableau';
 import { StockWaste } from './StockWaste';
-import { FoundationArea } from './FoundationArea';
-import { SettingsModal } from './SettingsModal';
 import {
   GameControls,
   useGameHistory,
@@ -14,6 +12,8 @@ import {
   calculateLayoutSizes,
   type LayoutSizes,
   type GameLocation,
+  SettingsModal,
+  FoundationArea,
 } from '@cardgames/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';

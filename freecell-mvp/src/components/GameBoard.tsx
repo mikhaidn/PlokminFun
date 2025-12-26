@@ -4,16 +4,7 @@ import { moveCardToFoundation } from '../state/gameActions';
 import { findSafeAutoMove } from '../rules/autoComplete';
 import { getLowestPlayableCards } from '../rules/hints';
 import { FreeCellArea } from './FreeCellArea';
-import { FoundationArea } from './FoundationArea';
 import { Tableau } from './Tableau';
-import { SettingsModal } from './SettingsModal';
-import {
-  type AccessibilitySettings,
-  loadAccessibilitySettings,
-  saveAccessibilitySettings,
-  getSettingsFromMode,
-  getMinButtonHeight,
-} from '../config/accessibilitySettings';
 import {
   useGameHistory,
   useCardInteraction,
@@ -22,7 +13,11 @@ import {
   calculateLayoutSizes,
   type LayoutSizes,
   type GameLocation,
+  SettingsModal,
+  useSettings,
+  FoundationArea,
 } from '@cardgames/shared';
+import { getMinButtonHeight } from '../config/accessibilitySettings';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 
@@ -72,39 +67,29 @@ export const GameBoard: React.FC = () => {
   const [showHints, setShowHints] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Accessibility settings
-  const [accessibilitySettings, setAccessibilitySettings] = useState<AccessibilitySettings>(() =>
-    loadAccessibilitySettings()
-  );
+  // Use shared settings (will be used for future features)
+  useSettings();
 
-  // Derive actual settings from game mode
-  const modeSettings = getSettingsFromMode(accessibilitySettings.gameMode);
+  // Temporary: Map old accessibility settings to defaults until full migration
+  const accessibilityDefaults = {
+    touchTargetSize: 'normal' as 'normal' | 'large',
+    fontSizeMultiplier: 1.0,
+    buttonPosition: 'top' as 'top' | 'bottom',
+    highContrastMode: false,
+  };
 
-  // Responsive layout sizing (with accessibility overrides)
+  // Responsive layout sizing
   const [layoutSizes, setLayoutSizes] = useState<LayoutSizes>(() =>
-    calculateLayoutSizes(
-      window.innerWidth,
-      window.innerHeight,
-      modeSettings.maxCardWidth,
-      modeSettings.fontSizeMultiplier
-    )
+    calculateLayoutSizes(window.innerWidth, window.innerHeight)
   );
 
-  // Update layout sizes on window resize or accessibility settings change
+  // Update layout sizes on window resize
   useEffect(() => {
     const handleResize = () => {
-      const settings = getSettingsFromMode(accessibilitySettings.gameMode);
       setLayoutSizes(
-        calculateLayoutSizes(
-          window.innerWidth,
-          window.innerHeight,
-          settings.maxCardWidth,
-          settings.fontSizeMultiplier
-        )
+        calculateLayoutSizes(window.innerWidth, window.innerHeight)
       );
     };
-
-    handleResize(); // Recalculate immediately when settings change
 
     window.addEventListener('resize', handleResize);
     // Also handle orientation change
@@ -114,13 +99,7 @@ export const GameBoard: React.FC = () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('orientationchange', handleResize);
     };
-  }, [accessibilitySettings.gameMode]);
-
-  // Save accessibility settings when they change
-  const handleSaveSettings = (newSettings: AccessibilitySettings) => {
-    setAccessibilitySettings(newSettings);
-    saveAccessibilitySettings(newSettings);
-  };
+  }, []);
 
   // Derive win condition from game state
   const showWin = useMemo(() => checkWinCondition(gameState), [gameState]);
@@ -342,11 +321,11 @@ export const GameBoard: React.FC = () => {
   const isMobile = window.innerWidth < 600;
   const isTablet = window.innerWidth >= 600 && window.innerWidth < 900;
   const padding = isMobile ? 12 : 24;
-  const minButtonHeight = getMinButtonHeight(modeSettings.touchTargetSize);
+  const minButtonHeight = getMinButtonHeight(accessibilityDefaults.touchTargetSize);
   const buttonPadding = isMobile ? '8px 12px' : '10px 18px';
-  const fontSize = (isMobile ? 0.8 : 1.0) * modeSettings.fontSizeMultiplier;
+  const fontSize = (isMobile ? 0.8 : 1.0) * accessibilityDefaults.fontSizeMultiplier;
   const titleSize = isMobile ? '1.5em' : isTablet ? '2em' : '2.5em';
-  const buttonsAtBottom = modeSettings.buttonPosition === 'bottom';
+  const buttonsAtBottom = accessibilityDefaults.buttonPosition === 'bottom';
 
   // Button controls JSX (reused for top/bottom positioning)
   const buttonControls = (
@@ -536,13 +515,13 @@ export const GameBoard: React.FC = () => {
           cardHeight={layoutSizes.cardHeight}
           cardGap={layoutSizes.cardGap}
           fontSize={layoutSizes.fontSize}
-          highContrastMode={modeSettings.highContrastMode}
+          highContrastMode={accessibilityDefaults.highContrastMode}
         />
         <FoundationArea
           foundations={gameState.foundations}
-          selectedCard={displaySelectedCard?.type === 'foundation' ? displaySelectedCard : null}
-          draggingCard={displayDraggingCard}
-          onFoundationClick={handleFoundationClick}
+          selectedFoundation={displaySelectedCard?.type === 'foundation' ? displaySelectedCard.index : null}
+          draggingCard={displayDraggingCard?.type === 'foundation' ? { type: 'foundation', index: displayDraggingCard.index } : null}
+          onClick={handleFoundationClick}
           onDragStart={(index) => handleDragStart({ type: 'foundation', index })}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
@@ -551,11 +530,8 @@ export const GameBoard: React.FC = () => {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchCancel}
-          cardWidth={layoutSizes.cardWidth}
-          cardHeight={layoutSizes.cardHeight}
-          cardGap={layoutSizes.cardGap}
-          fontSize={layoutSizes.fontSize}
-          highContrastMode={modeSettings.highContrastMode}
+          layoutSizes={layoutSizes}
+          highContrastMode={accessibilityDefaults.highContrastMode}
         />
         </div>
 
@@ -580,7 +556,7 @@ export const GameBoard: React.FC = () => {
         cardGap={layoutSizes.cardGap}
         cardOverlap={layoutSizes.cardOverlap}
         fontSize={layoutSizes.fontSize}
-        highContrastMode={modeSettings.highContrastMode}
+        highContrastMode={accessibilityDefaults.highContrastMode}
       />
 
       {/* Win Modal */}
@@ -647,9 +623,7 @@ export const GameBoard: React.FC = () => {
       {/* Settings Modal */}
       <SettingsModal
         isOpen={showSettings}
-        settings={accessibilitySettings}
         onClose={() => setShowSettings(false)}
-        onSave={handleSaveSettings}
       />
 
       {/* Touch drag preview */}
@@ -680,7 +654,7 @@ export const GameBoard: React.FC = () => {
               cardWidth={layoutSizes.cardWidth}
               cardHeight={layoutSizes.cardHeight}
               fontSize={layoutSizes.fontSize}
-              highContrastMode={modeSettings.highContrastMode}
+              highContrastMode={accessibilityDefaults.highContrastMode}
             />
           );
         })()}

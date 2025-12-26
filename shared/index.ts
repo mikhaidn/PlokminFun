@@ -8,6 +8,8 @@ export { DraggingCardPreview } from './components/DraggingCardPreview';
 export { Card } from './components/Card';
 export { CardBack } from './components/CardBack';
 export { EmptyCell } from './components/EmptyCell';
+export { SettingsModal } from './components/SettingsModal';
+export { FoundationArea } from './components/FoundationArea';
 
 // Types
 export type { GameControlsProps } from './types/GameControls.ts';
