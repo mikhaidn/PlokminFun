@@ -27,8 +27,13 @@ npx tsc --noEmit -p freecell-mvp/tsconfig.json > /dev/null 2>&1 || {
 # 2. Linting (catches unused vars, style issues)
 echo "  ✓ Linting..."
 npm run lint -ws --if-present > /dev/null 2>&1 || {
+  echo ""
   echo "  ✗ Lint errors found"
+  echo ""
   npm run lint -ws --if-present
+  echo ""
+  echo "💡 Quick fix: Run 'npm run lint:fix' to auto-fix most issues"
+  echo ""
   exit 1
 }
 

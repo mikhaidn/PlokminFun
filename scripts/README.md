@@ -28,6 +28,30 @@ npm run typecheck
 # ✓ No type errors found
 ```
 
+### `npm run lint:fix`
+**⚡ Quick Win!** Auto-fixes most lint issues (unused imports, spacing, quotes, etc.)
+
+**What it fixes:**
+- ✅ Unused imports and variables
+- ✅ Missing/extra semicolons
+- ✅ Quote style inconsistencies
+- ✅ Spacing and formatting
+- ❌ Does NOT fix type errors (use typecheck for those)
+
+**When to use:**
+- When pre-commit hook blocks you with lint errors
+- After refactoring (cleans up unused imports)
+- Before committing (as a final polish)
+
+**Example:**
+```bash
+npm run lint:fix
+# Automatically fixes all auto-fixable issues
+# Then stage the changes: git add -u
+```
+
+**Tip:** The pre-commit hook will suggest this command when it finds lint errors!
+
 ### `npm run validate`
 Runs the full CI pipeline locally: typecheck → lint → test → build
 
