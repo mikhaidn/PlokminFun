@@ -1,15 +1,20 @@
 # Project Status
 
 **Last Updated:** 2025-12-26
-**Current Phase:** P5 - RFC-005 Phase 2 Complete
-**Next Milestone:** RFC-005 Phase 3 - Perfect UI
+**Current Phase:** P5 - RFC-005 Phase 3 - Perfect UI
+**Next Milestone:** Delightful mobile experience for active users
 
 ---
 
 ## 🎯 Current Sprint
 
 ### Active Work
-- None (RFC-005 Phase 2 complete, awaiting Phase 3 prioritization)
+- [ ] **RFC-005 Phase 3: Perfect UI** (Focused on grandma-friendly polish)
+  - Smart tap-to-move (one-tap play on mobile, getValidMoves already done!)
+  - Card flip animations (3D transforms for Klondike stock reveal)
+  - Win celebration (confetti + smooth cascade)
+  - Analytics event structure (foundation for future Plausible integration)
+  - **Goal:** Smooth, delightful experience for current users
 
 ### Blocked/Waiting
 - None
@@ -299,20 +304,23 @@
 
 ## 📋 Next 3 Tasks
 
-1. **RFC-005 Phase 3 or Pivot to User Retention** (TBD)
-   - Option A: Continue RFC-005 Phase 3 (Animation System, Smart Tap, Unified Settings)
-   - Option B: Pivot to game persistence and analytics (P6/P7 from ROADMAP)
-   - **Decision needed:** Prioritize UI polish vs user retention features
+1. **Smart Tap-to-Move** (1-2 days) ⬅️ NEXT
+   - One-tap card movement on mobile (getValidMoves already implemented!)
+   - Highlight valid destinations when multiple options
+   - Auto-execute when only one valid move
+   - Makes mobile play much easier for grandma
 
-2. **Game Persistence** (if Option B chosen)
-   - Auto-save to localStorage on each move
-   - "Continue" vs "New Game" dialog
-   - Works for both FreeCell and Klondike
+2. **Card Flip Animations** (2-3 days)
+   - 3D CSS transforms for Klondike stock pile reveals
+   - Smooth, delightful card flips (not jarring)
+   - Configurable duration (300ms default)
+   - Works on mobile devices (tested on real hardware)
 
-3. **Privacy-First Analytics** (if Option B chosen)
-   - Add Plausible or Simple Analytics
-   - Track: games_started, games_won, device_type
-   - Zero PII, GDPR-compliant
+3. **Analytics Event Structure + Win Celebration** (1-2 days)
+   - Define GameEvent type (game_start, game_won, card_moved, etc.)
+   - Create useAnalytics hook (no-op implementation for now)
+   - Add confetti effect for wins (react-confetti)
+   - Ready to plug into Plausible when needed
 
 ---
 

@@ -73,6 +73,14 @@ export {
   undoWithHooks,
   redoWithHooks,
 } from './utils/lifecycleHooks';
+export {
+  trackEvent,
+  trackPageView,
+  getDeviceType,
+  getPlatform,
+  enrichEventProperties,
+} from './utils/analytics';
+export type { GameEventType, GameEventProperties } from './utils/analytics';
 
 // Config
 export { FEATURE_FLAGS } from './config/featureFlags';
