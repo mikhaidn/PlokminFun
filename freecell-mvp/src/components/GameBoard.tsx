@@ -4,7 +4,6 @@ import { moveCardToFoundation } from '../state/gameActions';
 import { findSafeAutoMove } from '../rules/autoComplete';
 import { getLowestPlayableCards } from '../rules/hints';
 import { FreeCellArea } from './FreeCellArea';
-import { Tableau } from './Tableau';
 import {
   useGameHistory,
   useCardInteraction,
@@ -16,10 +15,12 @@ import {
   SettingsModal,
   useSettings,
   FoundationArea,
+  GenericTableau,
 } from '@cardgames/shared';
 import { getMinButtonHeight } from '../config/accessibilitySettings';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
+import { convertTableauToGeneric } from '../utils/tableauAdapter';
 
 type SelectedCard =
   | { type: 'tableau'; column: number; cardIndex: number }
@@ -535,29 +536,42 @@ export const GameBoard: React.FC = () => {
         />
         </div>
 
-        {/* Tableau */}
-        <Tableau
-        tableau={gameState.tableau}
-        selectedCard={displaySelectedCard?.type === 'tableau' ? displaySelectedCard : null}
-        draggingCard={displayDraggingCard}
-        highlightedCardIds={highlightedCardIds}
-        onCardClick={handleTableauClick}
-        onEmptyColumnClick={handleEmptyColumnClick}
-        onDragStart={(columnIndex, cardIndex) => handleDragStart({ type: 'tableau', column: columnIndex, cardIndex })}
-        onDragEnd={handleDragEnd}
-        onDragOver={handleDragOver}
-        onDrop={handleTableauDrop}
-        onTouchStart={(columnIndex, cardIndex) => handleTouchStart({ type: 'tableau', column: columnIndex, cardIndex })}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchCancel}
-        cardWidth={layoutSizes.cardWidth}
-        cardHeight={layoutSizes.cardHeight}
-        cardGap={layoutSizes.cardGap}
-        cardOverlap={layoutSizes.cardOverlap}
-        fontSize={layoutSizes.fontSize}
-        highContrastMode={accessibilityDefaults.highContrastMode}
-      />
+        {/* Tableau - RFC-005: Using GenericTableau */}
+        <GenericTableau
+          columns={convertTableauToGeneric(gameState)}
+          layoutSizes={layoutSizes}
+          selectedCard={sharedInteractionState.selectedCard}
+          draggingCard={sharedInteractionState.draggingCard}
+          highlightedCardIds={highlightedCardIds}
+          onClick={handleTableauClick}
+          onEmptyColumnClick={handleEmptyColumnClick}
+          onDragStart={(columnIndex, cardIndex) => {
+            const location: GameLocation = {
+              type: 'tableau',
+              index: columnIndex,
+              cardIndex,
+              cardCount: gameState.tableau[columnIndex].length - cardIndex,
+            };
+            return sharedHandlers.handleDragStart(location);
+          }}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDrop={handleTableauDrop}
+          onTouchStart={(columnIndex, cardIndex) => {
+            const location: GameLocation = {
+              type: 'tableau',
+              index: columnIndex,
+              cardIndex,
+              cardCount: gameState.tableau[columnIndex].length - cardIndex,
+            };
+            return sharedHandlers.handleTouchStart(location);
+          }}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchCancel}
+          positioningStrategy="margin"
+          highContrastMode={accessibilityDefaults.highContrastMode}
+        />
 
       {/* Win Modal */}
       {showWin && (

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { type KlondikeGameState, isGameWon } from '../state/gameState';
 import { drawFromStock, autoMoveToFoundations } from '../state/gameActions';
-import { Tableau } from './Tableau';
 import { StockWaste } from './StockWaste';
 import {
   GameControls,
@@ -14,9 +13,11 @@ import {
   type GameLocation,
   SettingsModal,
   FoundationArea,
+  GenericTableau,
 } from '@cardgames/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
+import { convertTableauToGeneric } from '../utils/tableauAdapter';
 
 interface GameBoardProps {
   initialState: KlondikeGameState;
@@ -348,21 +349,21 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
         />
       </div>
 
-      {/* Tableau */}
-      <Tableau
-        tableau={gameState.tableau}
-        onClick={handleTableauClick}
-        selectedColumn={
-          sharedInteractionState.selectedCard?.type === 'tableau'
-            ? {
-                columnIndex: sharedInteractionState.selectedCard.index,
-                cardCount: sharedInteractionState.selectedCard.cardCount ?? 1,
-              }
-            : null
-        }
+      {/* Tableau - RFC-005: Using GenericTableau */}
+      <GenericTableau
+        columns={convertTableauToGeneric(gameState)}
         layoutSizes={layoutSizes}
-        gameState={gameState}
+        selectedCard={sharedInteractionState.selectedCard}
         draggingCard={sharedInteractionState.draggingCard}
+        onClick={handleTableauClick}
+        onEmptyColumnClick={(columnIndex) => {
+          // Empty columns can receive Kings in Klondike
+          sharedHandlers.handleCardClick({
+            type: 'tableau',
+            index: columnIndex,
+            cardCount: 0,
+          });
+        }}
         onDragStart={(columnIndex, _cardIndex, cardCount) =>
           handleDragStart({ type: 'tableau', index: columnIndex, cardCount })
         }
@@ -375,6 +376,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
+        positioningStrategy="absolute"
       />
 
       {/* Win Modal */}

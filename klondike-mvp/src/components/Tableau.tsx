@@ -45,7 +45,6 @@ export const Tableau: React.FC<TableauProps> = ({
         gap: `${layoutSizes.cardGap}px`,
         justifyContent: 'center',
         flexWrap: 'nowrap',
-        overflow: 'auto',
       }}
     >
       {tableau.map((column, columnIndex) => {
