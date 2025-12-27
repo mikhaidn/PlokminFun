@@ -15,6 +15,7 @@
 | 003 | Card Backs & Animations | 🔄 In Progress | [README](003-card-backs/) | motivation, solution, implementation (phases), testing |
 | 004 | Movement Mechanics | 📋 Draft | [README](004-movement-mechanics/) | motivation, solution, implementation (phases), decisions |
 | 005 | Unified Game Builder | 📝 Proposed | [README](005-unified-game-builder/) | motivation, solution, alternatives, implementation, testing, risks, decisions |
+| 006 | Game State Serialization | 📝 Proposed | [README](006-game-state-serialization/) | solution, implementation |
 
 ---
 

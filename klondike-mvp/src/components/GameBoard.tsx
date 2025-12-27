@@ -14,6 +14,8 @@ import {
   SettingsModal,
   FoundationArea,
   GenericTableau,
+  WinCelebration,
+  useSettings,
 } from '@cardgames/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
@@ -78,6 +80,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
 
   // Settings modal state
   const [showSettings, setShowSettings] = useState(false);
+
+  // Use shared settings for animations and interactions
+  const { settings } = useSettings();
 
   // Derive win state from game state
   const isWon = isGameWon(gameState);
@@ -387,6 +392,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
         positioningStrategy="absolute"
+      />
+
+      {/* Win Celebration */}
+      <WinCelebration
+        isActive={isWon && settings.winCelebration && settings.animationLevel !== 'none'}
+        duration={3000}
       />
 
       {/* Win Modal */}

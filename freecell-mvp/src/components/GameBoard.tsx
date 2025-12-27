@@ -16,6 +16,7 @@ import {
   useSettings,
   FoundationArea,
   GenericTableau,
+  WinCelebration,
 } from '@cardgames/shared';
 import { getMinButtonHeight } from '../config/accessibilitySettings';
 import { validateMove } from '../rules/moveValidation';
@@ -74,8 +75,8 @@ export const GameBoard: React.FC = () => {
   const [showHints, setShowHints] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Use shared settings (will be used for future features)
-  useSettings();
+  // Use shared settings for animations and interactions
+  const { settings } = useSettings();
 
   // Temporary: Map old accessibility settings to defaults until full migration
   const accessibilityDefaults = {
@@ -578,6 +579,12 @@ export const GameBoard: React.FC = () => {
           positioningStrategy="margin"
           highContrastMode={accessibilityDefaults.highContrastMode}
         />
+
+      {/* Win Celebration */}
+      <WinCelebration
+        isActive={showWin && settings.winCelebration && settings.animationLevel !== 'none'}
+        duration={3000}
+      />
 
       {/* Win Modal */}
       {showWin && (
