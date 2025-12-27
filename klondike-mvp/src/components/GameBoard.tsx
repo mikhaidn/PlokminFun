@@ -330,15 +330,12 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           onWasteClick={handleWasteClick}
           isWasteSelected={sharedInteractionState.selectedCard?.type === 'waste'}
           layoutSizes={layoutSizes}
-          draggingCard={sharedInteractionState.draggingCard}
           onDragStart={() => handleDragStart({ type: 'waste', index: 0, cardCount: 1 })}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
           onDrop={() => handleDrop({ type: 'waste', index: 0 })}
           onTouchStart={() => handleTouchStart({ type: 'waste', index: 0, cardCount: 1 })}
-          onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          onTouchCancel={handleTouchCancel}
         />
 
         <FoundationArea

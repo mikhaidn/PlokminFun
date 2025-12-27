@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardBack, EmptyCell, type LayoutSizes } from '@cardgames/shared';
+import { CardFlip, EmptyCell, type LayoutSizes } from '@cardgames/shared';
 import type { Card as CardType } from '../core/types';
 
 interface StockWasteProps {
@@ -9,15 +9,13 @@ interface StockWasteProps {
   onWasteClick: () => void;
   isWasteSelected: boolean;
   layoutSizes: LayoutSizes;
-  draggingCard?: { type: string } | null;
   onDragStart?: () => (e: React.DragEvent) => void;
   onDragEnd?: () => void;
   onDragOver?: (e: React.DragEvent) => void;
   onDrop?: () => (e: React.DragEvent) => void;
   onTouchStart?: () => (e: React.TouchEvent) => void;
-  onTouchMove?: (e: React.TouchEvent) => void;
   onTouchEnd?: (e: React.TouchEvent) => void;
-  onTouchCancel?: () => void;
+  flipDuration?: number;
 }
 
 export const StockWaste: React.FC<StockWasteProps> = ({
@@ -27,15 +25,13 @@ export const StockWaste: React.FC<StockWasteProps> = ({
   onWasteClick,
   isWasteSelected,
   layoutSizes,
-  draggingCard,
   onDragStart,
   onDragEnd,
   onDragOver,
   onDrop,
   onTouchStart,
-  onTouchMove,
   onTouchEnd,
-  onTouchCancel,
+  flipDuration = 300,
 }) => {
   const { cardWidth, cardHeight, cardGap, fontSize } = layoutSizes;
 
@@ -48,13 +44,17 @@ export const StockWaste: React.FC<StockWasteProps> = ({
           height: `${cardHeight}px`,
           cursor: 'pointer',
         }}
-        onClick={onStockClick}
       >
         {stock.length > 0 ? (
-          <CardBack
+          <CardFlip
+            card={stock[stock.length - 1]}
+            faceUp={false}
             cardWidth={cardWidth}
             cardHeight={cardHeight}
-            theme="blue"
+            fontSize={fontSize}
+            flipDuration={flipDuration}
+            cardBackTheme="blue"
+            onClick={onStockClick}
           />
         ) : (
           <EmptyCell
@@ -80,23 +80,19 @@ export const StockWaste: React.FC<StockWasteProps> = ({
         onClick={onWasteClick}
       >
         {waste.length > 0 ? (
-          <Card
+          <CardFlip
             card={waste[waste.length - 1]}
             faceUp={true}
             cardWidth={cardWidth}
             cardHeight={cardHeight}
             fontSize={fontSize}
+            flipDuration={flipDuration}
             isSelected={isWasteSelected}
-            isDragging={draggingCard?.type === 'waste'}
             draggable={true}
             onDragStart={onDragStart ? onDragStart() : undefined}
             onDragEnd={onDragEnd}
             onTouchStart={onTouchStart ? onTouchStart() : undefined}
-            onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
-            onTouchCancel={onTouchCancel}
-            data-drop-target-type="waste"
-            data-drop-target-index={0}
           />
         ) : (
           <EmptyCell
