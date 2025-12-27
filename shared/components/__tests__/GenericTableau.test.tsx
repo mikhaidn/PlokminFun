@@ -350,7 +350,6 @@ describe('GenericTableau', () => {
 
         // Skip column container (it won't have card-specific attributes)
         if (element.getAttribute('data-drop-target-index') === '0') {
-          const tagName = element.tagName.toLowerCase();
           // Only check card elements (divs with specific card structure), not the column container
           if (hasCardIndex || hasCardCount) {
             expect(hasCardIndex).toBe(true);
@@ -408,7 +407,6 @@ describe('GenericTableau', () => {
 
         // Skip column container (it won't have card-specific attributes)
         if (element.getAttribute('data-drop-target-index') === '0') {
-          const tagName = element.tagName.toLowerCase();
           // Only check card elements, not the column container
           if (hasCardIndex || hasCardCount) {
             expect(hasCardIndex).toBe(true);
@@ -452,9 +450,7 @@ describe('GenericTableau', () => {
       );
 
       // Find all card elements (has both card-index and card-count)
-      const cardElements = Array.from(
-        container.querySelectorAll('[data-drop-target-card-index]')
-      );
+      const cardElements = Array.from(container.querySelectorAll('[data-drop-target-card-index]'));
 
       expect(cardElements.length).toBe(3);
 
