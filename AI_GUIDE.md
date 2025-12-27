@@ -64,9 +64,17 @@ gameState.moves++;
 
 ### 3. **Run Validation Before Committing**
 ```bash
-npm run validate   # Runs: typecheck + lint + test + build (exactly what CI runs)
+npm run validate   # Runs: format:check + typecheck + lint + test + build (exactly what CI runs)
+npm run format     # Auto-format code (Prettier)
 npm run lint:fix   # Auto-fix most lint issues (unused imports, spacing, etc.)
 ```
+
+**Pre-commit hook automatically checks:**
+1. ✅ Format (Prettier)
+2. ✅ TypeScript errors
+3. ✅ Lint issues
+
+If hook blocks you: `npm run format && npm run lint:fix` will fix most issues!
 
 ### 4. **Check STATUS.md Before Starting Work**
 - Avoid duplicate work
@@ -79,7 +87,7 @@ npm run lint:fix   # Auto-fix most lint issues (unused imports, spacing, etc.)
 ### Development Workflow
 ```bash
 # First-time setup (recommended)
-npm run setup-hooks    # Install pre-commit validation
+npm run setup-hooks    # Install pre-commit validation (format + typecheck + lint)
 
 # Start dev server (from repo root)
 npm run dev:freecell   # Or npm run dev:klondike
@@ -87,12 +95,23 @@ npm run dev:freecell   # Or npm run dev:klondike
 # TDD mode
 npm run test:watch     # All packages in watch mode
 
+# Code formatting (NEW!)
+npm run format         # Auto-format all files with Prettier
+npm run format:check   # Check formatting without changing files
+
 # Quick validation
-npm run typecheck      # Fast type checking (no build)
-npm run lint:fix       # Auto-fix lint issues
+npm run typecheck        # Fast type checking (no build)
+npm run typecheck:watch  # Watch mode for TypeScript errors (NEW!)
+npm run lint:fix         # Auto-fix lint issues
 
 # Full monorepo validation (what CI runs)
-npm run validate       # Runs: typecheck + lint + test + build
+npm run validate       # Runs: format:check + typecheck + lint + test + build
+
+# Maintenance (NEW!)
+npm run clean          # Remove node_modules + dist, reinstall
+npm run clean:build    # Just remove dist/ directories
+npm run audit          # Check for security vulnerabilities
+npm run audit:fix      # Auto-fix security issues
 
 # RFC management
 npm run rfc:list       # List all RFCs

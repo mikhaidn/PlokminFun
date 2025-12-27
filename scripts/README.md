@@ -8,11 +8,47 @@ Helper scripts for maintaining code quality and preventing issues before they re
 # Install git hooks (one-time setup)
 npm run setup-hooks
 
+# Auto-format code (recommended before committing)
+npm run format
+
 # Run full validation (what CI runs)
 npm run validate
 ```
 
 ## Available Scripts
+
+### `npm run format`
+**⚡ Quick Win!** Auto-formats all code with Prettier (spaces, quotes, semicolons, line length, etc.)
+
+**What it fixes:**
+- ✅ Inconsistent spacing and indentation
+- ✅ Quote style (single vs double)
+- ✅ Semicolons (adds/removes based on config)
+- ✅ Line length (wraps at 100 chars)
+- ✅ Trailing commas
+- ✅ Arrow function parentheses
+
+**When to use:**
+- Before committing (pre-commit hook checks this!)
+- After writing code (keep it clean)
+- After refactoring (consistent style)
+
+**Example:**
+```bash
+npm run format
+# ✨ Formatted 140 files in 2 seconds
+```
+
+**Tip:** Pre-commit hook will suggest this command if you forget!
+
+### `npm run format:check`
+Checks if files are formatted without changing them. This is what CI runs.
+
+**Example:**
+```bash
+npm run format:check
+# ✓ All files formatted correctly
+```
 
 ### `npm run typecheck`
 Fast TypeScript type checking without building. Catches type errors immediately.
@@ -53,7 +89,7 @@ npm run lint:fix
 **Tip:** The pre-commit hook will suggest this command when it finds lint errors!
 
 ### `npm run validate`
-Runs the full CI pipeline locally: typecheck → lint → test → build
+Runs the full CI pipeline locally: format:check → typecheck → lint → test → build
 
 **When to use:**
 - Before creating a PR
@@ -88,10 +124,11 @@ git commit -m "fix: broken code"
 
 ## Pre-Commit Hook
 
-The pre-commit hook (`pre-commit.sh`) runs:
-1. **TypeScript type check** - Catches type errors
-2. **ESLint** - Catches unused vars, style issues
-3. ~~**Tests**~~ - Commented out (too slow), but you can enable it
+The pre-commit hook (`pre-commit.sh`) runs automatically before every commit:
+1. **Prettier format check** - Ensures consistent code style
+2. **TypeScript type check** - Catches type errors
+3. **ESLint** - Catches unused vars, style issues
+4. ~~**Tests**~~ - Commented out (too slow), but you can enable it
 
 **Skipping the hook (not recommended):**
 ```bash

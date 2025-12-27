@@ -1,13 +1,21 @@
 /**
  * Utility to generate pre-filled bug report URLs
+ * Generic version that works with any game state
  */
-
-import type { KlondikeGameState } from '../state/gameState';
 
 export interface BugReportContext {
   seed?: number;
   moves?: number;
   description?: string;
+}
+
+/**
+ * Minimal game state interface for bug reporting
+ * Any game state with seed and moves can use this utility
+ */
+export interface BugReportableGameState {
+  seed?: number;
+  moves: number;
 }
 
 /**
@@ -63,9 +71,10 @@ ${moves !== undefined ? `Moves: ${moves}` : ''}
 
 /**
  * Generate bug report from current game state
+ * Generic function that works with any game state that has seed and moves
  */
-export function createBugReportFromGameState(
-  gameState: KlondikeGameState,
+export function createBugReportFromGameState<TState extends BugReportableGameState>(
+  gameState: TState,
   description?: string
 ): string {
   return createBugReportUrl({

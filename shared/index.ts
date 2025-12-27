@@ -114,6 +114,8 @@ export {
   enrichEventProperties,
 } from './utils/analytics';
 export type { GameEventType, GameEventProperties } from './utils/analytics';
+export { createBugReportUrl, createBugReportFromGameState, openBugReport } from './utils/bugReport';
+export type { BugReportContext, BugReportableGameState } from './utils/bugReport';
 
 // Config
 export { FEATURE_FLAGS } from './config/featureFlags';
