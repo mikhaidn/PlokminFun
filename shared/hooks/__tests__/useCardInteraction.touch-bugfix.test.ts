@@ -10,6 +10,15 @@ import { renderHook, act } from '@testing-library/react';
 import { useCardInteraction } from '../useCardInteraction';
 import type { CardInteractionConfig, GameLocation } from '../../types/CardInteraction';
 
+// Mock SettingsContext (required after RFC-005 Phase 3 smart tap integration)
+vi.mock('../../contexts/SettingsContext', () => ({
+  useSettings: vi.fn(() => ({
+    settings: { smartTapToMove: false },
+    updateSettings: vi.fn(),
+    resetSettings: vi.fn(),
+  })),
+}));
+
 describe('Touch Interaction Bugs - Diagnostic Tests', () => {
   let mockValidateMove: ReturnType<typeof vi.fn>;
   let mockExecuteMove: ReturnType<typeof vi.fn>;

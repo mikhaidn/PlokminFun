@@ -863,17 +863,21 @@ describe('useCardInteraction', () => {
 
     it('should deselect when clicking same card again', () => {
       const location: TestLocation = { type: 'pile', index: 0 };
-      mockGetValidMoves.mockReturnValue([{ type: 'target', index: 0 }]);
+      // Need multiple valid moves to trigger highlight (not auto-execute)
+      mockGetValidMoves.mockReturnValue([
+        { type: 'target', index: 0 },
+        { type: 'target', index: 1 },
+      ]);
 
       const { result } = renderHook(() => useCardInteraction(configWithSmartTap));
 
-      // First click - select and highlight
+      // First click - select and highlight (multiple moves)
       act(() => {
         result.current.handlers.handleCardClick(location);
       });
 
       expect(result.current.state.selectedCard).toEqual(location);
-      expect(result.current.state.highlightedCells).toHaveLength(1);
+      expect(result.current.state.highlightedCells).toHaveLength(2);
 
       // Click same card again - should deselect
       act(() => {
