@@ -6,7 +6,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useCardInteraction } from '../useCardInteraction';
-import type { CardInteractionConfig, CardLocation } from '../../types/CardInteraction';
+import type {
+  CardInteractionConfig,
+  CardLocation,
+  GameLocation,
+} from '../../types/CardInteraction';
 
 // Mock SettingsContext (RFC-005 Phase 3: smart tap-to-move)
 vi.mock('../../contexts/SettingsContext', () => ({
@@ -992,6 +996,137 @@ describe('useCardInteraction', () => {
       // State should be cleared even after error
       expect(result.current.state.selectedCard).toBeNull();
       expect(result.current.state.highlightedCells).toEqual([]);
+    });
+  });
+
+  describe('BUGFIX: Location matching with optional properties', () => {
+    it('BUG: should match highlighted cell even when cardCount differs', () => {
+      // This test PROVES the bug exists
+      // getValidMoves returns: { type: 'freeCell', index: 0 } (no cardCount)
+      // Click handler sends: { type: 'freeCell', index: 0, cardCount: 1 }
+      // These should match for destination purposes, but currently don't!
+
+      // Enable smart tap in settings
+      vi.mocked(SettingsContext.useSettings).mockReturnValue({
+        settings: { smartTapToMove: true } as any,
+        updateSettings: vi.fn(),
+        resetSettings: vi.fn(),
+      });
+
+      const validMoves: GameLocation[] = [
+        { type: 'freeCell', index: 0 }, // From getValidMoves - NO cardCount
+        { type: 'tableau', index: 5 }, // Multiple moves to trigger highlighting
+      ];
+
+      const mockGetValidMoves = vi.fn(() => validMoves);
+
+      const { result } = renderHook(() =>
+        useCardInteraction({
+          validateMove: vi.fn(() => true),
+          executeMove: mockExecuteMove,
+          getValidMoves: mockGetValidMoves,
+        })
+      );
+
+      // Select a card (should highlight the valid destinations)
+      act(() => {
+        result.current.handlers.handleCardClick({ type: 'tableau', index: 0, cardCount: 1 });
+      });
+
+      // Verify getValidMoves was called
+      expect(mockGetValidMoves).toHaveBeenCalled();
+
+      // Verify cells are highlighted (should include both destinations)
+      expect(result.current.state.highlightedCells.length).toBe(2);
+
+      // Click the highlighted cell WITH cardCount (like GameBoard does)
+      act(() => {
+        result.current.handlers.handleCardClick({
+          type: 'freeCell',
+          index: 0,
+          cardCount: 1, // Click handler adds this
+        });
+      });
+
+      // BUG: This SHOULD execute the move, but currently doesn't!
+      // The locations don't match because undefined !== 1
+      // EXPECTATION: Move should be executed
+      // REALITY: Card gets deselected because locations don't match
+      expect(mockExecuteMove).toHaveBeenCalled(); // THIS WILL FAIL - proving the bug
+    });
+
+    it('BUG: should match highlighted tableau column even when cardCount differs', () => {
+      vi.mocked(SettingsContext.useSettings).mockReturnValue({
+        settings: { smartTapToMove: true } as any,
+        updateSettings: vi.fn(),
+        resetSettings: vi.fn(),
+      });
+
+      const validMoves: GameLocation[] = [
+        { type: 'tableau', index: 5 }, // Empty column destination - NO cardCount
+      ];
+
+      const { result } = renderHook(() =>
+        useCardInteraction({
+          validateMove: vi.fn(() => true),
+          executeMove: mockExecuteMove,
+          getValidMoves: vi.fn(() => validMoves),
+        })
+      );
+
+      // Select a card
+      act(() => {
+        result.current.handlers.handleCardClick({ type: 'tableau', index: 0, cardCount: 1 });
+      });
+
+      // Click empty column WITH cardCount: 0 (like handleEmptyColumnClick does)
+      act(() => {
+        result.current.handlers.handleCardClick({
+          type: 'tableau',
+          index: 5,
+          cardCount: 0, // Empty column click adds this
+        });
+      });
+
+      // BUG: Should execute, but won't because 0 !== undefined
+      expect(mockExecuteMove).toHaveBeenCalled(); // THIS WILL FAIL
+    });
+
+    it('BUG: should match foundation even when cardCount differs', () => {
+      vi.mocked(SettingsContext.useSettings).mockReturnValue({
+        settings: { smartTapToMove: true } as any,
+        updateSettings: vi.fn(),
+        resetSettings: vi.fn(),
+      });
+
+      const validMoves: GameLocation[] = [
+        { type: 'foundation', index: 2 }, // NO cardCount
+      ];
+
+      const { result } = renderHook(() =>
+        useCardInteraction({
+          validateMove: vi.fn(() => true),
+          executeMove: mockExecuteMove,
+          getValidMoves: vi.fn(() => validMoves),
+        })
+      );
+
+      // Select card
+      act(() => {
+        result.current.handlers.handleCardClick({ type: 'tableau', index: 3, cardCount: 1 });
+      });
+
+      // Click foundation WITH cardCount
+      act(() => {
+        result.current.handlers.handleCardClick({
+          type: 'foundation',
+          index: 2,
+          cardCount: 1,
+        });
+      });
+
+      // BUG: Should execute, won't match
+      expect(mockExecuteMove).toHaveBeenCalled(); // THIS WILL FAIL
     });
   });
 });

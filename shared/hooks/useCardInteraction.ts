@@ -56,15 +56,34 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
 
   /**
    * Compare two locations for equality
+   *
+   * For destination matching (tap-tap movement), we need lenient comparison:
+   * - Type and index must always match
+   * - cardIndex and cardCount are optional metadata
+   * - Only compare if BOTH locations have them defined
+   *
+   * This allows matching destinations from getValidMoves() (which don't have cardCount)
+   * with click locations from GameBoard (which do have cardCount).
    */
   const locationsEqual = useCallback((a: TLocation | null, b: TLocation | null): boolean => {
     if (a === null || b === null) return a === b;
-    return (
-      a.type === b.type &&
-      a.index === b.index &&
-      a.cardIndex === b.cardIndex &&
-      a.cardCount === b.cardCount
-    );
+
+    // Type and index must always match
+    if (a.type !== b.type || a.index !== b.index) {
+      return false;
+    }
+
+    // cardIndex: only compare if BOTH are defined
+    if (a.cardIndex !== undefined && b.cardIndex !== undefined && a.cardIndex !== b.cardIndex) {
+      return false;
+    }
+
+    // cardCount: only compare if BOTH are defined
+    if (a.cardCount !== undefined && b.cardCount !== undefined && a.cardCount !== b.cardCount) {
+      return false;
+    }
+
+    return true;
   }, []);
 
   /**
