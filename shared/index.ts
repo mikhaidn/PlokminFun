@@ -7,6 +7,8 @@ export { GameControls } from './components/GameControls.tsx';
 export { DraggingCardPreview } from './components/DraggingCardPreview';
 export { Card } from './components/Card';
 export { CardBack } from './components/CardBack';
+export { CardFlip } from './components/CardFlip';
+export type { CardFlipProps } from './components/CardFlip';
 export { EmptyCell } from './components/EmptyCell';
 export { SettingsModal } from './components/SettingsModal';
 export { FoundationArea } from './components/FoundationArea';

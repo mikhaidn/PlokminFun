@@ -22,6 +22,7 @@ export interface CardBackProps {
   onTouchStart?: (e: React.TouchEvent) => void;
   onTouchEnd?: (e: React.TouchEvent) => void;
   draggable?: boolean;
+  'data-testid'?: string;
 }
 
 /**
@@ -76,6 +77,7 @@ export function CardBack({
   onTouchStart,
   onTouchEnd,
   draggable = false,
+  'data-testid': dataTestId,
 }: CardBackProps) {
   const style: React.CSSProperties = {
     width: `${cardWidth}px`,
@@ -104,6 +106,7 @@ export function CardBack({
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       draggable={draggable}
+      data-testid={dataTestId}
     />
   );
 }
