@@ -374,12 +374,14 @@
 
 ## 📋 Next 3 Tasks
 
-1. **Game State Serialization** (1-2 days) ⬅️ NEXT
-   - Encode/decode game state to compact string format
+1. **Game State Serialization (RFC-006)** (1-2 days) ⬅️ NEXT
+   - Encode/decode game state to compact string format (~55-89 bytes)
+   - Self-describing header (version + game type + config)
    - Support sharing specific tableau positions (independent of seed)
-   - URL-safe format for easy sharing
+   - URL-safe base64url format for easy sharing
    - Foundation for daily challenges and puzzle sharing
    - Enables "share this game" social feature
+   - See: [RFC-006](../rfcs/006-game-state-serialization/README.md)
 
 2. **Game Persistence** (1-2 days)
    - Save game state to localStorage on each move
