@@ -51,6 +51,19 @@ export { DEFAULT_GAME_SETTINGS, applyAccessibilityOverrides } from './types/Game
 export { loadSettings, saveSettings, migrateOldSettings, resetSettings } from './utils/settingsStorage';
 export { SettingsProvider, SettingsContext, useSettings } from './contexts/SettingsContext';
 
+// Analytics (React hook-based approach)
+export type {
+  AnalyticsEvent,
+  GameStartEvent,
+  GameWonEvent,
+  CardMovedEvent,
+  SettingChangedEvent,
+  AnalyticsProvider,
+} from './types/Analytics';
+export { NoOpAnalyticsProvider } from './types/Analytics';
+export { AnalyticsProvider as AnalyticsContextProvider, AnalyticsContext } from './contexts/AnalyticsContext';
+export { useAnalytics } from './hooks/useAnalytics';
+
 // Rules
 export {
   isRed,
