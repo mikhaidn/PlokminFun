@@ -6,10 +6,12 @@ import { createInitialState } from './state/gameState';
 import { loadKlondikeSettings } from './utils/klondikeSettings';
 
 function App() {
-  const [seed] = useState(() => Math.floor(Math.random() * 1000000));
+  const [seed, setSeed] = useState(() => Math.floor(Math.random() * 1000000));
   const [gameKey, setGameKey] = useState(0);
 
   const handleNewGame = () => {
+    // Generate new seed for a different game layout
+    setSeed(Math.floor(Math.random() * 1000000));
     setGameKey((prev) => prev + 1);
   };
 
