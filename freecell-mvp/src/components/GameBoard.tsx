@@ -187,6 +187,8 @@ export const GameBoard: React.FC = () => {
   const handleNewGame = useCallback(() => {
     const newSeed = Date.now();
     setSeed(newSeed);
+    // Clear localStorage before resetting to prevent stale won state from persisting
+    localStorage.removeItem('freecell-game-history');
     resetHistory(initializeGame(newSeed));
   }, [resetHistory]);
 
