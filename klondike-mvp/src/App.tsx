@@ -12,6 +12,8 @@ function App() {
   const handleNewGame = () => {
     // Generate new seed for a different game layout
     setSeed(Math.floor(Math.random() * 1000000));
+    // Clear localStorage before starting new game to prevent stale won state from persisting
+    localStorage.removeItem('klondike-game-history');
     setGameKey((prev) => prev + 1);
   };
 
