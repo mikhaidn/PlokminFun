@@ -19,6 +19,9 @@ export function convertTableauToGeneric(gameState: KlondikeGameState): TableauCo
   return gameState.tableau.map((column: TableauColumn, columnIndex: number) => {
     const location: GameLocation = { type: 'tableau', index: columnIndex };
 
+    // Calculate face-down card count (total cards - face-up cards)
+    const faceDownCount = column.cards.length - column.faceUpCount;
+
     return {
       cards: column.cards.map((card, cardIndex) => ({
         card,
@@ -26,6 +29,7 @@ export function convertTableauToGeneric(gameState: KlondikeGameState): TableauCo
         draggable: isCardFaceUp(gameState, location, cardIndex), // Only face-up cards are draggable
       })),
       emptyLabel: 'K', // Klondike only allows Kings on empty columns
+      faceDownCount: faceDownCount > 0 ? faceDownCount : undefined, // Only show if there are face-down cards
     };
   });
 }

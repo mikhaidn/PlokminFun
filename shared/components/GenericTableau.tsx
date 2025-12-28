@@ -38,6 +38,8 @@ export interface TableauColumnData {
   cards: TableauCard[];
   /** Optional label for empty column (e.g., "K" for King-only) */
   emptyLabel?: string;
+  /** Optional face-down card count to display as badge (e.g., for Klondike) */
+  faceDownCount?: number;
 }
 
 /**
@@ -271,6 +273,30 @@ export const GenericTableau: React.FC<GenericTableauProps> = ({
                   </div>
                 );
               })
+            )}
+
+            {/* Face-down card count badge (for Klondike) */}
+            {column.faceDownCount !== undefined && column.faceDownCount > 0 && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '4px',
+                  right: '4px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                  color: 'white',
+                  borderRadius: '12px',
+                  padding: '2px 8px',
+                  fontSize: `${Math.max(12, cardWidth * 0.18)}px`,
+                  fontWeight: 'bold',
+                  zIndex: 9999,
+                  userSelect: 'none',
+                  pointerEvents: 'none',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                }}
+                title={`${column.faceDownCount} face-down card${column.faceDownCount > 1 ? 's' : ''}`}
+              >
+                {column.faceDownCount}↓
+              </div>
             )}
           </div>
         );
