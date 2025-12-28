@@ -14,45 +14,15 @@ This file tracks all known usability issues, bugs, and potential improvements id
 - [x] **#3** Stock recycle button unclear → **FIXED** ✅
 - [x] **#4** No face-down card count indicator → **FIXED** ✅
 - [x] **#5** Draw-3 mode not implemented → **FIXED** ✅ (2025-12-28)
+- [x] **#6** No Help/Rules screen → **FIXED** ✅ (2025-12-28)
 
 ---
 
 ## 🔥 Critical Priority (Implement Next)
 
-### **#6 - No Help/Rules Screen**
-**Status:** 🚨 Critical
-**Game:** Both
-**Effort:** 3-4 hours
-**Impact:** HIGH - New players don't know the rules
+**No critical issues remaining!** 🎉
 
-**Description:**
-No in-game explanation of rules, valid moves, or keyboard shortcuts. Players must consult external documentation.
-
-**Tasks:**
-- [ ] Create `HelpModal` component
-- [ ] Document game rules for FreeCell
-- [ ] Document game rules for Klondike
-- [ ] List keyboard shortcuts
-- [ ] Add "?" button to GameControls
-- [ ] Make accessible (ESC to close, focus management)
-
-**Files:**
-- `shared/components/HelpModal.tsx` (new)
-- `shared/components/GameControls.tsx`
-
-**Example Content:**
-```
-FreeCell Rules:
-- Stack descending, alternating colors
-- Foundation: Ascending, same suit
-- Free cells: Hold 1 card each
-- Max stack size: (freeCells + 1) × 2^(emptyColumns)
-
-Keyboard Shortcuts:
-- U / Ctrl+Z: Undo
-- R / Ctrl+Y: Redo
-- Esc: Close modals
-```
+All critical usability issues have been addressed. The next priorities are high-priority improvements to enhance the player experience.
 
 ---
 
