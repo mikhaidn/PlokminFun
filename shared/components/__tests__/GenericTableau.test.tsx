@@ -284,6 +284,28 @@ describe('GenericTableau', () => {
       const tableauContainer = container.firstChild as HTMLElement;
       expect(tableauContainer.children.length).toBe(3);
     });
+
+    it('should pass emptyColumnTooltip to empty cells', () => {
+      const columns: TableauColumnData[] = [{ cards: [], emptyLabel: 'K' }];
+
+      const onClick = vi.fn();
+      const onEmptyColumnClick = vi.fn();
+
+      const { container } = render(
+        <GenericTableau
+          columns={columns}
+          layoutSizes={mockLayoutSizes}
+          onClick={onClick}
+          onEmptyColumnClick={onEmptyColumnClick}
+          emptyColumnTooltip="Only Kings can start a new column"
+        />
+      );
+
+      // Find the empty cell element
+      const emptyCell = container.querySelector('[title]');
+      expect(emptyCell).toBeDefined();
+      expect(emptyCell?.getAttribute('title')).toBe('Only Kings can start a new column');
+    });
   });
 
   describe('touch drag-and-drop data attributes (regression test)', () => {

@@ -64,6 +64,9 @@ export interface GenericTableauProps {
   /** Highlighted cells (for smart tap destinations) */
   highlightedCells?: GameLocation[];
 
+  /** Tooltip text for empty columns (game-specific) */
+  emptyColumnTooltip?: string;
+
   // Event handlers
   onClick: (columnIndex: number, cardIndex: number) => void;
   onEmptyColumnClick: (columnIndex: number) => void;
@@ -134,6 +137,7 @@ export const GenericTableau: React.FC<GenericTableauProps> = ({
   draggingCard,
   highlightedCardIds = [],
   highlightedCells = [],
+  emptyColumnTooltip,
   onClick,
   onEmptyColumnClick,
   onDragStart,
@@ -196,6 +200,7 @@ export const GenericTableau: React.FC<GenericTableauProps> = ({
                 label={column.emptyLabel}
                 onClick={() => onEmptyColumnClick(columnIndex)}
                 isHighlighted={isEmptyColumnHighlighted}
+                title={emptyColumnTooltip}
                 data-drop-target-type="tableau"
                 data-drop-target-index={columnIndex}
               />

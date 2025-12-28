@@ -22,6 +22,7 @@ export interface CardBackProps {
   onTouchStart?: (e: React.TouchEvent) => void;
   onTouchEnd?: (e: React.TouchEvent) => void;
   draggable?: boolean;
+  isInvalidMove?: boolean; // NEW: Trigger shake animation for invalid move feedback
   'data-testid'?: string;
 }
 
@@ -74,6 +75,7 @@ export function CardBack({
   onTouchStart,
   onTouchEnd,
   draggable = false,
+  isInvalidMove = false,
   'data-testid': dataTestId,
 }: CardBackProps) {
   const style: React.CSSProperties = {
@@ -88,6 +90,7 @@ export function CardBack({
     cursor: draggable ? 'grab' : onClick ? 'pointer' : 'default',
     userSelect: 'none',
     WebkitUserSelect: 'none',
+    animation: isInvalidMove ? 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both' : 'none',
   };
 
   return (
