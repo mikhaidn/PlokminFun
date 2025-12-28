@@ -54,9 +54,8 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
     null
   );
   const [highlightedCells, setHighlightedCells] = useState<TLocation[]>([]);
-  const [invalidMoveAttempt, setInvalidMoveAttempt] = useState<InvalidMoveAttempt<TLocation> | null>(
-    null
-  );
+  const [invalidMoveAttempt, setInvalidMoveAttempt] =
+    useState<InvalidMoveAttempt<TLocation> | null>(null);
 
   // Timer ref for auto-clearing invalid move feedback
   const invalidMoveTimerRef = useRef<number | null>(null);

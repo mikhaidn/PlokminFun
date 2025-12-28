@@ -26,9 +26,8 @@ interface SettingsModalProps {
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const { settings, updateSettings, resetSettings } = useSettings();
   const [localSettings, setLocalSettings] = useState<GameSettings>(settings);
-  const [klondikeSettings, setKlondikeSettings] = useState<KlondikeSettings>(
-    loadKlondikeSettings()
-  );
+  const [klondikeSettings, setKlondikeSettings] =
+    useState<KlondikeSettings>(loadKlondikeSettings());
 
   if (!isOpen) return null;
 
