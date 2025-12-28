@@ -168,10 +168,10 @@ describe('Draw Mode', () => {
       // Recycle
       const recycled = drawFromStock(state);
 
-      // The last card in waste should be at the bottom of stock (drawn last)
-      // After recycling and drawing, the top of stock should be what was the first card in waste
+      // After recycling (reversing waste to stock) and drawing 1 card,
+      // the drawn card should be the FIRST card that was originally in waste
       expect(recycled.stock.length).toBe(23);
-      expect(recycled.waste[0].id).toBe(wasteCards[wasteCards.length - 1].id);
+      expect(recycled.waste[0].id).toBe(wasteCards[0].id);
     });
   });
 

@@ -23,33 +23,37 @@ import {
  * If stock is empty, recycle waste back to stock
  */
 export function drawFromStock(state: KlondikeGameState): KlondikeGameState {
+  let currentState = state;
+
   // If stock is empty, recycle waste to stock
-  if (state.stock.length === 0) {
-    if (state.waste.length === 0) {
-      return state; // Nothing to recycle
+  if (currentState.stock.length === 0) {
+    if (currentState.waste.length === 0) {
+      return currentState; // Nothing to recycle
     }
 
-    return {
-      ...state,
-      stock: [...state.waste].reverse(), // Reverse waste back to stock
+    // Recycle waste back to stock (reversed)
+    currentState = {
+      ...currentState,
+      stock: [...currentState.waste].reverse(),
       waste: [],
-      moves: state.moves + 1,
     };
+    // Continue to draw cards from the newly recycled stock
   }
 
   // Determine how many cards to draw based on mode
-  const cardsToDraw = state.drawMode === 'draw3' ? Math.min(3, state.stock.length) : 1;
+  const cardsToDraw =
+    currentState.drawMode === 'draw3' ? Math.min(3, currentState.stock.length) : 1;
 
   // Draw cards from stock to waste
-  const newStock = state.stock.slice(0, -cardsToDraw);
-  const drawnCards = state.stock.slice(-cardsToDraw);
-  const newWaste = [...state.waste, ...drawnCards];
+  const newStock = currentState.stock.slice(0, -cardsToDraw);
+  const drawnCards = currentState.stock.slice(-cardsToDraw);
+  const newWaste = [...currentState.waste, ...drawnCards];
 
   return {
-    ...state,
+    ...currentState,
     stock: newStock,
     waste: newWaste,
-    moves: state.moves + 1,
+    moves: currentState.moves + 1,
   };
 }
 
