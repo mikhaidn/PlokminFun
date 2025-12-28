@@ -10,9 +10,7 @@ import { VictoryModal } from '../VictoryModal';
 describe('VictoryModal', () => {
   describe('Basic rendering', () => {
     it('should not render when isOpen is false', () => {
-      const { container } = render(
-        <VictoryModal isOpen={false} moves={42} onNewGame={() => {}} />
-      );
+      const { container } = render(<VictoryModal isOpen={false} moves={42} onNewGame={() => {}} />);
       expect(container.firstChild).toBeNull();
     });
 
@@ -38,26 +36,20 @@ describe('VictoryModal', () => {
     });
 
     it('should display custom title', () => {
-      render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={() => {}} title="🎉 You Won!" />
-      );
+      render(<VictoryModal isOpen={true} moves={42} onNewGame={() => {}} title="🎉 You Won!" />);
       const heading = screen.getByRole('heading');
       expect(heading.textContent).toContain('You Won!');
     });
 
     it('should add emoji prefix if title does not have one', () => {
-      render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={() => {}} title="Great Job!" />
-      );
+      render(<VictoryModal isOpen={true} moves={42} onNewGame={() => {}} title="Great Job!" />);
       const heading = screen.getByRole('heading');
       expect(heading.textContent).toContain('🎉');
       expect(heading.textContent).toContain('Great Job!');
     });
 
     it('should not add emoji prefix if title already has one', () => {
-      render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={() => {}} title="🎉 You Won!" />
-      );
+      render(<VictoryModal isOpen={true} moves={42} onNewGame={() => {}} title="🎉 You Won!" />);
       const heading = screen.getByRole('heading');
       // Should not have double emoji
       expect(heading.textContent).toBe('🎉 You Won!');
@@ -74,9 +66,7 @@ describe('VictoryModal', () => {
     });
 
     it('should display game name in message when provided', () => {
-      render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={() => {}} gameName="FreeCell" />
-      );
+      render(<VictoryModal isOpen={true} moves={42} onNewGame={() => {}} gameName="FreeCell" />);
       expect(screen.getByText(/you won freecell/i)).toBeTruthy();
     });
 
@@ -118,9 +108,7 @@ describe('VictoryModal', () => {
 
     it('should not register ESC handler when modal is closed', () => {
       const onNewGame = vi.fn();
-      const { rerender } = render(
-        <VictoryModal isOpen={false} moves={42} onNewGame={onNewGame} />
-      );
+      const { rerender } = render(<VictoryModal isOpen={false} moves={42} onNewGame={onNewGame} />);
 
       fireEvent.keyDown(window, { key: 'Escape' });
       expect(onNewGame).not.toHaveBeenCalled();
@@ -134,9 +122,7 @@ describe('VictoryModal', () => {
 
     it('should cleanup ESC handler when modal closes', () => {
       const onNewGame = vi.fn();
-      const { rerender } = render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={onNewGame} />
-      );
+      const { rerender } = render(<VictoryModal isOpen={true} moves={42} onNewGame={onNewGame} />);
 
       // Close the modal
       rerender(<VictoryModal isOpen={false} moves={42} onNewGame={onNewGame} />);
@@ -203,12 +189,12 @@ describe('VictoryModal', () => {
         value: 400,
       });
 
-      const { container } = render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />
-      );
+      const { container } = render(<VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />);
 
       // Check that modal content has mobile-appropriate max-width
-      const contentDiv = container.querySelector('div[style*="background-color: white"]') as HTMLElement;
+      const contentDiv = container.querySelector(
+        'div[style*="background-color: white"]'
+      ) as HTMLElement;
       expect(contentDiv.style.maxWidth).toBe('90%');
     });
 
@@ -220,39 +206,33 @@ describe('VictoryModal', () => {
         value: 1200,
       });
 
-      const { container } = render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />
-      );
+      const { container } = render(<VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />);
 
       // Check that modal content has desktop-appropriate max-width
-      const contentDiv = container.querySelector('div[style*="background-color: white"]') as HTMLElement;
+      const contentDiv = container.querySelector(
+        'div[style*="background-color: white"]'
+      ) as HTMLElement;
       expect(contentDiv.style.maxWidth).toBe('400px');
     });
   });
 
   describe('Styling and layout', () => {
     it('should have high z-index to appear above confetti', () => {
-      const { container } = render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />
-      );
+      const { container } = render(<VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />);
 
       const overlay = container.firstChild as HTMLElement;
       expect(parseInt(overlay.style.zIndex)).toBe(10000);
     });
 
     it('should have semi-transparent backdrop', () => {
-      const { container } = render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />
-      );
+      const { container } = render(<VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />);
 
       const overlay = container.firstChild as HTMLElement;
       expect(overlay.style.backgroundColor).toBe('rgba(0, 0, 0, 0.7)');
     });
 
     it('should center content', () => {
-      const { container } = render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />
-      );
+      const { container } = render(<VictoryModal isOpen={true} moves={42} onNewGame={() => {}} />);
 
       const overlay = container.firstChild as HTMLElement;
       expect(overlay.style.display).toBe('flex');
@@ -279,11 +259,11 @@ describe('VictoryModal', () => {
 
     it('should stop propagation on content click', () => {
       const onNewGame = vi.fn();
-      const { container } = render(
-        <VictoryModal isOpen={true} moves={42} onNewGame={onNewGame} />
-      );
+      const { container } = render(<VictoryModal isOpen={true} moves={42} onNewGame={onNewGame} />);
 
-      const contentDiv = container.querySelector('div[style*="background-color: white"]') as HTMLElement;
+      const contentDiv = container.querySelector(
+        'div[style*="background-color: white"]'
+      ) as HTMLElement;
       fireEvent.click(contentDiv);
 
       // Should not trigger backdrop click behavior
