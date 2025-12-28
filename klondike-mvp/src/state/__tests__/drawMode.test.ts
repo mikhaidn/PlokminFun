@@ -158,6 +158,8 @@ describe('Draw Mode', () => {
       state = drawFromStock(state); // Card B
       state = drawFromStock(state); // Card C
 
+      const wasteCards = [...state.waste];
+
       // Empty the stock
       while (state.stock.length > 0) {
         state = drawFromStock(state);
