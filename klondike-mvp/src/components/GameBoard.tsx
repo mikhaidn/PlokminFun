@@ -16,10 +16,12 @@ import {
   GenericTableau,
   WinCelebration,
   useSettings,
+  HelpModal,
 } from '@cardgames/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 import { convertTableauToGeneric } from '../utils/tableauAdapter';
+import { klondikeHelpContent } from '../utils/helpContent';
 
 interface GameBoardProps {
   initialState: KlondikeGameState;
@@ -81,6 +83,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
 
   // Settings modal state
   const [showSettings, setShowSettings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   // Use shared settings for animations and interactions
   const { settings } = useSettings();
@@ -334,6 +337,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           onNewGame={onNewGame}
           showSettings={true}
           onSettings={() => setShowSettings(true)}
+          showHelp={true}
+          onHelp={() => setShowHelp(true)}
           showAutoComplete={true}
           onAutoComplete={handleAutoComplete}
           isMobile={isMobile}
@@ -472,6 +477,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
 
       {/* Settings Modal */}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={showHelp}
+        onClose={() => setShowHelp(false)}
+        content={klondikeHelpContent}
+      />
 
       {/* Touch drag preview */}
       <DraggingCardPreview

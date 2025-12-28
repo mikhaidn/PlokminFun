@@ -18,6 +18,8 @@ export const GameControls: React.FC<GameControlsProps> = ({
   onNewGame,
   showSettings = false,
   onSettings,
+  showHelp = false,
+  onHelp,
   showHints = false,
   hintsEnabled = false,
   onToggleHints,
@@ -103,6 +105,18 @@ export const GameControls: React.FC<GameControlsProps> = ({
           aria-label="Game Settings"
         >
           ⚙️ Settings
+        </button>
+      )}
+
+      {/* Help button (optional) */}
+      {showHelp && onHelp && (
+        <button
+          onClick={onHelp}
+          style={buttonStyle()}
+          title="How to Play - Rules and Keyboard Shortcuts"
+          aria-label="Help and Rules"
+        >
+          ❓ Help
         </button>
       )}
 

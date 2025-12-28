@@ -17,11 +17,13 @@ import {
   FoundationArea,
   GenericTableau,
   WinCelebration,
+  HelpModal,
 } from '@cardgames/shared';
 import { getMinButtonHeight } from '@cardgames/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 import { convertTableauToGeneric } from '../utils/tableauAdapter';
+import { freecellHelpContent } from '../utils/helpContent';
 
 type SelectedCard =
   | { type: 'tableau'; column: number; cardIndex: number }
@@ -78,6 +80,7 @@ export const GameBoard: React.FC = () => {
 
   const [showHints, setShowHints] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   // Use shared settings for animations and interactions
   const { settings } = useSettings();
@@ -427,6 +430,23 @@ export const GameBoard: React.FC = () => {
         ⚙️ Settings
       </button>
       <button
+        onClick={() => setShowHelp(true)}
+        style={{
+          padding: buttonPadding,
+          minHeight: `${minButtonHeight}px`,
+          cursor: 'pointer',
+          backgroundColor: 'white',
+          color: 'black',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          fontSize: `${fontSize}em`,
+        }}
+        title="How to Play - Rules and Keyboard Shortcuts"
+        aria-label="Help and Rules"
+      >
+        ❓ Help
+      </button>
+      <button
         onClick={() => setShowHints(!showHints)}
         style={{
           padding: buttonPadding,
@@ -688,6 +708,13 @@ export const GameBoard: React.FC = () => {
 
       {/* Settings Modal */}
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={showHelp}
+        onClose={() => setShowHelp(false)}
+        content={freecellHelpContent}
+      />
 
       {/* Touch drag preview */}
       <DraggingCardPreview
