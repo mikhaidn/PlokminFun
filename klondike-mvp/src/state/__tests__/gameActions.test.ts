@@ -41,12 +41,15 @@ describe('drawFromStock', () => {
 
     const newState = drawFromStock(state);
 
-    expect(newState.stock).toHaveLength(3);
-    expect(newState.waste).toHaveLength(0);
-    // Waste is reversed when recycled to stock
+    // After recycling, cards are drawn based on draw mode (draw1 by default)
+    // 3 cards recycled to stock (reversed), then 1 drawn to waste
+    expect(newState.stock).toHaveLength(2);
+    expect(newState.waste).toHaveLength(1);
+    // After reversing [A♥, K♠, 7♦] we get stock [7♦, K♠, A♥]
+    // Drawing from top (end) gives us A♥ (the first card originally drawn)
+    expect(newState.waste[0]).toEqual({ suit: '♥', value: 'A', rank: 1, id: 'A♥' });
     expect(newState.stock[0]).toEqual({ suit: '♦', value: '7', rank: 7, id: '7♦' });
     expect(newState.stock[1]).toEqual({ suit: '♠', value: 'K', rank: 13, id: 'K♠' });
-    expect(newState.stock[2]).toEqual({ suit: '♥', value: 'A', rank: 1, id: 'A♥' });
   });
 
   test('returns same state when both stock and waste are empty', () => {
@@ -104,9 +107,10 @@ describe('drawFromStock', () => {
 
     const wasteIds = state.waste.map((c) => c.id);
     const newState = drawFromStock(state);
-    const stockIds = newState.stock.map((c) => c.id);
+    // After recycling and drawing, all cards should be preserved across stock + waste
+    const allCardIds = [...newState.stock.map((c) => c.id), ...newState.waste.map((c) => c.id)];
 
-    expect(stockIds.sort()).toEqual(wasteIds.sort());
+    expect(allCardIds.sort()).toEqual(wasteIds.sort());
   });
 });
 

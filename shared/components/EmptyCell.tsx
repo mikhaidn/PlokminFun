@@ -7,6 +7,7 @@ interface EmptyCellProps {
   cardWidth?: number;
   cardHeight?: number;
   isHighlighted?: boolean;
+  title?: string;
   // Support for drop target attributes (for touch drag on mobile)
   'data-drop-target-type'?: string;
   'data-drop-target-index'?: number;
@@ -21,6 +22,7 @@ export const EmptyCell: React.FC<EmptyCellProps> = ({
   cardWidth = 60,
   cardHeight = 84,
   isHighlighted = false,
+  title,
   ...dataAttributes
 }) => {
   const borderRadius = cardWidth * 0.1;
@@ -45,7 +47,7 @@ export const EmptyCell: React.FC<EmptyCellProps> = ({
   };
 
   return (
-    <div style={cellStyle} onClick={onClick} {...dataAttributes}>
+    <div style={cellStyle} onClick={onClick} title={title} {...dataAttributes}>
       {label && <span>{label}</span>}
     </div>
   );

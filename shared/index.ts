@@ -11,6 +11,8 @@ export { CardFlip } from './components/CardFlip';
 export type { CardFlipProps } from './components/CardFlip';
 export { EmptyCell } from './components/EmptyCell';
 export { SettingsModal } from './components/SettingsModal';
+export { HelpModal } from './components/HelpModal';
+export type { HelpContent } from './components/HelpModal';
 export { FoundationArea } from './components/FoundationArea';
 export { GenericTableau } from './components/GenericTableau';
 export type {
@@ -28,6 +30,7 @@ export type {
   CardInteractionState,
   CardInteractionHandlers,
   UseCardInteractionReturn,
+  InvalidMoveAttempt,
 } from './types/CardInteraction';
 // Note: Card type not exported to avoid conflict with Card component
 // Import Card type separately if needed

@@ -55,6 +55,20 @@ export interface CardInteractionConfig<TLocation extends CardLocation> {
 }
 
 /**
+ * Invalid move attempt information for UI feedback
+ */
+export interface InvalidMoveAttempt<TLocation extends CardLocation> {
+  /** Location where invalid move was attempted */
+  location: TLocation;
+
+  /** Optional reason for the invalid move (for tooltip) */
+  reason?: string;
+
+  /** Timestamp when the attempt occurred (for auto-clearing) */
+  timestamp: number;
+}
+
+/**
  * State managed by the card interaction hook.
  */
 export interface CardInteractionState<TLocation extends CardLocation> {
@@ -72,6 +86,9 @@ export interface CardInteractionState<TLocation extends CardLocation> {
 
   /** Valid destination cells to highlight (smart tap-to-move feature) */
   highlightedCells: TLocation[];
+
+  /** Invalid move attempt for shake animation and tooltip feedback */
+  invalidMoveAttempt: InvalidMoveAttempt<TLocation> | null;
 }
 
 /**

@@ -15,9 +15,32 @@ import type { GameSettings } from '../types/GameSettings';
 const STORAGE_KEY = 'cardgames-settings-v2'; // v2 to distinguish from old format
 
 /**
+ * Detect if the user is on a mobile device
+ * Used to enable smart tap-to-move by default on mobile
+ *
+ * @returns true if on mobile device, false otherwise
+ */
+function isMobileDevice(): boolean {
+  // Check viewport width (most reliable for web)
+  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    return true;
+  }
+
+  // Check user agent as fallback (for tablets in desktop mode)
+  if (typeof navigator !== 'undefined') {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  }
+
+  return false;
+}
+
+/**
  * Load settings from localStorage
  * Returns default settings if none exist or if loading fails
  * Automatically applies accessibility overrides
+ * Enables smart tap-to-move by default on mobile devices
  *
  * @returns GameSettings with user preferences and accessibility overrides
  */
@@ -34,7 +57,16 @@ export function loadSettings(): GameSettings {
     console.warn('Failed to load settings:', error);
   }
 
-  return applyAccessibilityOverrides(DEFAULT_GAME_SETTINGS);
+  // First-time user: Apply mobile-friendly defaults
+  const defaults = { ...DEFAULT_GAME_SETTINGS };
+
+  // Enable smart tap-to-move by default on mobile devices
+  // Usability improvement: Mobile players expect tap-to-move behavior
+  if (isMobileDevice()) {
+    defaults.smartTapToMove = true;
+  }
+
+  return applyAccessibilityOverrides(defaults);
 }
 
 /**

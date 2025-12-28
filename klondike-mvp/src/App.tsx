@@ -3,6 +3,7 @@ import { SettingsProvider } from '@cardgames/shared';
 import { GameBoard } from './components/GameBoard';
 import { AnimationExperiments } from './components/AnimationExperiments';
 import { createInitialState } from './state/gameState';
+import { loadKlondikeSettings } from './utils/klondikeSettings';
 
 function App() {
   const [seed] = useState(() => Math.floor(Math.random() * 1000000));
@@ -20,12 +21,15 @@ function App() {
     return <AnimationExperiments />;
   }
 
+  // Load Klondike settings (draw mode)
+  const klondikeSettings = loadKlondikeSettings();
+
   return (
     <SettingsProvider>
       <div style={{ width: '100%', height: '100vh' }}>
         <GameBoard
           key={gameKey}
-          initialState={createInitialState(seed)}
+          initialState={createInitialState(seed, klondikeSettings.drawMode)}
           onNewGame={handleNewGame}
         />
       </div>

@@ -1,0 +1,83 @@
+/**
+ * Shared animations for card games
+ * Usability improvement: Provide visual feedback for invalid moves
+ */
+
+/**
+ * Shake animation for invalid move feedback
+ * Duration: 400ms
+ * Triggered when user attempts an invalid move
+ */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-8px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(8px);
+  }
+}
+
+.shake-animation {
+  animation: shake 400ms ease-in-out;
+}
+
+/**
+ * Subtle pulse animation for hints or highlights
+ * Can be used for highlighting valid move destinations
+ */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.pulse-animation {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/**
+ * Fade in animation for tooltips and messages
+ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-animation {
+  animation: fadeIn 200ms ease-out;
+}
+
+/**
+ * Respects prefers-reduced-motion accessibility setting
+ * Disables all animations if user prefers reduced motion
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

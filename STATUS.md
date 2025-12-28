@@ -1,19 +1,15 @@
 # Project Status
 
-**Last Updated:** 2025-12-27
-**Current Phase:** P5 - RFC-005 Phase 3 - Perfect UI
-**Next Milestone:** Delightful mobile experience for active users
+**Last Updated:** 2025-12-28
+**Current Phase:** P5 - Usability Improvements (Quick Wins)
+**Next Milestone:** Remove confusion points and improve mobile experience
 
 ---
 
 ## 🎯 Current Sprint
 
 ### Active Work
-- [ ] **RFC-005 Phase 3: Perfect UI** (Focused on grandma-friendly polish)
-  - Card flip animations (3D transforms for Klondike stock reveal)
-  - Win celebration (confetti + smooth cascade)
-  - Analytics event structure (foundation for future Plausible integration)
-  - **Goal:** Smooth, delightful experience for current users
+- None - Ready for next priority
 
 ### Blocked/Waiting
 - None
@@ -21,6 +17,55 @@
 ---
 
 ## ✅ Recently Completed
+
+### Week of 2025-12-28
+
+**MILESTONE: Usability Quick Wins Complete - 4 Critical Improvements Shipped 🎉**
+
+- [x] **Usability Quick Wins** ✅ ALL 4 COMPLETE
+  - Quick Win 1: Smart tap-to-move enabled by default on mobile ✅
+    - Auto-detect mobile devices (viewport < 768px)
+    - Enable smartTapToMove for first-time mobile users
+    - Reduces mobile confusion significantly
+  - Quick Win 2: Invalid move feedback with shake animation ✅
+    - Shake animation on invalid moves (600ms)
+    - Contextual tooltips ("No valid moves", "Invalid move", etc.)
+    - Respects prefers-reduced-motion
+    - Works with drag, touch, and tap interactions
+  - Quick Win 3: Improved game tooltips ✅
+    - Stock: "Click to draw cards from stock"
+    - Empty stock: "Click to recycle waste pile (unlimited)"
+    - Auto-complete: Detailed explanation of when it works
+    - Added title prop to CardFlip and EmptyCell
+  - Quick Win 4: Face-down card counter badges ✅
+    - Show "N↓" badge on Klondike tableau columns
+    - Helps strategic planning
+    - Non-intrusive design (top-right corner)
+  - **Deliverables:**
+    - shared/utils/settingsStorage.ts: Mobile detection
+    - shared/hooks/useCardInteraction.ts: Invalid move tracking
+    - shared/types/CardInteraction.ts: InvalidMoveAttempt type
+    - shared/styles/animations.css: Shake animation
+    - shared/docs/INVALID_MOVE_FEEDBACK.md: Usage guide
+    - shared/components/CardFlip.tsx: Title prop support
+    - shared/components/EmptyCell.tsx: Title prop support
+    - shared/components/GenericTableau.tsx: Face-down count badge
+    - klondike-mvp/src/components/StockWaste.tsx: Enhanced tooltips
+    - klondike-mvp/src/utils/tableauAdapter.ts: Face-down count
+  - **Test Results:** TypeScript compilation passed, no type errors
+  - **Impact:** Immediate UX improvements for mobile users and new players
+
+**PIVOT: Usability Analysis Complete - Identified 25 Improvements 🎯**
+
+- [x] **Comprehensive Usability Analysis** ✅ COMPLETE
+  - Analyzed FreeCell and Klondike from player perspective
+  - Identified 25 potentially confusing elements and missing configurations
+  - Prioritized issues: 3 Critical, 8 High, 9 Medium, 5 Low
+  - Created implementation roadmap with effort estimates
+  - **Deliverables:**
+    - usability-analysis.md: Full analysis with priority matrix
+  - **Impact:** Clear roadmap for improving player experience
+  - **Next Steps:** Implementing quick wins (4 issues, 3-4 hours total)
 
 ### Week of 2025-12-27
 

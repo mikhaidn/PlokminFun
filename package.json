@@ -21,6 +21,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit -p klondike-mvp/tsconfig.json && tsc --noEmit -p freecell-mvp/tsconfig.json",
     "typecheck:watch": "tsc --noEmit --watch -p klondike-mvp/tsconfig.json",
+    "check": "bash scripts/check-code-quality.sh",
     "validate": "npm run format:check && npm run typecheck && npm run lint && npm test && npm run build",
     "setup-hooks": "ln -sf ../../scripts/pre-commit.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit && echo '✅ Git hooks installed!'",
     "clean": "rm -rf */node_modules */dist */.turbo && npm install",

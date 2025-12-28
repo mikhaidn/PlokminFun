@@ -3,13 +3,20 @@
  * RFC-005 Phase 1 Day 2: Unified settings UI
  *
  * Sections:
- * 1. Game Mode (existing accessibility settings)
- * 2. Animations & Effects (new)
- * 3. Interaction Style (new)
+ * 1. Klondike Settings (Draw Mode - game-specific)
+ * 2. Game Mode (existing accessibility settings)
+ * 3. Animations & Effects (new)
+ * 4. Interaction Style (new)
  */
 
 import React, { useState } from 'react';
 import { useSettings, type GameSettings } from '@cardgames/shared';
+import { KlondikeSettingsSection } from './KlondikeSettingsSection';
+import {
+  loadKlondikeSettings,
+  saveKlondikeSettings,
+  type KlondikeSettings,
+} from '../utils/klondikeSettings';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -19,16 +26,20 @@ interface SettingsModalProps {
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
   const { settings, updateSettings, resetSettings } = useSettings();
   const [localSettings, setLocalSettings] = useState<GameSettings>(settings);
+  const [klondikeSettings, setKlondikeSettings] =
+    useState<KlondikeSettings>(loadKlondikeSettings());
 
   if (!isOpen) return null;
 
   const handleSave = () => {
     updateSettings(localSettings);
+    saveKlondikeSettings(klondikeSettings);
     onClose();
   };
 
   const handleCancel = () => {
     setLocalSettings(settings); // Reset to original
+    setKlondikeSettings(loadKlondikeSettings()); // Reset Klondike settings
     onClose();
   };
 
@@ -176,7 +187,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           Game Settings
         </h2>
 
-        {/* Section 1: Game Mode */}
+        {/* Section 1: Klondike-Specific Settings (PROMINENT) */}
+        <KlondikeSettingsSection
+          drawMode={klondikeSettings.drawMode}
+          onDrawModeChange={(mode) => setKlondikeSettings({ ...klondikeSettings, drawMode: mode })}
+          isMobile={isMobile}
+          fontSize={fontSize}
+        />
+
+        {/* Section 2: Game Mode */}
         <div style={sectionStyle}>
           <h3 style={sectionTitleStyle}>Game Mode</h3>
           <div style={{ marginBottom: '12px' }}>

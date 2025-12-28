@@ -55,6 +55,7 @@ export const StockWaste: React.FC<StockWasteProps> = ({
             flipDuration={flipDuration}
             cardBackTheme="blue"
             onClick={onStockClick}
+            title="Click to draw cards from stock"
           />
         ) : (
           <EmptyCell
@@ -62,6 +63,7 @@ export const StockWaste: React.FC<StockWasteProps> = ({
             cardHeight={cardHeight}
             label="↻"
             onClick={onStockClick}
+            title="Click to recycle waste pile back to stock (unlimited)"
           />
         )}
       </div>

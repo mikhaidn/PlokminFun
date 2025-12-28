@@ -4,12 +4,13 @@
  * Used by FreeCell, Klondike, and future games
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type {
   CardLocation,
   GameLocation,
   CardInteractionConfig,
   UseCardInteractionReturn,
+  InvalidMoveAttempt,
 } from '../types/CardInteraction';
 import { useSettings } from '../contexts/SettingsContext';
 
@@ -53,6 +54,45 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
     null
   );
   const [highlightedCells, setHighlightedCells] = useState<TLocation[]>([]);
+  const [invalidMoveAttempt, setInvalidMoveAttempt] =
+    useState<InvalidMoveAttempt<TLocation> | null>(null);
+
+  // Timer ref for auto-clearing invalid move feedback
+  const invalidMoveTimerRef = useRef<number | null>(null);
+
+  /**
+   * Trigger invalid move feedback
+   * Shows shake animation and optional tooltip
+   * Auto-clears after 600ms
+   */
+  const triggerInvalidMove = useCallback((location: TLocation, reason?: string) => {
+    // Clear any existing timer
+    if (invalidMoveTimerRef.current !== null) {
+      window.clearTimeout(invalidMoveTimerRef.current);
+    }
+
+    // Set invalid move state
+    setInvalidMoveAttempt({
+      location,
+      reason,
+      timestamp: Date.now(),
+    });
+
+    // Auto-clear after 600ms (enough time for shake animation)
+    invalidMoveTimerRef.current = window.setTimeout(() => {
+      setInvalidMoveAttempt(null);
+      invalidMoveTimerRef.current = null;
+    }, 600);
+  }, []);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (invalidMoveTimerRef.current !== null) {
+        window.clearTimeout(invalidMoveTimerRef.current);
+      }
+    };
+  }, []);
 
   /**
    * Compare two locations for equality
@@ -143,8 +183,8 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
         const validMoves = getValidMoves!(location);
 
         if (validMoves.length === 0) {
-          // No valid moves - could add shake animation here
-          // For now, just clear any previous selection
+          // No valid moves - trigger shake animation and feedback
+          triggerInvalidMove(location, 'No valid moves for this card');
           setSelectedCard(null);
           setHighlightedCells([]);
           return;
@@ -190,7 +230,10 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
           throw error;
         }
       } else {
-        // Invalid move - only change selection if clicking same type (likely another source card)
+        // Invalid move - trigger shake animation and feedback
+        triggerInvalidMove(location, 'Invalid move');
+
+        // Only change selection if clicking same type (likely another source card)
         // If clicking different type (likely a destination), keep current selection
         if (selectedCard.type === location.type) {
           setSelectedCard(location);
@@ -208,6 +251,7 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
       getValidMoves,
       settings.smartTapToMove,
       locationsEqual,
+      triggerInvalidMove,
     ]
   );
 
@@ -251,13 +295,16 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
         // Try to execute the move
         if (validateMove(draggingCard, location)) {
           executeMove(draggingCard, location);
+        } else {
+          // Invalid drop - trigger shake animation
+          triggerInvalidMove(location, 'Cannot drop card here');
         }
 
         // Always clear drag state after drop (even if invalid)
         setDraggingCard(null);
       };
     },
-    [draggingCard, validateMove, executeMove]
+    [draggingCard, validateMove, executeMove, triggerInvalidMove]
   );
 
   /**
@@ -360,6 +407,9 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
             // Try to execute the move
             if (validateMove(draggingCard, dropLocation)) {
               executeMove(draggingCard, dropLocation);
+            } else {
+              // Invalid touch drop - trigger shake animation
+              triggerInvalidMove(dropLocation, 'Cannot move card here');
             }
           }
         }
@@ -398,6 +448,7 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
       touchDragging,
       touchPosition,
       highlightedCells,
+      invalidMoveAttempt,
     },
     handlers: {
       handleCardClick,

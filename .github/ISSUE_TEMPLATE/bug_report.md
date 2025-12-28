@@ -1,43 +1,45 @@
 ---
 name: Bug Report
-about: Report a bug in FreeCell or other games
+about: Report a bug or error in the games
 title: '[BUG] '
 labels: bug
 assignees: ''
 ---
 
-## Bug Description
-<!-- A clear description of what the bug is -->
+## 🐛 Bug Description
+A clear and concise description of what the bug is.
 
-## Game
-<!-- Which game is affected? -->
+## 🎮 Game
 - [ ] FreeCell
-- [ ] Other: ___________
+- [ ] Klondike
+- [ ] Both
+- [ ] Landing page / other
 
-## Steps to Reproduce
+## 📋 Steps to Reproduce
 1. Go to '...'
 2. Click on '...'
-3. See error
+3. Drag card '...'
+4. See error
 
-## Expected Behavior
-<!-- What should happen? -->
+## ✅ Expected Behavior
+What you expected to happen.
 
-## Actual Behavior
-<!-- What actually happens? -->
+## ❌ Actual Behavior
+What actually happened.
 
-## Game Seed (if applicable)
-<!-- If you can reproduce with a specific seed, include it here -->
-Seed:
+## 📸 Screenshots
+If applicable, add screenshots to help explain your problem.
 
-## Screenshots
-<!-- If applicable, add screenshots -->
+## 💻 Environment
+- **Device:** [e.g., Desktop, iPhone 12, iPad]
+- **Browser:** [e.g., Chrome 120, Safari 17, Firefox 121]
+- **OS:** [e.g., Windows 11, macOS 14, iOS 17]
+- **Screen Size:** [e.g., 1920x1080, mobile]
 
-## Environment
-<!-- Please complete the following information -->
-- **App Version**: [e.g., 0.1.0 - find this at the bottom of the game page]
-- **Browser**: [e.g., Chrome 120, Safari 17, Firefox 121]
-- **Device**: [e.g., iPhone 14, Desktop, iPad]
-- **OS**: [e.g., iOS 17, macOS 14, Windows 11]
+## 🔍 Additional Context
+Add any other context about the problem here.
 
-## Additional Context
-<!-- Any other context about the problem -->
+## ☑️ Checklist
+- [ ] I have checked [KNOWN_ISSUES.md](../../KNOWN_ISSUES.md) and this is not already tracked
+- [ ] I can reproduce this bug consistently
+- [ ] I have included all relevant information above

@@ -59,6 +59,7 @@ export interface CardFlipProps {
 
   /** Accessibility */
   'aria-label'?: string;
+  title?: string;
 
   /** Additional styles */
   style?: React.CSSProperties;
@@ -109,6 +110,7 @@ export const CardFlip: React.FC<CardFlipProps> = ({
   onTouchStart,
   onTouchEnd,
   'aria-label': ariaLabel,
+  title,
   style = {},
 }) => {
   const [isFlipped, setIsFlipped] = useState(faceUp);
@@ -158,7 +160,12 @@ export const CardFlip: React.FC<CardFlipProps> = ({
   };
 
   return (
-    <div className="card-flip-container" style={containerStyle} aria-label={ariaLabel}>
+    <div
+      className="card-flip-container"
+      style={containerStyle}
+      aria-label={ariaLabel}
+      title={title}
+    >
       <div className={`card-flip-inner ${isFlipped ? 'flipped' : ''}`} style={innerStyle}>
         {/* Front face (card face) */}
         <div className="card-flip-front" style={frontStyle}>

@@ -15,6 +15,8 @@ export interface TableauColumn {
   faceUpCount: number; // Number of cards that are face-up (from the end)
 }
 
+export type DrawMode = 'draw1' | 'draw3';
+
 export interface KlondikeGameState {
   tableau: TableauColumn[]; // 7 columns
   stock: Card[]; // Draw pile (face-down)
@@ -22,6 +24,7 @@ export interface KlondikeGameState {
   foundations: Card[][]; // 4 foundation piles (face-up)
   seed: number; // For reproducible games
   moves: number; // Move counter
+  drawMode: DrawMode; // Draw-1 or Draw-3
 }
 
 /**
@@ -46,8 +49,11 @@ export interface Location {
  *
  * Total in tableau: 28 cards
  * Remaining in stock: 24 cards (all face-down)
+ *
+ * @param seed - Random seed for reproducible games
+ * @param drawMode - Draw-1 (easier) or Draw-3 (traditional)
  */
-export function createInitialState(seed: number): KlondikeGameState {
+export function createInitialState(seed: number, drawMode: DrawMode = 'draw1'): KlondikeGameState {
   const deck = shuffleWithSeed(createDeck(), seed);
 
   const tableau: TableauColumn[] = [];
@@ -74,6 +80,7 @@ export function createInitialState(seed: number): KlondikeGameState {
     foundations: [[], [], [], []], // 4 empty foundation piles
     seed,
     moves: 0,
+    drawMode,
   };
 }
 

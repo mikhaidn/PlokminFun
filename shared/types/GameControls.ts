@@ -20,6 +20,8 @@ export interface GameControlsProps {
   // Optional features
   showSettings?: boolean;
   onSettings?: () => void;
+  showHelp?: boolean;
+  onHelp?: () => void;
   showHints?: boolean;
   hintsEnabled?: boolean;
   onToggleHints?: () => void;
