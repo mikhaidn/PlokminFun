@@ -450,7 +450,7 @@ export const GameBoard: React.FC = () => {
           fontWeight: showHints ? 'bold' : 'normal',
           fontSize: `${fontSize}em`,
         }}
-        title="Toggle hints to highlight next playable cards"
+        title="Show hints: Highlights cards that can safely move to foundations"
       >
         💡 Hints
       </button>

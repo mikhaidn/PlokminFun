@@ -1,7 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { type Card as CardType } from '../types/Card';
 import { getCardColors, getCardBoxShadow } from '../utils/highContrastStyles';
 import { CardBack } from './CardBack';
+
+// Inject shake animation CSS once
+let shakeAnimationInjected = false;
+function injectShakeAnimation() {
+  if (shakeAnimationInjected) return;
+
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+      20%, 40%, 60%, 80% { transform: translateX(8px); }
+    }
+  `;
+  document.head.appendChild(style);
+  shakeAnimationInjected = true;
+}
 
 interface CardProps {
   card: CardType;
@@ -11,6 +28,7 @@ interface CardProps {
   isSelected?: boolean;
   isHighlighted?: boolean;
   isDragging?: boolean;
+  isInvalidMove?: boolean; // NEW: Trigger shake animation for invalid move feedback
   style?: React.CSSProperties;
   onDragStart?: (e: React.DragEvent) => void;
   onDragEnd?: (e: React.DragEvent) => void;
@@ -45,6 +63,7 @@ export const Card: React.FC<CardProps> = ({
   isSelected = false,
   isHighlighted = false,
   isDragging = false,
+  isInvalidMove = false,
   style = {},
   onDragStart,
   onDragEnd,
@@ -63,6 +82,11 @@ export const Card: React.FC<CardProps> = ({
   'data-drop-target-card-index': dropTargetCardIndex,
   'data-drop-target-card-count': dropTargetCardCount,
 }) => {
+  // Inject shake animation CSS on first render
+  useEffect(() => {
+    injectShakeAnimation();
+  }, []);
+
   // If face-down, render CardBack component
   if (!faceUp) {
     return (
@@ -77,6 +101,7 @@ export const Card: React.FC<CardProps> = ({
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         draggable={draggable && onClick !== undefined}
+        isInvalidMove={isInvalidMove}
       />
     );
   }
@@ -105,6 +130,7 @@ export const Card: React.FC<CardProps> = ({
     position: 'relative',
     transition: 'all 0.15s ease',
     opacity: isDragging ? 0.5 : 1,
+    animation: isInvalidMove ? 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both' : 'none',
     ...style,
   };
 

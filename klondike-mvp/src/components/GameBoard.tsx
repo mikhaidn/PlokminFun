@@ -24,6 +24,8 @@ import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 import { convertTableauToGeneric } from '../utils/tableauAdapter';
 import { klondikeHelpContent } from '../utils/helpContent';
+import { loadKlondikeSettings, updateKlondikeSetting } from '../utils/klondikeSettings';
+import type { DrawMode } from '../state/gameState';
 
 interface GameBoardProps {
   initialState: KlondikeGameState;
@@ -89,6 +91,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
 
   // Use shared settings for animations and interactions
   const { settings } = useSettings();
+
+  // Handle draw mode toggle
+  const handleDrawModeToggle = useCallback(() => {
+    const newMode: DrawMode = gameState.drawMode === 'draw1' ? 'draw3' : 'draw1';
+    updateKlondikeSetting('drawMode', newMode);
+    onNewGame(); // Start a new game with the new draw mode
+  }, [gameState.drawMode, onNewGame]);
 
   // Derive win state from game state
   const isWon = isGameWon(gameState);
@@ -368,6 +377,31 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           buttonPadding={isMobile ? '8px 12px' : '8px 16px'}
           fontSize={isMobile ? 0.8 : 0.875}
         />
+
+        {/* Draw Mode Toggle */}
+        <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
+          <span style={{ fontSize: isMobile ? '0.8em' : '0.875em', color: '#666' }}>Draw Mode:</span>
+          <button
+            onClick={handleDrawModeToggle}
+            style={{
+              padding: isMobile ? '8px 12px' : '8px 16px',
+              minHeight: `${buttonHeight}px`,
+              cursor: 'pointer',
+              backgroundColor: '#4caf50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              fontSize: isMobile ? '0.8em' : '0.875em',
+              fontWeight: 'bold',
+            }}
+            title={`Currently: Draw ${gameState.drawMode === 'draw1' ? '1' : '3'}. Click to switch.`}
+          >
+            {gameState.drawMode === 'draw1' ? 'Draw 1' : 'Draw 3'}
+          </button>
+          <span style={{ fontSize: '0.75em', color: '#999' }}>
+            (Changes next game)
+          </span>
+        </div>
       </div>
 
       {/* Top Row: Stock/Waste and Foundations */}
@@ -422,6 +456,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
         layoutSizes={layoutSizes}
         selectedCard={sharedInteractionState.selectedCard}
         draggingCard={sharedInteractionState.draggingCard}
+        emptyColumnTooltip="Only Kings can start a new column"
         onClick={handleTableauClick}
         onEmptyColumnClick={(columnIndex) => {
           // Empty columns can receive Kings in Klondike

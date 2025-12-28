@@ -22,6 +22,8 @@ export type {
 } from './components/GenericTableau';
 export { WinCelebration } from './components/WinCelebration';
 export { VictoryModal } from './components/VictoryModal';
+export { InvalidMoveTooltip, injectFadeAnimation } from './components/InvalidMoveTooltip';
+export type { InvalidMoveTooltipProps } from './components/InvalidMoveTooltip';
 
 // Types
 export type { GameControlsProps } from './types/GameControls.ts';
