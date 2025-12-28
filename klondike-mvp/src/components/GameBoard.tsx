@@ -24,7 +24,7 @@ import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 import { convertTableauToGeneric } from '../utils/tableauAdapter';
 import { klondikeHelpContent } from '../utils/helpContent';
-import { loadKlondikeSettings, updateKlondikeSetting } from '../utils/klondikeSettings';
+import { updateKlondikeSetting } from '../utils/klondikeSettings';
 import type { DrawMode } from '../state/gameState';
 
 interface GameBoardProps {
@@ -380,7 +380,9 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
 
         {/* Draw Mode Toggle */}
         <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
-          <span style={{ fontSize: isMobile ? '0.8em' : '0.875em', color: '#666' }}>Draw Mode:</span>
+          <span style={{ fontSize: isMobile ? '0.8em' : '0.875em', color: '#666' }}>
+            Draw Mode:
+          </span>
           <button
             onClick={handleDrawModeToggle}
             style={{
@@ -398,9 +400,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           >
             {gameState.drawMode === 'draw1' ? 'Draw 1' : 'Draw 3'}
           </button>
-          <span style={{ fontSize: '0.75em', color: '#999' }}>
-            (Changes next game)
-          </span>
+          <span style={{ fontSize: '0.75em', color: '#999' }}>(Changes next game)</span>
         </div>
       </div>
 

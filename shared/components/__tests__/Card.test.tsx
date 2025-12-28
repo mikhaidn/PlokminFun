@@ -17,9 +17,7 @@ const mockCard: CardType = {
 describe('Card', () => {
   describe('basic rendering', () => {
     it('should render a face-up card', () => {
-      const { container } = render(
-        <Card card={mockCard} faceUp={true} />
-      );
+      const { container } = render(<Card card={mockCard} faceUp={true} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement).toBeDefined();
@@ -28,9 +26,7 @@ describe('Card', () => {
     });
 
     it('should render a face-down card', () => {
-      const { container } = render(
-        <Card card={mockCard} faceUp={false} />
-      );
+      const { container } = render(<Card card={mockCard} faceUp={false} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement).toBeDefined();
@@ -39,9 +35,7 @@ describe('Card', () => {
     });
 
     it('should default to face-up when faceUp prop is not provided', () => {
-      const { container } = render(
-        <Card card={mockCard} />
-      );
+      const { container } = render(<Card card={mockCard} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement.textContent).toContain('A');
@@ -50,18 +44,14 @@ describe('Card', () => {
 
   describe('selection and highlighting', () => {
     it('should apply selected styling', () => {
-      const { container } = render(
-        <Card card={mockCard} isSelected={true} />
-      );
+      const { container } = render(<Card card={mockCard} isSelected={true} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement).toBeDefined();
     });
 
     it('should apply highlighted styling', () => {
-      const { container } = render(
-        <Card card={mockCard} isHighlighted={true} />
-      );
+      const { container } = render(<Card card={mockCard} isHighlighted={true} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement).toBeDefined();
@@ -70,27 +60,21 @@ describe('Card', () => {
 
   describe('invalid move feedback', () => {
     it('should apply shake animation when isInvalidMove is true', () => {
-      const { container } = render(
-        <Card card={mockCard} isInvalidMove={true} />
-      );
+      const { container } = render(<Card card={mockCard} isInvalidMove={true} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement.style.animation).toContain('shake');
     });
 
     it('should not apply shake animation by default', () => {
-      const { container } = render(
-        <Card card={mockCard} />
-      );
+      const { container } = render(<Card card={mockCard} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement.style.animation).toBe('none');
     });
 
     it('should apply shake animation to face-down cards', () => {
-      const { container } = render(
-        <Card card={mockCard} faceUp={false} isInvalidMove={true} />
-      );
+      const { container } = render(<Card card={mockCard} faceUp={false} isInvalidMove={true} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement).toBeDefined();
@@ -100,18 +84,14 @@ describe('Card', () => {
 
   describe('dragging state', () => {
     it('should apply dragging opacity', () => {
-      const { container } = render(
-        <Card card={mockCard} isDragging={true} />
-      );
+      const { container } = render(<Card card={mockCard} isDragging={true} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement.style.opacity).toBe('0.5');
     });
 
     it('should have full opacity when not dragging', () => {
-      const { container } = render(
-        <Card card={mockCard} isDragging={false} />
-      );
+      const { container } = render(<Card card={mockCard} isDragging={false} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement.style.opacity).toBe('1');
@@ -120,9 +100,7 @@ describe('Card', () => {
 
   describe('custom sizing', () => {
     it('should apply custom card width and height', () => {
-      const { container } = render(
-        <Card card={mockCard} cardWidth={100} cardHeight={140} />
-      );
+      const { container } = render(<Card card={mockCard} cardWidth={100} cardHeight={140} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement.style.width).toBe('100px');
@@ -130,9 +108,7 @@ describe('Card', () => {
     });
 
     it('should use default sizing when not specified', () => {
-      const { container } = render(
-        <Card card={mockCard} />
-      );
+      const { container } = render(<Card card={mockCard} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement.style.width).toBe('60px');
@@ -142,18 +118,14 @@ describe('Card', () => {
 
   describe('accessibility', () => {
     it('should have a title attribute with card information', () => {
-      const { container } = render(
-        <Card card={mockCard} />
-      );
+      const { container } = render(<Card card={mockCard} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement.getAttribute('title')).toBe('A♠');
     });
 
     it('should be clickable when onClick is provided', () => {
-      const { container } = render(
-        <Card card={mockCard} onClick={() => {}} />
-      );
+      const { container } = render(<Card card={mockCard} onClick={() => {}} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement.style.cursor).toBe('pointer');
@@ -162,18 +134,14 @@ describe('Card', () => {
 
   describe('card back themes', () => {
     it('should render blue card back by default', () => {
-      const { container } = render(
-        <Card card={mockCard} faceUp={false} />
-      );
+      const { container } = render(<Card card={mockCard} faceUp={false} />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement).toBeDefined();
     });
 
     it('should render red card back when specified', () => {
-      const { container } = render(
-        <Card card={mockCard} faceUp={false} cardBackTheme="red" />
-      );
+      const { container } = render(<Card card={mockCard} faceUp={false} cardBackTheme="red" />);
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement).toBeDefined();

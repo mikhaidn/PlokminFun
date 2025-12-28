@@ -286,9 +286,7 @@ describe('GenericTableau', () => {
     });
 
     it('should pass emptyColumnTooltip to empty cells', () => {
-      const columns: TableauColumnData[] = [
-        { cards: [], emptyLabel: 'K' },
-      ];
+      const columns: TableauColumnData[] = [{ cards: [], emptyLabel: 'K' }];
 
       const onClick = vi.fn();
       const onEmptyColumnClick = vi.fn();

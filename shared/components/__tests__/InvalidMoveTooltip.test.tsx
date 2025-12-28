@@ -9,10 +9,7 @@ import { InvalidMoveTooltip } from '../InvalidMoveTooltip';
 describe('InvalidMoveTooltip', () => {
   it('should render with provided reason and position', () => {
     const { container } = render(
-      <InvalidMoveTooltip
-        reason="Invalid move: Wrong color"
-        position={{ x: 100, y: 200 }}
-      />
+      <InvalidMoveTooltip reason="Invalid move: Wrong color" position={{ x: 100, y: 200 }} />
     );
 
     const tooltip = container.firstChild as HTMLElement;
@@ -22,10 +19,7 @@ describe('InvalidMoveTooltip', () => {
 
   it('should apply correct position styles', () => {
     const { container } = render(
-      <InvalidMoveTooltip
-        reason="Cannot move card here"
-        position={{ x: 150, y: 250 }}
-      />
+      <InvalidMoveTooltip reason="Cannot move card here" position={{ x: 150, y: 250 }} />
     );
 
     const tooltip = container.firstChild as HTMLElement;
@@ -36,10 +30,7 @@ describe('InvalidMoveTooltip', () => {
 
   it('should have alert role for accessibility', () => {
     const { container } = render(
-      <InvalidMoveTooltip
-        reason="Invalid move"
-        position={{ x: 0, y: 0 }}
-      />
+      <InvalidMoveTooltip reason="Invalid move" position={{ x: 0, y: 0 }} />
     );
 
     const tooltip = container.firstChild as HTMLElement;
@@ -56,10 +47,7 @@ describe('InvalidMoveTooltip', () => {
 
     reasons.forEach((reason) => {
       const { container } = render(
-        <InvalidMoveTooltip
-          reason={reason}
-          position={{ x: 100, y: 100 }}
-        />
+        <InvalidMoveTooltip reason={reason} position={{ x: 100, y: 100 }} />
       );
 
       const tooltip = container.firstChild as HTMLElement;
@@ -68,24 +56,14 @@ describe('InvalidMoveTooltip', () => {
   });
 
   it('should have pointer-events: none to not interfere with interactions', () => {
-    const { container } = render(
-      <InvalidMoveTooltip
-        reason="Invalid"
-        position={{ x: 0, y: 0 }}
-      />
-    );
+    const { container } = render(<InvalidMoveTooltip reason="Invalid" position={{ x: 0, y: 0 }} />);
 
     const tooltip = container.firstChild as HTMLElement;
     expect(tooltip.style.pointerEvents).toBe('none');
   });
 
   it('should have high z-index to appear above other elements', () => {
-    const { container } = render(
-      <InvalidMoveTooltip
-        reason="Invalid"
-        position={{ x: 0, y: 0 }}
-      />
-    );
+    const { container } = render(<InvalidMoveTooltip reason="Invalid" position={{ x: 0, y: 0 }} />);
 
     const tooltip = container.firstChild as HTMLElement;
     expect(tooltip.style.zIndex).toBe('10000');
