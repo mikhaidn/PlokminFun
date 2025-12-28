@@ -212,7 +212,13 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
       // If no card selected, select this one
       if (!selectedCard) {
         setSelectedCard(location);
-        setHighlightedCells([]);
+        // Highlight valid destinations if getValidMoves is available
+        if (getValidMoves) {
+          const validMoves = getValidMoves(location);
+          setHighlightedCells(validMoves);
+        } else {
+          setHighlightedCells([]);
+        }
         return;
       }
 
@@ -237,7 +243,13 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
         // If clicking different type (likely a destination), keep current selection
         if (selectedCard.type === location.type) {
           setSelectedCard(location);
-          setHighlightedCells([]);
+          // Highlight valid destinations for the new selection
+          if (getValidMoves) {
+            const validMoves = getValidMoves(location);
+            setHighlightedCells(validMoves);
+          } else {
+            setHighlightedCells([]);
+          }
         }
         // else: keep selectedCard unchanged
       }
