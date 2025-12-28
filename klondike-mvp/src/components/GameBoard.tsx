@@ -6,6 +6,7 @@ import {
   GameControls,
   useGameHistory,
   useCardInteraction,
+  useAutoMove,
   DraggingCardPreview,
   Card,
   calculateLayoutSizes,
@@ -90,6 +91,26 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
 
   // Derive win state from game state
   const isWon = isGameWon(gameState);
+
+  // Auto-move cards to foundations using shared hook
+  useAutoMove({
+    gameState,
+    findAutoMove: (state) => {
+      // Klondike's autoMoveToFoundations does all moves at once
+      // We need to check if any moves are available
+      const newState = autoMoveToFoundations(state);
+      // Return a simple indicator if state changed
+      return newState !== state ? { hasMove: true } : null;
+    },
+    executeMove: (state) => {
+      // Execute all auto-moves at once
+      return autoMoveToFoundations(state);
+    },
+    onStateChange: pushState,
+    isInteracting: !!(sharedInteractionState.draggingCard || sharedInteractionState.selectedCard),
+    enabled: settings.autoComplete,
+    debounceMs: 300,
+  });
 
   // Update layout sizes on window resize
   useEffect(() => {

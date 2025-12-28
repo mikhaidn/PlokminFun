@@ -7,6 +7,7 @@ import { FreeCellArea } from './FreeCellArea';
 import {
   useGameHistory,
   useCardInteraction,
+  useAutoMove,
   DraggingCardPreview,
   Card,
   calculateLayoutSizes,
@@ -117,44 +118,33 @@ export const GameBoard: React.FC = () => {
   // Derive win condition from game state
   const showWin = useMemo(() => checkWinCondition(gameState), [gameState]);
 
-  // Auto-move cards to foundations
-  useEffect(() => {
-    if (sharedInteractionState.draggingCard || sharedInteractionState.selectedCard) return;
-
-    const timer = setTimeout(() => {
-      const autoMove = findSafeAutoMove(gameState);
-      if (autoMove) {
-        let newState: GameState | null = null;
-
-        if (autoMove.source.type === 'freeCell') {
-          newState = moveCardToFoundation(
-            gameState,
-            'freeCell',
-            autoMove.source.index,
-            autoMove.foundationIndex
-          );
-        } else if (autoMove.source.type === 'tableau') {
-          newState = moveCardToFoundation(
-            gameState,
-            'tableau',
-            autoMove.source.column,
-            autoMove.foundationIndex
-          );
-        }
-
-        if (newState) {
-          pushState(newState);
-        }
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [
+  // Auto-move cards to foundations using shared hook
+  useAutoMove({
     gameState,
-    sharedInteractionState.draggingCard,
-    sharedInteractionState.selectedCard,
-    pushState,
-  ]);
+    findAutoMove: findSafeAutoMove,
+    executeMove: (state, autoMove) => {
+      if (autoMove.source.type === 'freeCell') {
+        return moveCardToFoundation(
+          state,
+          'freeCell',
+          autoMove.source.index,
+          autoMove.foundationIndex
+        );
+      } else if (autoMove.source.type === 'tableau') {
+        return moveCardToFoundation(
+          state,
+          'tableau',
+          autoMove.source.column,
+          autoMove.foundationIndex
+        );
+      }
+      return null;
+    },
+    onStateChange: pushState,
+    isInteracting: !!(sharedInteractionState.draggingCard || sharedInteractionState.selectedCard),
+    enabled: settings.autoComplete,
+    debounceMs: 300,
+  });
 
   // Keyboard shortcuts for undo/redo
   useEffect(() => {

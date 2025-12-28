@@ -421,6 +421,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           </label>
         </div>
 
+        {/* Section 4: App Updates */}
+        <div style={sectionStyle}>
+          <h3 style={sectionTitleStyle}>App Updates</h3>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              width: '100%',
+              padding: '12px',
+              fontSize,
+              cursor: 'pointer',
+              backgroundColor: '#1e40af',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              marginBottom: '8px',
+            }}
+          >
+            Reload App
+          </button>
+          <div style={{ fontSize: '0.85em', color: '#666', textAlign: 'center' }}>
+            Refresh to get the latest version and clear cache
+          </div>
+        </div>
+
         {/* Action Buttons */}
         <div
           style={{

@@ -51,6 +51,8 @@ export type {
 } from './hooks/useGameAnimations';
 export { useSmartTap } from './hooks/useSmartTap';
 export type { SmartTapAction } from './hooks/useSmartTap';
+export { useAutoMove } from './hooks/useAutoMove';
+export type { AutoMoveOptions } from './hooks/useAutoMove';
 
 // Settings (RFC-005 Phase 1 Day 2)
 export type { GameSettings } from './types/GameSettings';
