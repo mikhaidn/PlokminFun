@@ -89,7 +89,10 @@ export const GameBoard: React.FC = () => {
   const { settings } = useSettings();
 
   // Derive accessibility settings from game mode
-  const accessibilitySettings = getSettingsFromMode(settings.gameMode);
+  const accessibilitySettings = useMemo(
+    () => getSettingsFromMode(settings.gameMode),
+    [settings.gameMode]
+  );
 
   // Responsive layout sizing with accessibility multipliers
   const [layoutSizes, setLayoutSizes] = useState<LayoutSizes>(() =>
@@ -101,9 +104,9 @@ export const GameBoard: React.FC = () => {
     )
   );
 
-  // Update layout sizes on window resize
+  // Update layout sizes on window resize or game mode change
   useEffect(() => {
-    const handleResize = () => {
+    const updateLayout = () => {
       setLayoutSizes(
         calculateLayoutSizes(
           window.innerWidth,
@@ -114,27 +117,17 @@ export const GameBoard: React.FC = () => {
       );
     };
 
-    window.addEventListener('resize', handleResize);
-    // Also handle orientation change
-    window.addEventListener('orientationchange', handleResize);
+    // Recalculate layout immediately when accessibility settings change
+    updateLayout();
+
+    window.addEventListener('resize', updateLayout);
+    window.addEventListener('orientationchange', updateLayout);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
+      window.removeEventListener('resize', updateLayout);
+      window.removeEventListener('orientationchange', updateLayout);
     };
   }, [accessibilitySettings.cardSizeMultiplier, accessibilitySettings.fontSizeMultiplier]);
-
-  // Recalculate layout when game mode changes (accessibility settings)
-  useEffect(() => {
-    setLayoutSizes(
-      calculateLayoutSizes(
-        window.innerWidth,
-        window.innerHeight,
-        accessibilitySettings.cardSizeMultiplier,
-        accessibilitySettings.fontSizeMultiplier
-      )
-    );
-  }, [settings.gameMode, accessibilitySettings.cardSizeMultiplier, accessibilitySettings.fontSizeMultiplier]);
 
   // Derive win condition from game state
   const showWin = useMemo(() => checkWinCondition(gameState), [gameState]);
