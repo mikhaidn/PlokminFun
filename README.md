@@ -1,39 +1,70 @@
-# 🂡 Card Games Collection
+# ✨ Plokmin Consortium
 
-Classic solitaire games built with modern web technology. Play online at [mikhaidn.github.io/CardGames](https://mikhaidn.github.io/CardGames/)
+A collection of interactive web experiences - each standalone, delightful, and mobile-first.
 
-## 🎮 Available Games
+🌐 **Live:** [mikhaidn.github.io/CardGames](https://mikhaidn.github.io/CardGames/)
 
-| Game | Status | Play Now |
-|------|--------|----------|
-| **FreeCell** | ✅ Live | [Play FreeCell](https://mikhaidn.github.io/CardGames/freecell/) |
-| **Klondike** | ✅ Live | [Play Klondike](https://mikhaidn.github.io/CardGames/klondike/) |
-| Spider Solitaire | 🚧 Coming Soon | - |
-| Pyramid | 🚧 Coming Soon | - |
-| Tri-Peaks | 🚧 Coming Soon | - |
-| Yukon | 🚧 Coming Soon | - |
+---
+
+## 🎯 What is This?
+
+**Plokmin Consortium** is a collection of diverse interactive web experiences. Think Neal.fun - each page is its own experience, from games to productivity tools.
+
+**Current Philosophy:** Build experiences, discover patterns, extract commonalities naturally (not upfront).
+
+---
+
+## 🎮 Experiences
+
+| Experience | Type | Status | Try It |
+|------------|------|--------|--------|
+| **Dog Care Tracker** 🐕 | Productivity | ✅ Live | [Track](https://mikhaidn.github.io/CardGames/dog-care-tracker/) |
+| **FreeCell** 🃏 | Card Game | ✅ Live | [Play](https://mikhaidn.github.io/CardGames/freecell/) |
+| **Klondike** 🎴 | Card Game | ✅ Live | [Play](https://mikhaidn.github.io/CardGames/klondike/) |
+| Habit Tracker | Productivity | 🚧 Planned | - |
+| Spider Solitaire | Card Game | 🚧 Planned | - |
+
+---
 
 ## 🏗️ Architecture
 
-This is a **monorepo** built with npm workspaces, featuring:
-
-- **Shared library** (`@cardgames/shared`) - Reusable game components, hooks, and utilities
-- **Individual games** - FreeCell and Klondike, each as standalone apps
-- **React + TypeScript + Vite** - Modern web stack with full type safety
-- **GitHub Pages** - Auto-deployment on push to `main`
+### Monorepo Structure
 
 ```
-CardGames/
-├── shared/           # @cardgames/shared library
-│   ├── components/   # GameControls, DraggingCardPreview, Card, CardBack
-│   ├── hooks/        # useGameHistory, useCardInteraction
-│   └── utils/        # Common utilities
-├── freecell-mvp/     # FreeCell game
-├── klondike-mvp/     # Klondike game
-├── index.html        # Root landing page (game selector)
-├── docs/             # Documentation
-└── rfcs/             # Design documents (Request for Comments)
+Plokmin/
+├── shared/              # @cardgames/shared (card game utilities)
+├── dog-care-tracker/    # Dog activity tracking PWA
+├── freecell-mvp/        # FreeCell solitaire
+├── klondike-mvp/        # Klondike solitaire
+└── index.html           # Landing page (experience selector)
 ```
+
+### Tech Stack
+- **React + TypeScript** - Type-safe components
+- **Vite** - Fast builds and dev server
+- **npm workspaces** - Monorepo management
+- **GitHub Pages** - Zero-cost hosting
+- **PWA** - Offline-capable, installable
+
+### Design Philosophy
+
+**Self-contained experiences:**
+- Each experience is independently understandable
+- Minimal shared dependencies (avoid coupling)
+- Own README with full context
+
+**Extract patterns naturally:**
+- Build 2-3 experiences first
+- Identify truly common patterns
+- Extract shared libraries when clear benefit
+- Don't prematurely abstract
+
+**AI-optimized documentation:**
+- Clear vision (VISION.md)
+- Experience-specific context (per-directory READMEs)
+- Quick onboarding (<2 min to productivity)
+
+---
 
 ## 🚀 Quick Start
 
@@ -47,109 +78,167 @@ CardGames/
 # Install all dependencies
 npm install
 
-# Build shared library
-npm run build -w shared
+# Run specific experience
+npm run dev:dog         # Dog Care Tracker
+npm run dev:freecell    # FreeCell
+npm run dev:klondike    # Klondike
 
-# Run a game in development mode
-cd freecell-mvp && npm run dev
-# or
-cd klondike-mvp && npm run dev
+# Run validation (what CI runs)
+npm run validate        # lint + test + build
 
-# Run tests
-npm test
-
-# Lint code
-npm run lint
-
-# Build everything
-npm run build
+# Auto-fix issues
+npm run format          # Prettier formatting
+npm run lint:fix        # ESLint auto-fixes
 ```
 
-## 🧪 Testing
-
-Each game has comprehensive test coverage:
-
-```bash
-# Run all tests
-npm test
-
-# Watch mode for TDD
-npm run test:watch
-
-# Coverage report
-npm run test:coverage
-
-# Game-specific tests
-cd freecell-mvp && npm test
-cd klondike-mvp && npm test
-cd shared && npm test
-```
+---
 
 ## 📚 Documentation
 
-### For Developers
+### 🎯 Start Here
+- **[VISION.md](VISION.md)** - Big picture: What is Plokmin Consortium and why? **(READ FIRST)**
 - **[AI_GUIDE.md](AI_GUIDE.md)** - 30-second quick start for AI agents
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and design decisions
-- **[STATUS.md](STATUS.md)** - Current work status and sprint progress
-- **[ROADMAP.md](ROADMAP.md)** - Future plans and priorities
-- **[DOCS.md](DOCS.md)** - Complete documentation index
+- **[STATUS.md](STATUS.md)** - Current work and recent completions
 
-### For Contributors
-- **[rfcs/](rfcs/)** - Request for Comments (design proposals)
-- **[docs/development/](docs/development/)** - Testing, monorepo setup, version management
-- **[docs/deployment/](docs/deployment/)** - GitHub Pages, PWA, native apps
-- **[docs/games/](docs/games/)** - Game-specific documentation
+### 📖 Deep Dives
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and design patterns
+- **[ROADMAP.md](ROADMAP.md)** - Future plans and priorities
+- **[rfcs/](rfcs/)** - Design proposals (Request for Comments)
+
+### 🎮 Per-Experience Docs
+- **[dog-care-tracker/README.md](dog-care-tracker/README.md)** - Dog tracking PWA
+- **[freecell-mvp/](freecell-mvp/)** - FreeCell card game
+- **[klondike-mvp/](klondike-mvp/)** - Klondike card game
+
+---
 
 ## 🤝 Contributing
 
-1. Check **[STATUS.md](STATUS.md)** to see what's being worked on
-2. Review **[ROADMAP.md](ROADMAP.md)** for priorities
-3. Read relevant **[RFCs](rfcs/INDEX.md)** for design decisions
-4. Write tests first (TDD approach)
-5. Run `npm run lint && npm test && npm run build` before committing
+### Before Starting Work
+1. **Read [VISION.md](VISION.md)** - Understand the big picture
+2. **Check [STATUS.md](STATUS.md)** - See current work
+3. **Review experience README** - Get specific context
 
-## 📦 Technologies
+### Development Workflow
+```bash
+# 1. Make changes
+npm run dev:dog
 
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **Vitest** - Unit testing
-- **@testing-library/react** - Component testing
-- **ESLint** - Code linting
-- **npm workspaces** - Monorepo management
+# 2. Validate before committing
+npm run validate
+
+# 3. Auto-fix common issues
+npm run format
+npm run lint:fix
+
+# 4. Commit and push
+git add .
+git commit -m "feat: your changes"
+git push
+```
+
+### Quality Standards
+- ✅ Write tests first (TDD approach)
+- ✅ Run `npm run validate` before push
+- ✅ Lint and format must pass
+- ✅ >95% coverage on core logic
+- ✅ Mobile-first design
+- ✅ PWA-capable (offline, installable)
+
+---
+
+## 📦 Project Stats
+
+### Code Quality
+- **Tests:** 560+ across all experiences
+- **Coverage:** >95% on core modules
+- **Type Safety:** TypeScript strict mode
+- **Linting:** ESLint + Prettier, zero errors
+
+### Experiences
+- **Live:** 3 (Dog Tracker, FreeCell, Klondike)
+- **Planned:** 3+ (Habit Tracker, Spider, Pyramid)
+- **Architecture:** Monorepo with shared libraries
+
+### Deployment
+- **Platform:** GitHub Pages (auto-deploy on push to `main`)
+- **Uptime:** 100%
+- **Build Time:** ~2-3 minutes
+- **Bundle Sizes:** 48KB (dog), 101KB (freecell), 104KB (klondike) gzipped
+
+---
+
+## 🎨 Design Principles
+
+### 1. Experience-First
+- Self-contained and understandable alone
+- Mobile-first design
+- Offline-capable PWA
+- Polished details
+
+### 2. Experiment-Driven
+- Build → Observe → Extract patterns
+- Don't design abstractions upfront
+- Let shared libraries emerge naturally
+
+### 3. AI-Optimized Docs
+- Clear vision in one place
+- Experience-specific READMEs
+- Quick context (<2 min onboarding)
+
+---
 
 ## 🌐 Deployment
 
-Games are automatically deployed to GitHub Pages when pushing to `main`:
+**Live Site:** https://mikhaidn.github.io/CardGames/
 
-- **Root:** https://mikhaidn.github.io/CardGames/
-- **FreeCell:** https://mikhaidn.github.io/CardGames/freecell/
-- **Klondike:** https://mikhaidn.github.io/CardGames/klondike/
+### Per-Experience URLs
+- Root: `/` (experience selector)
+- Dog Tracker: `/dog-care-tracker/`
+- FreeCell: `/freecell/`
+- Klondike: `/klondike/`
+
+### Deployment Process
+1. Push to `main` branch
+2. GitHub Actions runs CI/CD
+3. Builds all experiences
+4. Deploys to GitHub Pages
+5. Live in ~2-3 minutes
 
 See **[docs/deployment/github-pages.md](docs/deployment/github-pages.md)** for details.
 
-## ✨ Features
+---
 
-### Shared Components
-- **GameControls** - New Game, Undo, Redo, Settings, Help buttons
-- **DraggingCardPreview** - Visual feedback during drag
-- **Card/CardBack** - Unified card rendering with customizable backs
-- **useGameHistory** - Undo/redo state management
-- **useCardInteraction** - Unified drag-and-drop + click interactions
+## 🔮 Future Plans
 
-### Game Features
-- Responsive design (mobile, tablet, desktop)
-- Undo/redo support
-- Reproducible games (seeded RNG)
-- Drag-and-drop card movement
-- Click-to-select on touch devices
-- Win detection and celebration
-- Statistics tracking (time, moves)
+### Near-Term (Next 2 Months)
+- Habit tracker (experiment with non-card PWA patterns)
+- Extract `@plokmin/pwa-common` (localStorage, PWA setup)
+- Split `@cardgames/shared` → `@plokmin/card-common`
+- Add 2-3 more card games
+
+### Long-Term Vision
+- 10+ diverse experiences
+- Mature shared library ecosystem
+- <2 minute AI agent onboarding
+- 1-2 day new experience launch time
+
+See **[ROADMAP.md](ROADMAP.md)** for detailed plans.
+
+---
 
 ## 📄 License
 
 [Add your license here]
 
-## 🐛 Issues
+---
 
-Found a bug? [Create an issue](https://github.com/mikhaidn/CardGames/issues)
+## 🐛 Issues & Feedback
+
+- **Bug Reports:** [Create an issue](https://github.com/mikhaidn/CardGames/issues)
+- **Feature Requests:** Check [ROADMAP.md](ROADMAP.md) first, then create issue
+- **Questions:** See [DOCS.md](DOCS.md) for full documentation index
+
+---
+
+**Built with ❤️ by the Plokmin Consortium**
