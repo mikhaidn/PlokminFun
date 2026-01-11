@@ -2,14 +2,13 @@ import { useLocalStorage } from './useLocalStorage';
 import { DayLog, Period, PeriodLog, createEmptyDayLog } from '../types';
 
 /**
- * Hook for managing today's dog care log
+ * Hook for managing a dog care log for a specific date
  * Persists to localStorage automatically
  */
-export function useDayLog() {
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+export function useDayLog(date: string) {
   const [dayLog, setDayLog] = useLocalStorage<DayLog>(
-    `dog-log-${today}`,
-    createEmptyDayLog(today)
+    `dog-log-${date}`,
+    createEmptyDayLog(date)
   );
 
   const updatePeriod = (period: Period, updates: Partial<PeriodLog>) => {
@@ -26,16 +25,16 @@ export function useDayLog() {
   };
 
   const importLog = (importedLog: DayLog) => {
-    // Merge imported data with today's date
+    // Merge imported data with current date
     setDayLog({
       ...importedLog,
-      date: today,
+      date: date,
     });
   };
 
   const clearLog = () => {
-    // Reset to empty log for today
-    setDayLog(createEmptyDayLog(today));
+    // Reset to empty log for current date
+    setDayLog(createEmptyDayLog(date));
   };
 
   return {

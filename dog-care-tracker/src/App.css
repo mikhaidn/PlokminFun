@@ -41,7 +41,82 @@ body {
 
 .app-header h1 {
   font-size: 1.5rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Date picker controls */
+.date-picker-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.date-nav-btn {
+  background: var(--background);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-nav-btn:hover {
+  background: var(--border);
+  border-color: var(--secondary);
+}
+
+.date-nav-btn:active {
+  transform: scale(0.95);
+}
+
+.date-picker {
+  padding: 0.5rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.date-picker:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.date-display {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.today-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+
+.today-btn:hover {
+  background: var(--primary-hover);
+}
+
+.today-btn:active {
+  transform: scale(0.98);
 }
 
 .date {
