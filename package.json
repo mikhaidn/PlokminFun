@@ -11,8 +11,8 @@
   "scripts": {
     "install-all": "npm install",
     "build:shared": "npm run build -w shared",
-    "build:games": "npm run build -ws --if-present",
-    "build": "npm run build:shared && npm run build:games",
+    "build:pages": "npm run build -ws --if-present",
+    "build": "npm run build:shared && npm run build:pages",
     "test": "npm test -ws --if-present",
     "test:watch": "npm run test:watch -ws --if-present",
     "test:coverage": "npm run test:coverage -ws --if-present",

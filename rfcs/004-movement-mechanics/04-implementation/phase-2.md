@@ -224,7 +224,7 @@ USE_SHARED_INTERACTION_HOOK: true
 **Commands:**
 ```bash
 npm run build:shared
-npm run build:games
+npm run build:pages
 npm test
 npm run lint
 ```

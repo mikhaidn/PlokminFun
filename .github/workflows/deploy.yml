@@ -38,11 +38,12 @@ jobs:
         # Build the library first so the apps can consume the latest build
         run: npm run build -w shared
 
-      - name: Build Games
-        # Build both games using the workspace flag
+      - name: Build Pages
+        # Build all pages using the workspace flag
         run: |
           npm run build -w freecell-mvp
           npm run build -w klondike-mvp
+          npm run build -w dog-care-tracker
 
       - name: Create root landing page
         run: |

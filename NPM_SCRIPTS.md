@@ -24,7 +24,7 @@ npm run validate
 |---------|-------------|
 | `npm run build` | Build everything (shared + all games) |
 | `npm run build:shared` | Build shared library only |
-| `npm run build:games` | Build all games (requires shared built first) |
+| `npm run build:pages` | Build all games (requires shared built first) |
 
 **Typical workflow:**
 ```bash
@@ -221,7 +221,7 @@ npm test  # Tests all packages in parallel!
 **Conditional execution:**
 ```bash
 # --if-present runs only if script exists
-npm run build:games  # Skips packages without build script
+npm run build:pages  # Skips packages without build script
 ```
 
 **Watch for changes:**
@@ -264,7 +264,7 @@ npm run test:watch
 ```bash
 # Always build shared first!
 npm run build:shared
-npm run build:games
+npm run build:pages
 ```
 
 ### Tests failing
