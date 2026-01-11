@@ -5,7 +5,8 @@
   "workspaces": [
     "freecell-mvp",
     "klondike-mvp",
-    "shared"
+    "shared",
+    "dog-care-tracker"
   ],
   "scripts": {
     "install-all": "npm install",
@@ -30,6 +31,7 @@
     "audit:fix": "npm audit fix --workspaces",
     "dev:freecell": "npm run dev -w freecell-mvp",
     "dev:klondike": "npm run dev -w klondike-mvp",
+    "dev:dog": "npm run dev -w dog-care-tracker",
     "docs": "cat DOCS.md",
     "docs:ai": "cat AI_GUIDE.md",
     "docs:rfcs": "cat rfcs/INDEX.md",
