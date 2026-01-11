@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { DayLog } from '../types';
 
 interface DaySummaryProps {
@@ -7,27 +6,6 @@ interface DaySummaryProps {
 }
 
 export function DaySummary({ dayLog, onChange }: DaySummaryProps) {
-  const [showPhotoInput, setShowPhotoInput] = useState(!dayLog.photoUrl);
-  const [imageError, setImageError] = useState(false);
-
-  const handleChangePhoto = () => {
-    setShowPhotoInput(true);
-    setImageError(false);
-  };
-
-  const handleRemovePhoto = () => {
-    onChange({ photoUrl: '' });
-    setShowPhotoInput(true);
-    setImageError(false);
-  };
-
-  const handlePhotoUrlChange = (url: string) => {
-    onChange({ photoUrl: url });
-    if (url) {
-      setImageError(false);
-    }
-  };
-
   return (
     <div className="day-summary-card">
       <div className="day-summary-header">

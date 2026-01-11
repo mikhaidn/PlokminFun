@@ -9,12 +9,17 @@ import './App.css';
 
 function App() {
   // Get today's date in YYYY-MM-DD format
-  const getTodayString = () => new Date().toISOString().split('T')[0];
-
+  const getTodayString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Add 1 because of 0-indexing!
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
   const { dayLog, updatePeriod, updateDayLog, importLog, clearLog } = useDayLog(selectedDate);
 
-  const dateFormatted = new Date(dayLog.date).toLocaleDateString('en-US', {
+  const formatDate = (date: string) => new Date(date).toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -85,7 +90,7 @@ function App() {
             →
           </button>
         </div>
-        <p className="date-display">{dateFormatted}</p>
+        <p className="date-display">{formatDate(selectedDate)}</p>
         {!isToday && (
           <button className="today-btn" onClick={goToToday}>
             Jump to Today
