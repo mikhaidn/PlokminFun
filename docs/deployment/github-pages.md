@@ -20,7 +20,7 @@
 
 **Steps:**
 1. Build shared library (`npm run build:shared`)
-2. Build both games (`npm run build:games`)
+2. Build both games (`npm run build:pages`)
 3. Create root landing page
 4. Deploy to GitHub Pages
 5. Live in 1-2 minutes

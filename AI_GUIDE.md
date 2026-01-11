@@ -217,7 +217,7 @@ npm install <package> -w shared
 **Build order matters (for card games):**
 ```bash
 npm run build:shared   # Build shared first
-npm run build:games    # Then build games
+npm run build:pages    # Then build games
 ```
 
 **Dog tracker:** Standalone, no shared library dependency
