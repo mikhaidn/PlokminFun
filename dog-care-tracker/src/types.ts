@@ -14,6 +14,8 @@ export interface DayLog {
     afternoon: PeriodLog;
     night: PeriodLog;
   };
+  summary?: string; // Day-level notes
+  photoUrl?: string; // External photo link (iCloud, Google Photos, etc.)
 }
 
 export const PERIOD_EMOJIS: Record<Period, string> = {

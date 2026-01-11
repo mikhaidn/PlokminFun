@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PeriodCard } from './components/PeriodCard';
 import { ShareButton } from './components/ShareButton';
 import { ImportButton } from './components/ImportButton';
+import { DaySummary } from './components/DaySummary';
 import { useDayLog } from './hooks/useDayLog';
 import { Period } from './types';
 import './App.css';
@@ -11,7 +12,7 @@ function App() {
   const getTodayString = () => new Date().toISOString().split('T')[0];
 
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
-  const { dayLog, updatePeriod, importLog, clearLog } = useDayLog(selectedDate);
+  const { dayLog, updatePeriod, updateDayLog, importLog, clearLog } = useDayLog(selectedDate);
 
   const dateFormatted = new Date(dayLog.date).toLocaleDateString('en-US', {
     weekday: 'long',
@@ -89,6 +90,7 @@ function App() {
             onChange={(updates) => updatePeriod(period, updates)}
           />
         ))}
+        <DaySummary dayLog={dayLog} onChange={updateDayLog} />
       </main>
 
       <footer className="app-footer">

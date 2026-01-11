@@ -9,7 +9,8 @@ const PERIOD_ABBREV: Record<Period, string> = {
 
 /**
  * Encode DayLog to human-readable URL params
- * Example: ?d=2026-01-11&m=pee,poop,walk&m_notes=Good+walk&a=pee
+ * Omits empty periods to keep URLs shorter
+ * Example: ?d=2026-01-11&m=pee,poop,walk&m_notes=Good+walk&s=Vet+visit
  */
 export function generateShareUrl(log: DayLog): string {
   const baseUrl = window.location.origin + window.location.pathname;
@@ -18,7 +19,7 @@ export function generateShareUrl(log: DayLog): string {
   // Add date
   params.set('d', log.date);
 
-  // Add period data
+  // Add period data (omit if completely empty)
   const periods: Period[] = ['morning', 'afternoon', 'night'];
   periods.forEach((period) => {
     const periodLog = log.periods[period];
@@ -30,14 +31,26 @@ export function generateShareUrl(log: DayLog): string {
     if (periodLog.poop) activities.push('poop');
     if (periodLog.walk) activities.push('walk');
 
-    // Set activities param (or "none" if empty)
-    params.set(abbrev, activities.length > 0 ? activities.join(',') : 'none');
+    // Only include period if it has activities OR notes
+    if (activities.length > 0 || periodLog.notes) {
+      params.set(abbrev, activities.length > 0 ? activities.join(',') : 'none');
 
-    // Add notes if present
-    if (periodLog.notes) {
-      params.set(`${abbrev}_notes`, periodLog.notes);
+      // Add notes if present
+      if (periodLog.notes) {
+        params.set(`${abbrev}_notes`, periodLog.notes);
+      }
     }
   });
+
+  // Add day summary if present
+  if (log.summary) {
+    params.set('s', log.summary);
+  }
+
+  // Add photo URL if present
+  if (log.photoUrl) {
+    params.set('photo', log.photoUrl);
+  }
 
   return `${baseUrl}?${params.toString()}`;
 }
@@ -71,6 +84,18 @@ export function generateShareText(log: DayLog): string {
 
     lines.push(`${emoji} ${label}: ${activityStr}${noteStr}`);
   });
+
+  // Add day summary if present
+  if (log.summary) {
+    lines.push('');
+    lines.push(`📝 ${log.summary}`);
+  }
+
+  // Add photo if present
+  if (log.photoUrl) {
+    lines.push('');
+    lines.push(`📷 ${log.photoUrl}`);
+  }
 
   // Add shareable URL at the end
   const url = generateShareUrl(log);
@@ -123,6 +148,18 @@ export function parseShareText(text: string): DayLog | null {
         dayLog.periods[period].notes = notesParam;
       }
     });
+
+    // Parse day summary
+    const summary = params.get('s');
+    if (summary) {
+      dayLog.summary = summary;
+    }
+
+    // Parse photo URL
+    const photoUrl = params.get('photo');
+    if (photoUrl) {
+      dayLog.photoUrl = photoUrl;
+    }
 
     return dayLog;
   } catch (error) {

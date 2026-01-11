@@ -21,6 +21,13 @@ export function useDayLog(date: string) {
     }));
   };
 
+  const updateDayLog = (updates: Partial<Pick<DayLog, 'summary' | 'photoUrl'>>) => {
+    setDayLog((prev) => ({
+      ...prev,
+      ...updates,
+    }));
+  };
+
   const importLog = (importedLog: DayLog) => {
     // Merge imported data with current date
     setDayLog({
@@ -37,6 +44,7 @@ export function useDayLog(date: string) {
   return {
     dayLog,
     updatePeriod,
+    updateDayLog,
     importLog,
     clearLog,
   };
