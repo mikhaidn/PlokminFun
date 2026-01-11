@@ -8,24 +8,27 @@ import { Period } from './types';
 import './App.css';
 
 function App() {
-  // Get today's date in YYYY-MM-DD format
+  // For the initial state
   const getTodayString = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // Add 1 because of 0-indexing!
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
+
+  // Get today's date in YYYY-MM-DD format
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
   const { dayLog, updatePeriod, updateDayLog, importLog, clearLog } = useDayLog(selectedDate);
 
-  const formatDate = (date: string) => new Date(date).toLocaleDateString(undefined, {
+
+// For the display text
+const formatDate = (dateString: string) => {
+  const [y, m, d] = dateString.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
     year: 'numeric',
   });
-
+};
   const periods: Period[] = ['morning', 'afternoon', 'night'];
   const isToday = selectedDate === getTodayString();
 
