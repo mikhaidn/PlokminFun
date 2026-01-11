@@ -1,33 +1,45 @@
 import { DayLog, Period, PERIOD_EMOJIS, PERIOD_LABELS } from '../types';
 
-/**
- * Encode DayLog to base64 for URL sharing
- */
-export function encodeDayLog(log: DayLog): string {
-  const json = JSON.stringify(log);
-  return btoa(json);
-}
+// Period abbreviations for URL params
+const PERIOD_ABBREV: Record<Period, string> = {
+  morning: 'm',
+  afternoon: 'a',
+  night: 'n',
+};
 
 /**
- * Decode base64 string to DayLog
- */
-export function decodeDayLog(encoded: string): DayLog | null {
-  try {
-    const json = atob(encoded);
-    return JSON.parse(json);
-  } catch (error) {
-    console.error('Failed to decode day log:', error);
-    return null;
-  }
-}
-
-/**
- * Generate shareable URL with encoded data
+ * Encode DayLog to human-readable URL params
+ * Example: ?d=2026-01-11&m=pee,poop,walk&m_notes=Good+walk&a=pee
  */
 export function generateShareUrl(log: DayLog): string {
   const baseUrl = window.location.origin + window.location.pathname;
-  const encoded = encodeDayLog(log);
-  return `${baseUrl}?data=${encoded}`;
+  const params = new URLSearchParams();
+
+  // Add date
+  params.set('d', log.date);
+
+  // Add period data
+  const periods: Period[] = ['morning', 'afternoon', 'night'];
+  periods.forEach((period) => {
+    const periodLog = log.periods[period];
+    const abbrev = PERIOD_ABBREV[period];
+
+    // Build activity list
+    const activities = [];
+    if (periodLog.pee) activities.push('pee');
+    if (periodLog.poop) activities.push('poop');
+    if (periodLog.walk) activities.push('walk');
+
+    // Set activities param (or "none" if empty)
+    params.set(abbrev, activities.length > 0 ? activities.join(',') : 'none');
+
+    // Add notes if present
+    if (periodLog.notes) {
+      params.set(`${abbrev}_notes`, periodLog.notes);
+    }
+  });
+
+  return `${baseUrl}?${params.toString()}`;
 }
 
 /**
@@ -60,22 +72,59 @@ export function generateShareText(log: DayLog): string {
     lines.push(`${emoji} ${label}: ${activityStr}${noteStr}`);
   });
 
+  // Add shareable URL at the end
+  const url = generateShareUrl(log);
+  lines.push('');
+  lines.push(`Share: ${url}`);
+
   return lines.join('\n');
 }
 
 /**
- * Parse share text back to DayLog (for import)
- * Returns null if parsing fails
+ * Parse share URL or text back to DayLog
  */
 export function parseShareText(text: string): DayLog | null {
   try {
-    // Very simple parser - look for emojis and extract data
-    // For MVP, we'll just extract the encoded URL if present
-    const urlMatch = text.match(/\?data=([A-Za-z0-9+/=]+)/);
-    if (urlMatch) {
-      return decodeDayLog(urlMatch[1]);
-    }
-    return null;
+    // Extract URL from text if present
+    const urlMatch = text.match(/https?:\/\/[^\s]+/);
+    const urlString = urlMatch ? urlMatch[0] : text;
+
+    // Parse URL params
+    const url = new URL(urlString.includes('?') ? urlString : `http://dummy${urlString}`);
+    const params = new URLSearchParams(url.search);
+
+    const date = params.get('d');
+    if (!date) return null;
+
+    // Parse periods
+    const periods: Period[] = ['morning', 'afternoon', 'night'];
+    const dayLog: DayLog = {
+      date,
+      periods: {
+        morning: { pee: false, poop: false, walk: false, notes: '' },
+        afternoon: { pee: false, poop: false, walk: false, notes: '' },
+        night: { pee: false, poop: false, walk: false, notes: '' },
+      },
+    };
+
+    periods.forEach((period) => {
+      const abbrev = PERIOD_ABBREV[period];
+      const activitiesParam = params.get(abbrev);
+      const notesParam = params.get(`${abbrev}_notes`);
+
+      if (activitiesParam && activitiesParam !== 'none') {
+        const activities = activitiesParam.split(',');
+        dayLog.periods[period].pee = activities.includes('pee');
+        dayLog.periods[period].poop = activities.includes('poop');
+        dayLog.periods[period].walk = activities.includes('walk');
+      }
+
+      if (notesParam) {
+        dayLog.periods[period].notes = notesParam;
+      }
+    });
+
+    return dayLog;
   } catch (error) {
     console.error('Failed to parse share text:', error);
     return null;
@@ -87,7 +136,9 @@ export function parseShareText(text: string): DayLog | null {
  */
 export function getSharedLogFromUrl(): DayLog | null {
   const params = new URLSearchParams(window.location.search);
-  const encoded = params.get('data');
-  if (!encoded) return null;
-  return decodeDayLog(encoded);
+  const date = params.get('d');
+  if (!date) return null;
+
+  // Reuse the parser with current URL
+  return parseShareText(window.location.href);
 }

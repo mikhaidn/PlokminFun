@@ -6,7 +6,7 @@ import { Period } from './types';
 import './App.css';
 
 function App() {
-  const { dayLog, updatePeriod, importLog } = useDayLog();
+  const { dayLog, updatePeriod, importLog, clearLog } = useDayLog();
 
   const todayFormatted = new Date(dayLog.date).toLocaleDateString('en-US', {
     weekday: 'long',
@@ -16,6 +16,12 @@ function App() {
   });
 
   const periods: Period[] = ['morning', 'afternoon', 'night'];
+
+  const handleClear = () => {
+    if (window.confirm('Clear all entries for today? This cannot be undone.')) {
+      clearLog();
+    }
+  };
 
   return (
     <div className="app">
@@ -37,6 +43,9 @@ function App() {
 
       <footer className="app-footer">
         <div className="button-group">
+          <button className="btn btn-danger" onClick={handleClear}>
+            🗑️ Clear
+          </button>
           <ImportButton onImport={importLog} />
           <ShareButton dayLog={dayLog} />
         </div>

@@ -33,9 +33,15 @@ export function useDayLog() {
     });
   };
 
+  const clearLog = () => {
+    // Reset to empty log for today
+    setDayLog(createEmptyDayLog(today));
+  };
+
   return {
     dayLog,
     updatePeriod,
     importLog,
+    clearLog,
   };
 }
