@@ -1,21 +1,21 @@
 import { InstructionSet } from '../types';
 
-export function getBearExampleInstructions(): InstructionSet {
+export function getExampleInstructions(): InstructionSet {
   const now = new Date().toISOString();
 
   return {
     id: crypto.randomUUID(),
-    petName: 'Bear',
+    petName: 'Example Pet',
     ownerName: '',
     created: now,
     updated: now,
     generalNotes:
-      "Don't love leaving Bear home for more than 6 hours without some sort of break or check-in, but he can do 8-9 hours fine when needed. He hasn't been asking to go out as much in general, so it's important to get him out before you leave. Unopened food in cabinet and Chewy box in living room.",
+      'Add general care notes here. For example: feeding schedule, behavioral notes, emergency contacts, etc.',
     tasks: [
       {
         id: crypto.randomUUID(),
-        title: 'Give fluoxetine',
-        description: '1/2 pull in the morning if possible',
+        title: 'Morning medication',
+        description: 'Describe medication dosage and timing',
         period: 'morning',
         category: 'medication',
         recurring: true,
@@ -23,9 +23,8 @@ export function getBearExampleInstructions(): InstructionSet {
       },
       {
         id: crypto.randomUUID(),
-        title: 'Take Bear out before leaving',
-        description:
-          "He hasn't been asking to go out as much, so proactive bathroom break is important",
+        title: 'Morning walk',
+        description: 'Take outside for bathroom break',
         period: 'morning',
         category: 'bathroom',
         recurring: true,
@@ -33,32 +32,30 @@ export function getBearExampleInstructions(): InstructionSet {
       },
       {
         id: crypto.randomUUID(),
-        title: 'Fill treat ball and turn on Bluey',
-        description: 'Before leaving for the day',
+        title: 'Feed breakfast',
+        description: 'Regular food, 1 cup',
         period: 'morning',
-        category: 'activity',
-        recurring: true,
-        priority: 'medium',
-      },
-      {
-        id: crypto.randomUUID(),
-        title: 'Check if Bear ate from bowl',
-        description:
-          'If untouched by tonight, try Primal Freeze Dried Lamb. You can try it dry first. He eats it most consistently if you pour some hot water on it and let it sit for ~1 min',
-        period: 'evening',
         category: 'feeding',
         recurring: true,
         priority: 'high',
       },
       {
         id: crypto.randomUUID(),
-        title: 'Try alternative food if needed',
-        description:
-          "If he hasn't eaten anything by tomorrow, try any other food. There is more unopened food in the cabinet and in the Chewy box in the living room",
-        period: 'anytime',
+        title: 'Evening walk',
+        description: 'Take outside for exercise and bathroom',
+        period: 'evening',
+        category: 'bathroom',
+        recurring: true,
+        priority: 'high',
+      },
+      {
+        id: crypto.randomUUID(),
+        title: 'Feed dinner',
+        description: 'Regular food, 1 cup',
+        period: 'evening',
         category: 'feeding',
-        recurring: false,
-        priority: 'medium',
+        recurring: true,
+        priority: 'high',
       },
     ],
   };

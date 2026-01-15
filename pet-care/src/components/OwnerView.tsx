@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useInstructions } from '../hooks/useInstructions';
 import { createEmptyTask, CATEGORY_EMOJIS, PRIORITY_EMOJIS, PERIOD_LABELS } from '../types';
 import { TaskEditor } from './TaskEditor';
-import { getBearExampleInstructions } from '../utils/examples';
+import { getExampleInstructions } from '../utils/examples';
 import { ShareInstructionsButton } from './ShareInstructionsButton';
 import { ImportInstructionsButton } from './ImportInstructionsButton';
 
@@ -34,7 +34,7 @@ export function OwnerView() {
   };
 
   const handleLoadExample = () => {
-    const example = getBearExampleInstructions();
+    const example = getExampleInstructions();
     importInstructions(example);
   };
 
@@ -60,7 +60,7 @@ export function OwnerView() {
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
           <p style={{ color: '#666', marginBottom: '10px' }}>Or try an example:</p>
           <button type="button" onClick={handleLoadExample} className="secondary">
-            Load Bear's Example Instructions
+            Load Example Instructions
           </button>
         </div>
       </div>
