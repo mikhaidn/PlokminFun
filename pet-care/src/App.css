@@ -490,6 +490,218 @@ body {
   resize: vertical;
 }
 
+/* Share and Import Buttons */
+.share-button,
+.import-button {
+  padding: 10px 20px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.share-button:hover,
+.import-button:hover {
+  background: #1976D2;
+}
+
+/* Import Banner */
+.import-banner {
+  background: #e3f2fd;
+  border: 2px solid #2196F3;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.import-banner p {
+  flex: 1;
+  margin: 0;
+  color: #1565C0;
+  font-weight: 500;
+}
+
+.import-banner button {
+  padding: 8px 16px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.import-banner button.secondary {
+  background: #ddd;
+  color: #333;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid #eee;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: #999;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.share-section,
+.import-section {
+  margin-bottom: 25px;
+}
+
+.share-section:last-child,
+.import-section:last-child {
+  margin-bottom: 0;
+}
+
+.share-section h4,
+.import-section h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.hint {
+  color: #666;
+  font-size: 13px;
+  margin: 0 0 12px 0;
+}
+
+.share-preview,
+.import-input,
+.share-url {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: monospace;
+  margin-bottom: 10px;
+  resize: vertical;
+}
+
+.share-preview {
+  background: #f9f9f9;
+}
+
+.share-url {
+  font-size: 12px;
+}
+
+.import-input {
+  font-family: inherit;
+}
+
+.share-section button,
+.import-section button {
+  padding: 10px 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.share-section button:hover,
+.import-section button:hover {
+  background: #45a049;
+}
+
+.share-section button:disabled,
+.import-section button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.copy-success {
+  margin-top: 15px;
+  padding: 10px;
+  background: #4CAF50;
+  color: white;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 13px;
+  margin: 5px 0 10px 0;
+}
+
+/* Action Bar (for share/import buttons) */
+.action-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #eee;
+  flex-wrap: wrap;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .app {

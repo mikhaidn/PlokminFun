@@ -3,6 +3,8 @@ import { useInstructions } from '../hooks/useInstructions';
 import { createEmptyTask, CATEGORY_EMOJIS, PRIORITY_EMOJIS, PERIOD_LABELS } from '../types';
 import { TaskEditor } from './TaskEditor';
 import { getBearExampleInstructions } from '../utils/examples';
+import { ShareInstructionsButton } from './ShareInstructionsButton';
+import { ImportInstructionsButton } from './ImportInstructionsButton';
 
 export function OwnerView() {
   const {
@@ -145,6 +147,11 @@ export function OwnerView() {
             ))}
           </div>
         )}
+      </div>
+
+      <div className="action-bar">
+        <ShareInstructionsButton instructions={instructions} />
+        <ImportInstructionsButton onImport={importInstructions} />
       </div>
     </div>
   );

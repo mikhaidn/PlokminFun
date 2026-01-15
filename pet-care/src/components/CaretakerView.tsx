@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useInstructions } from '../hooks/useInstructions';
 import { useDailyLog } from '../hooks/useDailyLog';
 import { Task, CATEGORY_EMOJIS, PRIORITY_EMOJIS, PERIOD_LABELS, PERIOD_EMOJIS } from '../types';
+import { ShareLogButton } from './ShareLogButton';
 
 export function CaretakerView() {
   const { instructions } = useInstructions();
@@ -156,6 +157,10 @@ export function CaretakerView() {
           placeholder="Add any overall notes for the day..."
           rows={4}
         />
+      </div>
+
+      <div className="action-bar">
+        <ShareLogButton log={log} instructions={instructions} />
       </div>
     </div>
   );
