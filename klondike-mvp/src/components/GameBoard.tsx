@@ -366,6 +366,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           onRedo={redo}
           onReset={handleResetGame}
           onNewGame={onNewGame}
+          showHome={true}
+          onHome={() => (window.location.href = '/')}
           showSettings={true}
           onSettings={() => setShowSettings(true)}
           showHelp={true}
@@ -378,29 +380,80 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           fontSize={isMobile ? 0.8 : 0.875}
         />
 
-        {/* Draw Mode Toggle */}
-        <div style={{ display: 'flex', gap: '8px', marginTop: '12px', alignItems: 'center' }}>
-          <span style={{ fontSize: isMobile ? '0.8em' : '0.875em', color: '#666' }}>
+        {/* Draw Mode Toggle - Segmented Control Style */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '8px',
+            marginTop: '12px',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
+          <span
+            style={{ fontSize: isMobile ? '0.8em' : '0.875em', color: '#666', fontWeight: '500' }}
+          >
             Draw Mode:
           </span>
-          <button
-            onClick={handleDrawModeToggle}
+          <div
             style={{
-              padding: isMobile ? '8px 12px' : '8px 16px',
-              minHeight: `${buttonHeight}px`,
-              cursor: 'pointer',
-              backgroundColor: '#4caf50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: isMobile ? '0.8em' : '0.875em',
-              fontWeight: 'bold',
+              display: 'inline-flex',
+              border: '2px solid #4caf50',
+              borderRadius: '6px',
+              overflow: 'hidden',
             }}
-            title={`Currently: Draw ${gameState.drawMode === 'draw1' ? '1' : '3'}. Click to switch.`}
+            role="group"
+            aria-label="Draw mode selection"
           >
-            {gameState.drawMode === 'draw1' ? 'Draw 1' : 'Draw 3'}
-          </button>
-          <span style={{ fontSize: '0.75em', color: '#999' }}>(Changes next game)</span>
+            <button
+              onClick={() => {
+                if (gameState.drawMode !== 'draw1') {
+                  handleDrawModeToggle();
+                }
+              }}
+              style={{
+                padding: isMobile ? '6px 14px' : '8px 18px',
+                minHeight: `${buttonHeight}px`,
+                cursor: gameState.drawMode === 'draw1' ? 'default' : 'pointer',
+                backgroundColor: gameState.drawMode === 'draw1' ? '#4caf50' : 'white',
+                color: gameState.drawMode === 'draw1' ? 'white' : '#333',
+                border: 'none',
+                borderRight: '1px solid #e0e0e0',
+                fontSize: isMobile ? '0.8em' : '0.875em',
+                fontWeight: gameState.drawMode === 'draw1' ? 'bold' : 'normal',
+                transition: 'all 0.2s ease',
+              }}
+              title="Draw 1 card at a time (easier)"
+              aria-pressed={gameState.drawMode === 'draw1'}
+            >
+              Draw 1 {gameState.drawMode === 'draw1' ? '✓' : ''}
+            </button>
+            <button
+              onClick={() => {
+                if (gameState.drawMode !== 'draw3') {
+                  handleDrawModeToggle();
+                }
+              }}
+              style={{
+                padding: isMobile ? '6px 14px' : '8px 18px',
+                minHeight: `${buttonHeight}px`,
+                cursor: gameState.drawMode === 'draw3' ? 'default' : 'pointer',
+                backgroundColor: gameState.drawMode === 'draw3' ? '#4caf50' : 'white',
+                color: gameState.drawMode === 'draw3' ? 'white' : '#333',
+                border: 'none',
+                fontSize: isMobile ? '0.8em' : '0.875em',
+                fontWeight: gameState.drawMode === 'draw3' ? 'bold' : 'normal',
+                transition: 'all 0.2s ease',
+              }}
+              title="Draw 3 cards at a time (traditional, harder)"
+              aria-pressed={gameState.drawMode === 'draw3'}
+            >
+              Draw 3 {gameState.drawMode === 'draw3' ? '✓' : ''}
+            </button>
+          </div>
+          <span style={{ fontSize: '0.7em', color: '#999', fontStyle: 'italic' }}>
+            (applies to next game)
+          </span>
         </div>
       </div>
 

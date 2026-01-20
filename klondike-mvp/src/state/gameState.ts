@@ -1,5 +1,9 @@
-import { type CardType as Card } from '@cardgames/shared';
-import { createDeck, shuffleWithSeed } from '@cardgames/shared';
+import {
+  type CardType as Card,
+  type InitializationSource,
+  getDeckFromSource,
+  createSeedSource,
+} from '@cardgames/shared';
 
 /**
  * Klondike Game State
@@ -38,7 +42,8 @@ export interface Location {
 }
 
 /**
- * Create initial game state for Klondike
+ * Create initial Klondike game state from an initialization source.
+ * Supports seed-based, manual card arrangement, or serialized game states.
  *
  * Tableau setup:
  * - Column 0: 1 card (1 face-up)
@@ -50,11 +55,27 @@ export interface Location {
  * Total in tableau: 28 cards
  * Remaining in stock: 24 cards (all face-down)
  *
- * @param seed - Random seed for reproducible games
+ * @param source - Initialization source (seed, cards, or serialized)
  * @param drawMode - Draw-1 (easier) or Draw-3 (traditional)
+ * @returns A new KlondikeGameState object
+ *
+ * @example
+ * // Random game from seed
+ * const game1 = createInitialStateFromSource({ type: 'seed', seed: 12345 });
+ *
+ * // Manual card arrangement for testing
+ * const testCards = [...]; // 52 cards in specific order
+ * const game2 = createInitialStateFromSource({ type: 'cards', cards: testCards });
+ *
+ * // Future: Load from serialized state (RFC-006)
+ * const game3 = createInitialStateFromSource({ type: 'serialized', data: '...' });
  */
-export function createInitialState(seed: number, drawMode: DrawMode = 'draw1'): KlondikeGameState {
-  const deck = shuffleWithSeed(createDeck(), seed);
+export function createInitialStateFromSource(
+  source: InitializationSource,
+  drawMode: DrawMode = 'draw1'
+): KlondikeGameState {
+  // Get shuffled deck from any source type
+  const deck = getDeckFromSource(source);
 
   const tableau: TableauColumn[] = [];
   let cardIndex = 0;
@@ -73,6 +94,9 @@ export function createInitialState(seed: number, drawMode: DrawMode = 'draw1'): 
   // Remaining cards go to stock (24 cards)
   const stock = deck.slice(cardIndex);
 
+  // Extract seed from source (or use 0 for non-seed sources)
+  const seed = source.type === 'seed' ? source.seed : 0;
+
   return {
     tableau,
     stock,
@@ -82,6 +106,18 @@ export function createInitialState(seed: number, drawMode: DrawMode = 'draw1'): 
     moves: 0,
     drawMode,
   };
+}
+
+/**
+ * Create initial game state for Klondike with a seed.
+ * Convenience wrapper around createInitialStateFromSource for backward compatibility.
+ *
+ * @param seed - Random seed for reproducible games
+ * @param drawMode - Draw-1 (easier) or Draw-3 (traditional)
+ * @returns A new KlondikeGameState object
+ */
+export function createInitialState(seed: number, drawMode: DrawMode = 'draw1'): KlondikeGameState {
+  return createInitialStateFromSource(createSeedSource(seed), drawMode);
 }
 
 /**

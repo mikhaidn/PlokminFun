@@ -25,7 +25,7 @@ export function getSettingsFromMode(mode: GameMode) {
     case 'standard':
       return {
         highContrastMode: false,
-        maxCardWidth: 60,
+        cardSizeMultiplier: 1.0,
         fontSizeMultiplier: 1.0,
         buttonPosition: 'top' as const,
         touchTargetSize: 'normal' as const,
@@ -36,8 +36,8 @@ export function getSettingsFromMode(mode: GameMode) {
     case 'easy-to-see':
       return {
         highContrastMode: true,
-        maxCardWidth: 90, // 50% larger
-        fontSizeMultiplier: 1.5,
+        cardSizeMultiplier: 1.5, // 50% larger cards
+        fontSizeMultiplier: 1.2, // 20% larger text
         buttonPosition: 'top' as const,
         touchTargetSize: 'large' as const,
         gamePosition: 'center' as const,
@@ -47,8 +47,8 @@ export function getSettingsFromMode(mode: GameMode) {
     case 'one-handed-left':
       return {
         highContrastMode: true,
-        maxCardWidth: 90,
-        fontSizeMultiplier: 1.5,
+        cardSizeMultiplier: 1.5, // 50% larger cards
+        fontSizeMultiplier: 1.2, // 20% larger text
         buttonPosition: 'bottom' as const,
         touchTargetSize: 'large' as const,
         gamePosition: 'center' as const,
@@ -58,8 +58,8 @@ export function getSettingsFromMode(mode: GameMode) {
     case 'one-handed-right':
       return {
         highContrastMode: true,
-        maxCardWidth: 90,
-        fontSizeMultiplier: 1.5,
+        cardSizeMultiplier: 1.5, // 50% larger cards
+        fontSizeMultiplier: 1.2, // 20% larger text
         buttonPosition: 'bottom' as const,
         touchTargetSize: 'large' as const,
         gamePosition: 'center' as const,

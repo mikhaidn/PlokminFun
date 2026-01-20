@@ -108,7 +108,7 @@ npm install
 npm run build:shared
 
 # Build all games
-npm run build:games
+npm run build:pages
 
 # Build everything (shared + games)
 npm run build
@@ -1060,5 +1060,5 @@ cd freecell-mvp && npm run test:coverage
 cd klondike-mvp && npm run test:coverage
 
 # Build for deployment
-npm run build:shared && npm run build:games
+npm run build:shared && npm run build:pages
 ```

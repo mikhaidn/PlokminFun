@@ -24,14 +24,9 @@ npx prettier --check . > /dev/null 2>&1 || {
 
 # 2. TypeScript type checking (fastest check, no compilation)
 echo "  ✓ Type checking..."
-npx tsc --noEmit -p klondike-mvp/tsconfig.json > /dev/null 2>&1 || {
-  echo "  ✗ TypeScript errors in klondike-mvp"
-  npx tsc --noEmit -p klondike-mvp/tsconfig.json
-  exit 1
-}
-npx tsc --noEmit -p freecell-mvp/tsconfig.json > /dev/null 2>&1 || {
-  echo "  ✗ TypeScript errors in freecell-mvp"
-  npx tsc --noEmit -p freecell-mvp/tsconfig.json
+npm run typecheck > /dev/null 2>&1 || {
+  echo "  ✗ TypeScript errors found"
+  npm run typecheck
   exit 1
 }
 

@@ -18,6 +18,8 @@ export interface GameControlsProps {
   onNewGame: () => void;
 
   // Optional features
+  showHome?: boolean;
+  onHome?: () => void;
   showSettings?: boolean;
   onSettings?: () => void;
   showHelp?: boolean;

@@ -104,31 +104,53 @@ npm run validate
 ```
 
 ### `npm run setup-hooks`
-Installs pre-commit hook that runs checks automatically.
+Installs both pre-commit and pre-push hooks that run checks automatically.
 
 **What it does:**
-- Links `scripts/pre-commit.sh` to `.git/hooks/pre-commit`
-- Runs typecheck + lint before every commit
+- Links `scripts/pre-commit.sh` to `.git/hooks/pre-commit` (fast checks)
+- Links `scripts/pre-push.sh` to `.git/hooks/pre-push` (comprehensive checks)
 - Prevents committing broken code
+- Ensures all builds work before pushing
 
 **Example:**
 ```bash
 npm run setup-hooks
-# ✅ Git hooks installed!
+# ✅ Git hooks installed (pre-commit + pre-push)!
 
 git commit -m "fix: broken code"
 # 🔍 Running pre-commit checks...
 #   ✗ TypeScript errors in klondike-mvp
 # Commit blocked!
+
+git push
+# 🚀 Running pre-push checks (comprehensive validation)...
+#   ✗ Build failed for pet-care
+# Push blocked!
 ```
 
-## Pre-Commit Hook
+## Git Hooks
+
+### Pre-Commit Hook
 
 The pre-commit hook (`pre-commit.sh`) runs automatically before every commit:
 1. **Prettier format check** - Ensures consistent code style
-2. **TypeScript type check** - Catches type errors
-3. **ESLint** - Catches unused vars, style issues
-4. ~~**Tests**~~ - Commented out (too slow), but you can enable it
+2. **TypeScript type check** - Catches type errors (all workspaces)
+3. **ESLint** - Catches unused vars, style issues (all workspaces)
+4. **Tests** - Runs all tests
+5. **Build** - Verifies all code compiles
+
+### Pre-Push Hook (NEW!)
+
+The pre-push hook (`pre-push.sh`) runs comprehensive checks before pushing:
+1. **Prettier format check** - Final format validation
+2. **TypeScript type check** - All workspaces
+3. **ESLint** - All workspaces
+4. **Tests** - All tests must pass
+5. **Build ALL workspaces** - Critical for deployment
+6. **Verify dist/ folders** - Ensures deployment artifacts exist
+
+**Why this matters:** Prevents pushing code that will break deployment on GitHub Pages.
+Without this hook, you might forget to build a new workspace and it won't deploy!
 
 **Skipping the hook (not recommended):**
 ```bash

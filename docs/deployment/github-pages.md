@@ -9,6 +9,8 @@
 - **Root:** https://mikhaidn.github.io/CardGames/ (game selector)
 - **FreeCell:** https://mikhaidn.github.io/CardGames/freecell/
 - **Klondike:** https://mikhaidn.github.io/CardGames/klondike/
+- **Dog Care Tracker:** https://mikhaidn.github.io/CardGames/dog-care-tracker/
+- **Pet Care Instructions:** https://mikhaidn.github.io/CardGames/pet-care/
 
 ---
 
@@ -20,7 +22,7 @@
 
 **Steps:**
 1. Build shared library (`npm run build:shared`)
-2. Build both games (`npm run build:games`)
+2. Build both games (`npm run build:pages`)
 3. Create root landing page
 4. Deploy to GitHub Pages
 5. Live in 1-2 minutes
@@ -143,24 +145,129 @@ _site/                          # GitHub Pages root
 
 ---
 
-## 🚀 Adding New Games
+## 🚀 Adding New Apps/Games
 
-To add a new game to the deployment:
+**⚠️ CRITICAL CHECKLIST** - Follow ALL steps to avoid deployment issues!
 
-1. **Create game directory** (e.g., `spider-mvp/`)
-2. **Update `.github/workflows/deploy.yml`:**
-   ```yaml
-   - name: Build Spider
-     run: cd spider-mvp && npm ci && npm run build
+To add a new app or game to the deployment:
 
-   - name: Copy Spider to _site
-     run: cp -r spider-mvp/dist _site/spider
-   ```
-3. **Add to landing page** (`index.html`)
-4. **Configure base path** in `spider-mvp/vite.config.ts`:
-   ```typescript
-   base: '/CardGames/spider/'
-   ```
+### 1. Create App Directory Structure
+
+```bash
+mkdir -p new-app/{src,public}
+cd new-app
+```
+
+### 2. Configure Vite Build (vite.config.ts)
+
+```typescript
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/CardGames/new-app/',  // ⚠️ CRITICAL: Must match GitHub Pages path
+  build: {
+    outDir: 'dist',
+  },
+});
+```
+
+### 3. Create Package.json with Build Scripts
+
+```json
+{
+  "name": "@plokmin/new-app",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  }
+}
+```
+
+### 4. Add to Root Workspace (package.json)
+
+```json
+{
+  "workspaces": [
+    "freecell-mvp",
+    "klondike-mvp",
+    "dog-care-tracker",
+    "pet-care",
+    "new-app"  // ⚠️ ADD THIS
+  ]
+}
+```
+
+### 5. Update GitHub Actions Deploy Workflow
+
+**⚠️ MOST COMMON MISTAKE** - Edit `.github/workflows/deploy.yml`:
+
+```yaml
+- name: Build Pages
+  run: |
+    npm run build -w freecell-mvp
+    npm run build -w klondike-mvp
+    npm run build -w dog-care-tracker
+    npm run build -w pet-care
+    npm run build -w new-app  # ⚠️ ADD THIS
+
+- name: Create root landing page
+  run: |
+    # ... existing copies ...
+    cp -r new-app/dist _site/new-app  # ⚠️ ADD THIS
+```
+
+### 6. Update Root Landing Page (index.html)
+
+Add a card for your new app:
+
+```html
+<a href="./new-app/" class="game-card">
+  <div class="game-icon">🆕</div>
+  <h2>New App</h2>
+  <p>Description of your app</p>
+  <span class="status available">Try Now</span>
+</a>
+```
+
+### 7. Update Deployment Documentation
+
+Add your app to the "Live URLs" section at the top of this file.
+
+### 8. Test Locally Before Pushing
+
+```bash
+# Build and test locally
+npm run build -w new-app
+
+# Check that dist/ folder was created
+ls -la new-app/dist/
+
+# Preview production build
+cd new-app && npm run preview
+```
+
+### 9. Verification Checklist
+
+Before merging to main:
+
+- [ ] `vite.config.ts` has correct `base` path
+- [ ] App added to `.github/workflows/deploy.yml` (2 places: build AND copy)
+- [ ] App added to root `package.json` workspaces
+- [ ] App added to `index.html` landing page
+- [ ] Local build succeeds: `npm run build -w new-app`
+- [ ] `dist/` folder exists and contains `index.html`
+- [ ] Local preview works: `npm run preview` in app directory
+- [ ] Paths in `dist/index.html` include `/CardGames/new-app/` prefix
+
+### 10. Common Mistakes to Avoid
+
+❌ **Forgot to add to deploy.yml** - App won't deploy (most common!)
+❌ **Wrong base path in vite.config.ts** - 404 errors on production
+❌ **Forgot to add to workspaces** - Build fails in CI
+❌ **Didn't test local build** - Errors only caught in production
 
 ---
 

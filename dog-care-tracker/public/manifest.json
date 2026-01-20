@@ -1,0 +1,20 @@
+{
+  "name": "Dog Care Tracker",
+  "short_name": "Dog Tracker",
+  "description": "Track your dog's daily activities - pee, poop, walks, and notes. Share with caretakers instantly.",
+  "start_url": "/CardGames/dog-care-tracker/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4a5568",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/CardGames/dog-care-tracker/dog-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "utilities"],
+  "screenshots": []
+}

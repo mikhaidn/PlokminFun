@@ -16,6 +16,8 @@ export const GameControls: React.FC<GameControlsProps> = ({
   onRedo,
   onReset,
   onNewGame,
+  showHome = false,
+  onHome,
   showSettings = false,
   onSettings,
   showHelp = false,
@@ -73,6 +75,18 @@ export const GameControls: React.FC<GameControlsProps> = ({
         Moves: {moves}
         {seed !== undefined && ` • Seed: ${seed}`}
       </span>
+
+      {/* Home button (optional) */}
+      {showHome && onHome && (
+        <button
+          onClick={onHome}
+          style={buttonStyle()}
+          title="Return to game selection"
+          aria-label="Return to game selection"
+        >
+          🏠 Home
+        </button>
+      )}
 
       {/* Undo button */}
       <button

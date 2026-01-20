@@ -99,9 +99,9 @@ The root `package.json` defines workspaces:
     "klondike-mvp"
   ],
   "scripts": {
-    "build": "npm run build:shared && npm run build:games",
+    "build": "npm run build:shared && npm run build:pages",
     "build:shared": "npm run build -w shared",
-    "build:games": "npm run build -w freecell-mvp -w klondike-mvp",
+    "build:pages": "npm run build -w freecell-mvp -w klondike-mvp",
     "test": "npm test -ws",
     "lint": "npm run lint -ws"
   }
@@ -194,13 +194,13 @@ import { GameControls, useGameHistory } from '@cardgames/shared';
 ```bash
 # ✅ Correct order
 npm run build:shared     # Build shared library first
-npm run build:games      # Then build games
+npm run build:pages      # Then build games
 
 # Or use combined command
 npm run build            # Runs both in correct order
 
 # ❌ Wrong - will fail
-npm run build:games      # Games can't find @cardgames/shared
+npm run build:pages      # Games can't find @cardgames/shared
 ```
 
 ### Why Build Order Matters
@@ -277,7 +277,7 @@ npm run lint
 npm run build:shared
 
 # Build all games
-npm run build:games
+npm run build:pages
 
 # Clean and reinstall
 rm -rf node_modules package-lock.json
@@ -355,7 +355,7 @@ npm install  # Installs for all workspaces
 // Root package.json
 {
   "scripts": {
-    "build:games": "npm run build -w freecell-mvp -w klondike-mvp -w spider-mvp"
+    "build:pages": "npm run build -w freecell-mvp -w klondike-mvp -w spider-mvp"
   }
 }
 ```
@@ -419,10 +419,10 @@ Always build in dependency order:
 
 ```bash
 # ✅ Correct
-npm run build:shared && npm run build:games
+npm run build:shared && npm run build:pages
 
 # ❌ Wrong
-npm run build:games  # Will fail if shared not built
+npm run build:pages  # Will fail if shared not built
 ```
 
 ### 4. Test Changes Across Packages
@@ -561,7 +561,7 @@ npm install specific-package -w problematic-workspace
   run: npm run build:shared
 
 - name: Build games
-  run: npm run build:games
+  run: npm run build:pages
 
 - name: Run tests
   run: npm test

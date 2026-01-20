@@ -20,8 +20,9 @@ import {
   WinCelebration,
   VictoryModal,
   HelpModal,
+  getMinButtonHeight,
+  getSettingsFromMode,
 } from '@cardgames/shared';
-import { getMinButtonHeight } from '@cardgames/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 import { convertTableauToGeneric } from '../utils/tableauAdapter';
@@ -87,34 +88,46 @@ export const GameBoard: React.FC = () => {
   // Use shared settings for animations and interactions
   const { settings } = useSettings();
 
-  // Temporary: Map old accessibility settings to defaults until full migration
-  const accessibilityDefaults = {
-    touchTargetSize: 'normal' as 'normal' | 'large',
-    fontSizeMultiplier: 1.0,
-    buttonPosition: 'top' as 'top' | 'bottom',
-    highContrastMode: false,
-  };
-
-  // Responsive layout sizing
-  const [layoutSizes, setLayoutSizes] = useState<LayoutSizes>(() =>
-    calculateLayoutSizes(window.innerWidth, window.innerHeight)
+  // Derive accessibility settings from game mode
+  const accessibilitySettings = useMemo(
+    () => getSettingsFromMode(settings.gameMode),
+    [settings.gameMode]
   );
 
-  // Update layout sizes on window resize
+  // Responsive layout sizing with accessibility multipliers
+  const [layoutSizes, setLayoutSizes] = useState<LayoutSizes>(() =>
+    calculateLayoutSizes(
+      window.innerWidth,
+      window.innerHeight,
+      accessibilitySettings.cardSizeMultiplier,
+      accessibilitySettings.fontSizeMultiplier
+    )
+  );
+
+  // Update layout sizes on window resize or game mode change
   useEffect(() => {
-    const handleResize = () => {
-      setLayoutSizes(calculateLayoutSizes(window.innerWidth, window.innerHeight));
+    const updateLayout = () => {
+      setLayoutSizes(
+        calculateLayoutSizes(
+          window.innerWidth,
+          window.innerHeight,
+          accessibilitySettings.cardSizeMultiplier,
+          accessibilitySettings.fontSizeMultiplier
+        )
+      );
     };
 
-    window.addEventListener('resize', handleResize);
-    // Also handle orientation change
-    window.addEventListener('orientationchange', handleResize);
+    // Recalculate layout immediately when accessibility settings change
+    updateLayout();
+
+    window.addEventListener('resize', updateLayout);
+    window.addEventListener('orientationchange', updateLayout);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
+      window.removeEventListener('resize', updateLayout);
+      window.removeEventListener('orientationchange', updateLayout);
     };
-  }, []);
+  }, [accessibilitySettings.cardSizeMultiplier, accessibilitySettings.fontSizeMultiplier]);
 
   // Derive win condition from game state
   const showWin = useMemo(() => checkWinCondition(gameState), [gameState]);
@@ -187,6 +200,8 @@ export const GameBoard: React.FC = () => {
   const handleNewGame = useCallback(() => {
     const newSeed = Date.now();
     setSeed(newSeed);
+    // Clear localStorage before resetting to prevent stale won state from persisting
+    localStorage.removeItem('freecell-game-history');
     resetHistory(initializeGame(newSeed));
   }, [resetHistory]);
 
@@ -347,11 +362,14 @@ export const GameBoard: React.FC = () => {
   const isMobile = window.innerWidth < 600;
   const isTablet = window.innerWidth >= 600 && window.innerWidth < 900;
   const padding = isMobile ? 12 : 24;
-  const minButtonHeight = getMinButtonHeight(accessibilityDefaults.touchTargetSize);
+  const minButtonHeight = getMinButtonHeight(accessibilitySettings.touchTargetSize);
   const buttonPadding = isMobile ? '8px 12px' : '10px 18px';
-  const fontSize = (isMobile ? 0.8 : 1.0) * accessibilityDefaults.fontSizeMultiplier;
+  const fontSize = (isMobile ? 0.8 : 1.0) * accessibilitySettings.fontSizeMultiplier;
   const titleSize = isMobile ? '1.5em' : isTablet ? '2em' : '2.5em';
-  const buttonsAtBottom = accessibilityDefaults.buttonPosition === 'bottom';
+  const buttonsAtBottom = accessibilitySettings.buttonPosition === 'bottom';
+
+  // Calculate responsive drop zone height for better touch targets on tablets
+  const dropZoneHeight = Math.max(300, window.innerHeight * 0.35);
 
   // Button controls JSX (reused for top/bottom positioning)
   const buttonControls = (
@@ -365,6 +383,23 @@ export const GameBoard: React.FC = () => {
       }}
     >
       <span>Moves: {gameState.moves}</span>
+      <button
+        onClick={() => (window.location.href = '/')}
+        style={{
+          padding: buttonPadding,
+          minHeight: `${minButtonHeight}px`,
+          cursor: 'pointer',
+          backgroundColor: 'white',
+          color: 'black',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          fontSize: `${fontSize}em`,
+        }}
+        title="Return to game selection"
+        aria-label="Return to game selection"
+      >
+        🏠 Home
+      </button>
       <button
         onClick={undo}
         disabled={!canUndo}
@@ -561,7 +596,7 @@ export const GameBoard: React.FC = () => {
           cardHeight={layoutSizes.cardHeight}
           cardGap={layoutSizes.cardGap}
           fontSize={layoutSizes.fontSize}
-          highContrastMode={accessibilityDefaults.highContrastMode}
+          highContrastMode={accessibilitySettings.highContrastMode}
         />
         <FoundationArea
           foundations={gameState.foundations}
@@ -584,7 +619,7 @@ export const GameBoard: React.FC = () => {
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchCancel}
           layoutSizes={layoutSizes}
-          highContrastMode={accessibilityDefaults.highContrastMode}
+          highContrastMode={accessibilitySettings.highContrastMode}
         />
       </div>
 
@@ -623,7 +658,8 @@ export const GameBoard: React.FC = () => {
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
         positioningStrategy="margin"
-        highContrastMode={accessibilityDefaults.highContrastMode}
+        dropZoneHeight={dropZoneHeight}
+        highContrastMode={accessibilitySettings.highContrastMode}
       />
 
       {/* Win Celebration */}
@@ -701,7 +737,7 @@ export const GameBoard: React.FC = () => {
                 cardWidth={layoutSizes.cardWidth}
                 cardHeight={layoutSizes.cardHeight}
                 fontSize={layoutSizes.fontSize}
-                highContrastMode={accessibilityDefaults.highContrastMode}
+                highContrastMode={accessibilitySettings.highContrastMode}
               />
             );
           })()}

@@ -140,6 +140,13 @@ export {
 // Core utilities
 export { seededRandom } from './core/rng';
 export { createDeck, shuffleWithSeed } from './core/deck';
+export {
+  getDeckFromSource,
+  createSeedSource,
+  createCardsSource,
+  createSerializedSource,
+} from './core/gameInitializer';
+export type { InitializationSource } from './core/gameInitializer';
 export type {
   CardSize,
   FontSizes,
