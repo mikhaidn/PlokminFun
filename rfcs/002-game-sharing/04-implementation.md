@@ -136,7 +136,7 @@ freecell-mvp/src/replay/
 I just won FreeCell in 87 moves! 🎉
 
 Can you beat my score?
-https://mikhaidn.github.io/CardGames/freecell/?replay=g4z3m.A7B2C5...W
+https://mikhaidn.github.io/PlokminFun/freecell/?replay=g4z3m.A7B2C5...W
 
 #FreeCell #CardGames
 ```

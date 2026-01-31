@@ -167,4 +167,4 @@ See [ROADMAP.md](ROADMAP.md) for planned features and improvements.
 - **Vite**: Fast dev server and optimized builds
 - **PWA**: Installable, offline-capable progressive web app
 
-**Live at**: https://mikhaidn.github.io/CardGames/light-vod-editor/
+**Live at**: https://mikhaidn.github.io/PlokminFun/light-vod-editor/

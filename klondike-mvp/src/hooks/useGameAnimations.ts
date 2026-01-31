@@ -6,7 +6,7 @@
  * Connects settings context to Day 1 animation experiments
  */
 
-import { useSettings } from '@cardgames/shared';
+import { useSettings } from '@plokmin/shared';
 
 export interface GameAnimationConfig {
   /** Whether to animate at all (false for 'none' level) */

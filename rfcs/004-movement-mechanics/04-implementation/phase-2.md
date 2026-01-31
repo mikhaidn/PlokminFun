@@ -128,7 +128,7 @@ export function useCardInteraction(
 **Pattern:**
 
 ```typescript
-import { useCardInteraction, FEATURE_FLAGS, type GameLocation } from '@cardgames/shared';
+import { useCardInteraction, FEATURE_FLAGS, type GameLocation } from '@plokmin/shared';
 
 const { state: interactionState, handlers } = useCardInteraction({
   canMove: (from, to) => validateMove(gameState, from, to),

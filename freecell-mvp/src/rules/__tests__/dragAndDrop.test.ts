@@ -2,8 +2,8 @@ import { describe, test, expect } from 'vitest';
 import { validateMove } from '../moveValidation';
 import { executeMove } from '../../state/moveExecution';
 import type { GameState } from '../../state/gameState';
-import type { GameLocation } from '@cardgames/shared';
-import type { CardType as Card } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
+import type { CardType as Card } from '@plokmin/shared';
 
 /**
  * Tests for drag and drop functionality in FreeCell

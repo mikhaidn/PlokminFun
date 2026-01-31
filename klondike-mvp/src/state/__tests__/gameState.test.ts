@@ -6,7 +6,7 @@ import {
   isGameWon,
   type Location,
 } from '../gameState';
-import type { CardType as Card } from '@cardgames/shared';
+import type { CardType as Card } from '@plokmin/shared';
 
 describe('createInitialState', () => {
   test('creates 7 tableau columns', () => {

@@ -22,8 +22,8 @@ That guide contains:
 
 ### Repository Structure
 ```
-CardGames/
-├── shared/           # @cardgames/shared library (reusable components/hooks)
+PlokminFun/
+├── shared/           # @plokmin/shared library (reusable components/hooks)
 ├── freecell-mvp/     # FreeCell game
 ├── klondike-mvp/     # Klondike game
 ├── index.html        # Root landing page (GitHub Pages)
@@ -42,10 +42,10 @@ npm run build         # Build everything
 
 ## 🎯 Critical Rules
 
-### 1. Always Import from @cardgames/shared
+### 1. Always Import from @plokmin/shared
 ```typescript
 // ✅ CORRECT
-import { GameControls, useGameHistory } from '@cardgames/shared';
+import { GameControls, useGameHistory } from '@plokmin/shared';
 
 // ❌ WRONG - Never duplicate shared code locally
 import { GameControls } from './components/GameControls';
@@ -143,7 +143,7 @@ npm run validate       # Runs: typecheck + lint + test + build
 
 ## 🌐 Deployment
 
-- **Live site:** https://mikhaidn.github.io/CardGames/
+- **Live site:** https://mikhaidn.github.io/PlokminFun/
 - **Deployment:** Automatic on push to `main`
 - **Root page:** `/index.html` (game selector landing page)
 - **CI/CD:** `.github/workflows/deploy.yml`
@@ -160,7 +160,7 @@ See [docs/deployment/github-pages.md](docs/deployment/github-pages.md) for detai
 
 **Import errors?**
 - Check tsconfig path mappings
-- Ensure you're importing from `@cardgames/shared`
+- Ensure you're importing from `@plokmin/shared`
 
 **Type errors?**
 - Run `npm run lint` for details

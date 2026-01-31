@@ -11,7 +11,7 @@ const buildVersion = `${buildDate}-${gitHash}`;
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/CardGames/freecell/',
+  base: '/PlokminFun/freecell/',
   define: {
     __BUILD_VERSION__: JSON.stringify(buildVersion),
     __GIT_HASH__: JSON.stringify(gitHash),
@@ -19,7 +19,7 @@ export default defineConfig({
   resolve: {
     preserveSymlinks: true, // This tells Vite to follow the symlinks NPM created
     alias: {
-      '@cardgames/shared': path.resolve(__dirname, '../shared/index.ts'),
+      '@plokmin/shared': path.resolve(__dirname, '../shared/index.ts'),
     },
     // This is the key fix for the Hook error
     dedupe: ['react', 'react-dom'],
@@ -37,17 +37,17 @@ export default defineConfig({
         background_color: '#2c5f2d',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/CardGames/freecell/',
-        start_url: '/CardGames/freecell/',
+        scope: '/PlokminFun/freecell/',
+        start_url: '/PlokminFun/freecell/',
         icons: [
           {
-            src: '/CardGames/freecell/icon-192.png',
+            src: '/PlokminFun/freecell/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable',
           },
           {
-            src: '/CardGames/freecell/icon-512.png',
+            src: '/PlokminFun/freecell/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable',

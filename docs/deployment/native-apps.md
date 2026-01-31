@@ -111,7 +111,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  base: './',  // Use relative paths for Capacitor (not '/CardGames/freecell/')
+  base: './',  // Use relative paths for Capacitor (not '/PlokminFun/freecell/')
   plugins: [react()],
 })
 ```
@@ -120,7 +120,7 @@ export default defineConfig({
 
 ```typescript
 export default defineConfig({
-  base: process.env.CAPACITOR ? './' : '/CardGames/freecell/',
+  base: process.env.CAPACITOR ? './' : '/PlokminFun/freecell/',
   plugins: [react()],
 })
 ```

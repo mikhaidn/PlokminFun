@@ -8,7 +8,7 @@ import {
   moveCardFromFoundationToFreeCell,
 } from '../gameActions';
 import { initializeGame } from '../gameState';
-import { type CardType as Card } from '@cardgames/shared';
+import { type CardType as Card } from '@plokmin/shared';
 
 describe('moveCardToFreeCell', () => {
   test('moves card from tableau to empty free cell', () => {

@@ -12,7 +12,7 @@
  *   Click card → if 0 valid moves, provide feedback
  */
 
-import { useSettings, type GameLocation } from '@cardgames/shared';
+import { useSettings, type GameLocation } from '@plokmin/shared';
 
 export type SmartTapAction =
   | { action: 'select'; location: GameLocation }

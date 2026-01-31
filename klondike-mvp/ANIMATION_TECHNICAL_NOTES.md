@@ -344,7 +344,7 @@ if (!supportsTransform) {
 
 ## Next Steps for Production
 
-1. **Create `useGameAnimations` hook** in `@cardgames/shared`
+1. **Create `useGameAnimations` hook** in `@plokmin/shared`
 2. **Add `AnimationConfig` to GameConfig** interface
 3. **Lazy load confetti** to reduce initial bundle
 4. **Add device detection** for mobile optimization

@@ -3,7 +3,7 @@ import {
   type InitializationSource,
   getDeckFromSource,
   createSeedSource,
-} from '@cardgames/shared';
+} from '@plokmin/shared';
 
 /**
  * Klondike Game State

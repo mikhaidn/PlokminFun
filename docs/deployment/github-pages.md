@@ -6,11 +6,11 @@
 
 ## 🌐 Live URLs
 
-- **Root:** https://mikhaidn.github.io/CardGames/ (game selector)
-- **FreeCell:** https://mikhaidn.github.io/CardGames/freecell/
-- **Klondike:** https://mikhaidn.github.io/CardGames/klondike/
-- **Dog Care Tracker:** https://mikhaidn.github.io/CardGames/dog-care-tracker/
-- **Pet Care Instructions:** https://mikhaidn.github.io/CardGames/pet-care/
+- **Root:** https://mikhaidn.github.io/PlokminFun/ (game selector)
+- **FreeCell:** https://mikhaidn.github.io/PlokminFun/freecell/
+- **Klondike:** https://mikhaidn.github.io/PlokminFun/klondike/
+- **Dog Care Tracker:** https://mikhaidn.github.io/PlokminFun/dog-care-tracker/
+- **Pet Care Instructions:** https://mikhaidn.github.io/PlokminFun/pet-care/
 
 ---
 
@@ -60,20 +60,20 @@ git push origin main
 
 Games are configured to run at specific paths on GitHub Pages:
 
-**FreeCell:** `/CardGames/freecell/`
+**FreeCell:** `/PlokminFun/freecell/`
 ```typescript
 // freecell-mvp/vite.config.ts
 export default defineConfig({
-  base: '/CardGames/freecell/',
+  base: '/PlokminFun/freecell/',
   plugins: [react()],
 })
 ```
 
-**Klondike:** `/CardGames/klondike/`
+**Klondike:** `/PlokminFun/klondike/`
 ```typescript
 // klondike-mvp/vite.config.ts
 export default defineConfig({
-  base: '/CardGames/klondike/',
+  base: '/PlokminFun/klondike/',
   plugins: [react()],
 })
 ```
@@ -166,7 +166,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/CardGames/new-app/',  // ⚠️ CRITICAL: Must match GitHub Pages path
+  base: '/PlokminFun/new-app/',  // ⚠️ CRITICAL: Must match GitHub Pages path
   build: {
     outDir: 'dist',
   },
@@ -260,7 +260,7 @@ Before merging to main:
 - [ ] Local build succeeds: `npm run build -w new-app`
 - [ ] `dist/` folder exists and contains `index.html`
 - [ ] Local preview works: `npm run preview` in app directory
-- [ ] Paths in `dist/index.html` include `/CardGames/new-app/` prefix
+- [ ] Paths in `dist/index.html` include `/PlokminFun/new-app/` prefix
 
 ### 10. Common Mistakes to Avoid
 

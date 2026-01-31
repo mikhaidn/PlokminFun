@@ -26,7 +26,7 @@ Use the initialization script to create a fully-configured experience in ~30 sec
 
 **Live URL after deploy:**
 ```
-https://mikhaidn.github.io/CardGames/my-experience-name/
+https://mikhaidn.github.io/PlokminFun/my-experience-name/
 ```
 
 ---
@@ -144,7 +144,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <a href="/CardGames/">← Back to Plokmin Consortium</a>
+        <a href="/PlokminFun/">← Back to Plokmin Consortium</a>
       </footer>
     </div>
   );
@@ -173,7 +173,7 @@ Edit `my-experience-name/README.md` to document:
 - ✅ Self-contained state and logic
 
 **When to use shared library:**
-- ✅ Building a card game → use `@cardgames/shared`
+- ✅ Building a card game → use `@plokmin/shared`
 - ✅ Reusing existing components (Card, GameControls, etc.)
 - ✅ Shared game logic (undo/redo, history, etc.)
 
@@ -254,7 +254,7 @@ git push origin main
 
 **Live URL:**
 ```
-https://mikhaidn.github.io/CardGames/my-experience-name/
+https://mikhaidn.github.io/PlokminFun/my-experience-name/
 ```
 
 ### How It Works
@@ -270,7 +270,7 @@ https://mikhaidn.github.io/CardGames/my-experience-name/
 npm run build -w my-experience-name
 npm run preview -w my-experience-name
 
-# Visit: http://localhost:4173/CardGames/my-experience-name/
+# Visit: http://localhost:4173/PlokminFun/my-experience-name/
 ```
 
 ---
@@ -296,7 +296,7 @@ rm -rf my-experience-name
 ```bash
 # Reinstall dependencies
 npm install
-npm run build:shared  # If using @cardgames/shared
+npm run build:shared  # If using @plokmin/shared
 npm run build -w my-experience-name
 ```
 
@@ -312,7 +312,7 @@ grep "my-experience-name" index.html
 ### Dev Server Wrong Port/Path
 ```bash
 # The experience MUST use the correct base path for GitHub Pages
-# Check vite.config.ts has: base: '/CardGames/my-experience-name/'
+# Check vite.config.ts has: base: '/PlokminFun/my-experience-name/'
 ```
 
 ### Service Worker Not Working
@@ -338,7 +338,7 @@ See `dog-care-tracker/` for a full-featured example with:
 - Mobile-optimized UI
 
 ### Card Game Experience (FreeCell)
-See `freecell-mvp/` for an example using `@cardgames/shared`:
+See `freecell-mvp/` for an example using `@plokmin/shared`:
 - Shared components (Card, GameControls, etc.)
 - Shared hooks (useGameHistory, useCardInteraction)
 - Game-specific logic in local files
@@ -363,7 +363,7 @@ See `freecell-mvp/` for an example using `@cardgames/shared`:
 - Don't break existing experiences
 - Don't skip PWA manifest/icon updates
 - Don't use relative imports from other workspaces
-  - Use package imports (e.g., `@cardgames/shared`)
+  - Use package imports (e.g., `@plokmin/shared`)
 
 ---
 

@@ -1,4 +1,4 @@
-import { SettingsProvider } from '@cardgames/shared';
+import { SettingsProvider } from '@plokmin/shared';
 import { GameBoard } from './components/GameBoard';
 
 function App() {

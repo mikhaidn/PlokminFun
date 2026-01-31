@@ -166,7 +166,7 @@ export function calculateMaxMovableCards(
 </div>
 ```
 
-### 2.4 Reuse from @cardgames/shared
+### 2.4 Reuse from @plokmin/shared
 **No changes needed for:**
 - `<GameControls>` - Undo, redo, new game, settings
 - `<Card>` - Card rendering component
@@ -299,10 +299,10 @@ describe('calculateMaxMovableCards', () => {
 | Game actions | `freecell-mvp/src/state/gameActions.ts` | None |
 | Game rules | `freecell-mvp/src/state/gameRules.ts` | None |
 | Move validation | Shared logic | None |
-| Undo/redo | `@cardgames/shared` | None |
-| Card components | `@cardgames/shared` | None |
-| Settings | `@cardgames/shared` | None |
-| Drag interaction | `@cardgames/shared` | None |
+| Undo/redo | `@plokmin/shared` | None |
+| Card components | `@plokmin/shared` | None |
+| Settings | `@plokmin/shared` | None |
+| Drag interaction | `@plokmin/shared` | None |
 
 ### New/Modified Code (20%)
 | File | Type | Lines | Effort |
@@ -328,7 +328,7 @@ describe('calculateMaxMovableCards', () => {
 **Mitigation:** Test on iPhone SE (375px), ensure no horizontal scroll, 44px touch targets
 
 ### Risk: Code Duplication
-**Mitigation:** Share game logic via `@cardgames/shared`, only UI differs
+**Mitigation:** Share game logic via `@plokmin/shared`, only UI differs
 
 ---
 

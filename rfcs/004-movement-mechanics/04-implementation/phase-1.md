@@ -1,6 +1,6 @@
 # Phase 1: Extract Shared Validation (2 days)
 
-**Goal:** Create `@cardgames/shared/rules/` with generic validation functions.
+**Goal:** Create `@plokmin/shared/rules/` with generic validation functions.
 
 ---
 
@@ -154,7 +154,7 @@ export function canStackOnTableau(card: Card, targetCard: Card | null): boolean 
 }
 
 // AFTER
-import { canStackDescending } from '@cardgames/shared';
+import { canStackDescending } from '@plokmin/shared';
 
 export function canStackOnTableau(card: Card, targetCard: Card | null): boolean {
   return canStackDescending(card, targetCard, { allowEmpty: true });
@@ -197,7 +197,7 @@ export function canPlaceOnTableau(cardToPlace: Card, targetCard: Card): boolean 
 }
 
 // AFTER
-import { canStackDescending } from '@cardgames/shared';
+import { canStackDescending } from '@plokmin/shared';
 
 export function canPlaceOnTableau(cardToPlace: Card, targetCard: Card): boolean {
   return canStackDescending(cardToPlace, targetCard, { allowEmpty: false });

@@ -23,18 +23,18 @@ You've built an excellent foundation. The shared library is comprehensive, both 
 
 ## What's Already Shared (~1835 lines)
 
-### Components (`@cardgames/shared/components/`)
+### Components (`@plokmin/shared/components/`)
 - `Card.tsx` - Universal card display
 - `CardBack.tsx` - Card back with CSS patterns
 - `EmptyCell.tsx` - Empty column placeholder
 - `GameControls.tsx` - New Game/Undo/Redo/Settings/Help
 - `DraggingCardPreview.tsx` - Visual feedback during drag
 
-### Hooks (`@cardgames/shared/hooks/`)
+### Hooks (`@plokmin/shared/hooks/`)
 - `useGameHistory.ts` - Undo/redo system with localStorage persistence
 - `useCardInteraction.ts` - Unified drag-and-drop + click-to-select interaction
 
-### Rules (`@cardgames/shared/rules/`)
+### Rules (`@plokmin/shared/rules/`)
 - `solitaireRules.ts`:
   - `isRed()`, `isBlack()` - Color detection
   - `hasAlternatingColors()`, `hasSameSuit()` - Color/suit rules
@@ -43,7 +43,7 @@ You've built an excellent foundation. The shared library is comprehensive, both 
   - `isValidTableauSequence()` - Multi-card sequence validation
   - **100% reusable for any tableau-based game**
 
-### Types (`@cardgames/shared/types/`)
+### Types (`@plokmin/shared/types/`)
 - `Card.ts`, `GameLocation.ts`, `CardInteraction.ts`
 - Unified location type supports all current games
 

@@ -16,7 +16,7 @@ This proof-of-concept validates that we can:
 open spike-large-file-trimmer.html
 
 # Or if already in the directory:
-cd /Users/danmikhail/git/mikhaidn/CardGames/light-vod-editor
+cd /Users/danmikhail/git/mikhaidn/PlokminFun/light-vod-editor
 open spike-large-file-trimmer.html
 ```
 

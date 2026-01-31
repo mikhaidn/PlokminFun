@@ -5,7 +5,7 @@
  * This allows FreeCell to use the shared GenericTableau component (RFC-005)
  */
 
-import type { TableauColumnData } from '@cardgames/shared';
+import type { TableauColumnData } from '@plokmin/shared';
 import type { GameState } from '../state/gameState';
 
 /**

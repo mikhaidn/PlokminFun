@@ -3,7 +3,7 @@ import {
   type InitializationSource,
   getDeckFromSource,
   createSeedSource,
-} from '@cardgames/shared';
+} from '@plokmin/shared';
 
 /**
  * Represents the complete state of a FreeCell game.

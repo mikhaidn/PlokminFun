@@ -20,8 +20,8 @@
     /* Path mapping for shared components */
     "baseUrl": ".",
     "paths": {
-      "@cardgames/shared": ["../shared/index.ts"],
-      "@cardgames/shared/*": ["../shared/*"]
+      "@plokmin/shared": ["../shared/index.ts"],
+      "@plokmin/shared/*": ["../shared/*"]
     },
 
     /* Linting */

@@ -1,4 +1,4 @@
-import { type CardType as Card } from '@cardgames/shared';
+import { type CardType as Card } from '@plokmin/shared';
 import { type GameState } from '../state/gameState';
 import { canStackOnFoundation } from './validation';
 

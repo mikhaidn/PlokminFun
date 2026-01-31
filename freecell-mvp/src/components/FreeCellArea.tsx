@@ -1,6 +1,6 @@
 import React from 'react';
-import { type CardType, type GameLocation } from '@cardgames/shared';
-import { Card, EmptyCell } from '@cardgames/shared';
+import { type CardType, type GameLocation } from '@plokmin/shared';
+import { Card, EmptyCell } from '@plokmin/shared';
 
 interface FreeCellAreaProps {
   freeCells: (CardType | null)[];

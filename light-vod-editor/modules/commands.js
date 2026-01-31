@@ -24,14 +24,20 @@ export function generateConcatCommand() {
   const ext = inputFile.match(/\.[^/.]+$/)?.[0] || '.mp4';
 
   // Build video filters
-  const videoFilters = segments.map((seg, i) =>
-    `[0:v]trim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},setpts=PTS-STARTPTS[v${i}]`
-  ).join('; ');
+  const videoFilters = segments
+    .map(
+      (seg, i) =>
+        `[0:v]trim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},setpts=PTS-STARTPTS[v${i}]`
+    )
+    .join('; ');
 
   // Build audio filters
-  const audioFilters = segments.map((seg, i) =>
-    `[0:a]atrim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},asetpts=PTS-STARTPTS[a${i}]`
-  ).join('; ');
+  const audioFilters = segments
+    .map(
+      (seg, i) =>
+        `[0:a]atrim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},asetpts=PTS-STARTPTS[a${i}]`
+    )
+    .join('; ');
 
   // Build concat filter
   const concatInputs = segments.map((_, i) => `[v${i}][a${i}]`).join('');
@@ -57,10 +63,12 @@ export function generateSplitCommands() {
   const baseName = inputFile.replace(/\.[^/.]+$/, '');
   const ext = inputFile.match(/\.[^/.]+$/)?.[0] || '.mp4';
 
-  return segments.map((seg, i) => {
-    const duration = seg.end - seg.start;
-    return `ffmpeg -ss ${formatTimeFFmpeg(seg.start)} -t ${duration.toFixed(2)} -i "${inputFile}" -c copy "${baseName}_segment${i + 1}${ext}"`;
-  }).join('\n\n');
+  return segments
+    .map((seg, i) => {
+      const duration = seg.end - seg.start;
+      return `ffmpeg -ss ${formatTimeFFmpeg(seg.start)} -t ${duration.toFixed(2)} -i "${inputFile}" -c copy "${baseName}_segment${i + 1}${ext}"`;
+    })
+    .join('\n\n');
 }
 
 /**
@@ -70,7 +78,7 @@ export function generateSplitCommands() {
 export function generateVoiceoverCommand() {
   const currentFile = getCurrentFile();
   const allTracks = getVoiceoverTracks();
-  const recordedTracks = allTracks.filter(t => t.blob !== null);
+  const recordedTracks = allTracks.filter((t) => t.blob !== null);
 
   if (!currentFile || recordedTracks.length === 0) {
     return '// Add voiceover tracks first';
@@ -81,10 +89,9 @@ export function generateVoiceoverCommand() {
   const ext = inputFile.match(/\.[^/.]+$/)?.[0] || '.mp4';
 
   // Build input list
-  const inputs = [
-    `-i "${inputFile}"`,
-    ...recordedTracks.map(t => `-i "${t.filename}"`)
-  ].join(' ');
+  const inputs = [`-i "${inputFile}"`, ...recordedTracks.map((t) => `-i "${t.filename}"`)].join(
+    ' '
+  );
 
   // Build filter complex
   const filters = [];

@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { StockWaste } from '../StockWaste';
-import type { CardType as Card } from '@cardgames/shared';
+import type { CardType as Card } from '@plokmin/shared';
 
 describe('StockWaste - Flip Animations', () => {
   const mockStock: Card[] = [

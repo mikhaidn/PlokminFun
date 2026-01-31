@@ -210,7 +210,7 @@
 **RFC-005 Shared Component Consolidation 🎉**
 
 - [x] **SettingsModal → Shared Library**
-  - Moved Klondike's advanced SettingsModal to @cardgames/shared
+  - Moved Klondike's advanced SettingsModal to @plokmin/shared
   - Unified settings UI with animation/interaction controls
   - Both games now use shared SettingsModal component
   - Wrapped both games with SettingsProvider for global settings
@@ -238,7 +238,7 @@
   - Created GameConfig<TState> for config-driven game builder
   - CardDisplayConfig integration with RFC-003 card backs
   - isCardFaceUp() as key method for card display logic
-  - All interfaces exported from @cardgames/shared
+  - All interfaces exported from @plokmin/shared
   - Comprehensive documentation for future compatibility
 
 - [x] **RFC-005 Compatibility Guide**
@@ -250,7 +250,7 @@
 
 - [x] **RFC-003 Phase 2: Klondike Card Backs Integration**
   - Created klondike-mvp/src/state/cardDisplay.ts (RFC-005 compatible)
-  - isCardFaceUp() using GameLocation from @cardgames/shared
+  - isCardFaceUp() using GameLocation from @plokmin/shared
   - Helper functions matching GameActions interface signatures
   - 25 new comprehensive tests (all passing)
   - Updated Tableau.tsx to use RFC-005 compatible helpers
@@ -269,7 +269,7 @@
   - Updated CI/CD workflows for monorepo builds
   - Both games now building and deploying from monorepo
 
-- [x] **Shared Library Extracted (#21)** - @cardgames/shared
+- [x] **Shared Library Extracted (#21)** - @plokmin/shared
   - GameControls component (New Game, Undo, Redo, Settings, Help)
   - DraggingCardPreview component (visual feedback during drag)
   - useGameHistory hook (undo/redo system)
@@ -284,7 +284,7 @@
   - 665+ test cases for game actions
   - 391+ test cases for game state
   - 359+ test cases for game rules
-  - Live at: https://mikhaidn.github.io/CardGames/klondike/
+  - Live at: https://mikhaidn.github.io/PlokminFun/klondike/
 
 - [x] **Undo/Redo System (#16)**
   - useGameHistory hook with state snapshots
@@ -330,9 +330,9 @@
 
 ### Deployment
 - **Status:** ✅ Both games live on GitHub Pages
-- **FreeCell:** https://mikhaidn.github.io/CardGames/freecell/
-- **Klondike:** https://mikhaidn.github.io/CardGames/klondike/
-- **Landing:** https://mikhaidn.github.io/CardGames/
+- **FreeCell:** https://mikhaidn.github.io/PlokminFun/freecell/
+- **Klondike:** https://mikhaidn.github.io/PlokminFun/klondike/
+- **Landing:** https://mikhaidn.github.io/PlokminFun/
 - **Last Deploy:** Auto-deploys on push to main
 - **Uptime:** 100% (GitHub Pages)
 
@@ -389,7 +389,7 @@
 - Add game persistence to localStorage
 
 ### Completed ✅
-- [x] Library extraction (@cardgames/shared) - ✅ DONE (#21)
+- [x] Library extraction (@plokmin/shared) - ✅ DONE (#21)
 - [x] Monorepo setup (npm workspaces) - ✅ DONE (#25)
 - [x] Shared component library (GameControls, DraggingCardPreview, hooks) - ✅ DONE (#21)
 
@@ -400,14 +400,14 @@
 ### FreeCell
 - **Status:** ✅ Live and Playable (PWA-enabled)
 - **Features:** Core gameplay, hints, auto-complete, seed-based, undo/redo, accessibility settings, shared interaction system, smart tap-to-move
-- **URL:** https://mikhaidn.github.io/CardGames/freecell/
+- **URL:** https://mikhaidn.github.io/PlokminFun/freecell/
 - **Missing:** Game persistence, daily challenge
 - **Next:** Game persistence, analytics
 
 ### Klondike
 - **Status:** ✅ Live and Playable (#19)
 - **Features:** Core gameplay (draw-1 and draw-3), card backs (stock face-down), card flip animations, undo/redo, shared interaction system, smart tap-to-move, comprehensive test coverage (201 tests)
-- **URL:** https://mikhaidn.github.io/CardGames/klondike/
+- **URL:** https://mikhaidn.github.io/PlokminFun/klondike/
 - **Missing:** Daily challenge, game persistence
 - **Next:** Game persistence (localStorage)
 

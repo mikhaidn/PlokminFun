@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { getMaxMovable, isValidStack } from '../movement';
-import { type CardType as Card } from '@cardgames/shared';
+import { type CardType as Card } from '@plokmin/shared';
 
 describe('getMaxMovable', () => {
   test('with 0 free cells and 0 empty columns: max = 1', () => {

@@ -4,7 +4,7 @@
 
 Klondike is the classic solitaire card game that most people simply call "Solitaire". This implementation features both Draw-1 and Draw-3 modes, comprehensive testing (1415+ tests), and shares the same architecture and UI components as FreeCell.
 
-**Live Demo**: https://mikhaidn.github.io/CardGames/klondike/
+**Live Demo**: https://mikhaidn.github.io/PlokminFun/klondike/
 
 ## Game Rules
 
@@ -126,8 +126,8 @@ klondike-mvp/
 │   └── main.tsx           # Entry point
 │
 ├── public/                # Static assets (icons, manifest)
-├── package.json           # Dependencies (includes @cardgames/shared)
-├── vite.config.ts         # Vite config (base: /CardGames/klondike/)
+├── package.json           # Dependencies (includes @plokmin/shared)
+├── vite.config.ts         # Vite config (base: /PlokminFun/klondike/)
 └── vitest.config.ts       # Test configuration
 ```
 
@@ -423,7 +423,7 @@ npm run lint
 - `src/components/SettingsModal.tsx` - Draw mode settings
 
 **Shared Library Integration**:
-- Uses `@cardgames/shared` for GameControls, useGameHistory, useCardInteraction
+- Uses `@plokmin/shared` for GameControls, useGameHistory, useCardInteraction
 - See [Shared Library Documentation](./shared-library.md) for details
 
 ## Future Enhancements

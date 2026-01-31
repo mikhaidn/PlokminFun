@@ -1,11 +1,11 @@
-import { type CardType as Card } from '@cardgames/shared';
+import { type CardType as Card } from '@plokmin/shared';
 import {
   isRed,
   isBlack,
   canStackDescending,
   canStackOnFoundation as sharedCanStackOnFoundation,
   isValidTableauSequence,
-} from '@cardgames/shared';
+} from '@plokmin/shared';
 
 // Re-export color helpers for use in UI components
 export { isRed, isBlack };

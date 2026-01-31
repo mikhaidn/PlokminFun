@@ -4,7 +4,7 @@
 
 FreeCell is a solitaire card game that requires strategy and planning. This implementation is built with React, TypeScript, and Vite, featuring responsive design, accessibility settings, and comprehensive game mechanics.
 
-**Live Demo**: https://mikhaidn.github.io/CardGames/freecell/
+**Live Demo**: https://mikhaidn.github.io/PlokminFun/freecell/
 
 ## Game Rules
 
@@ -98,8 +98,8 @@ freecell-mvp/
 │   └── main.tsx           # Entry point
 │
 ├── public/                # Static assets (icons, manifest)
-├── package.json           # Dependencies (includes @cardgames/shared)
-├── vite.config.ts         # Vite config (base: /CardGames/freecell/)
+├── package.json           # Dependencies (includes @plokmin/shared)
+├── vite.config.ts         # Vite config (base: /PlokminFun/freecell/)
 └── vitest.config.ts       # Test configuration
 ```
 
@@ -398,5 +398,5 @@ npm run lint
 - `vite.config.ts` - Build configuration
 
 **Shared Library Integration**:
-- Uses `@cardgames/shared` for GameControls, useGameHistory, useCardInteraction
+- Uses `@plokmin/shared` for GameControls, useGameHistory, useCardInteraction
 - See [Shared Library Documentation](./shared-library.md) for details

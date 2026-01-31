@@ -5,7 +5,7 @@ export function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-        .register('/CardGames/dog-care-tracker/service-worker.js')
+        .register('/PlokminFun/dog-care-tracker/service-worker.js')
         .then((registration) => {
           console.log('ServiceWorker registered:', registration.scope);
         })

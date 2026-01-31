@@ -38,11 +38,11 @@ We have TWO working games (FreeCell and Klondike), a monorepo architecture, shar
 - ✅ Klondike Solitaire implemented (#19)
 - ✅ Draw-1 and Draw-3 modes
 - ✅ 1415+ comprehensive tests
-- ✅ Live at https://mikhaidn.github.io/CardGames/klondike/
+- ✅ Live at https://mikhaidn.github.io/PlokminFun/klondike/
 
 **P3: Library Extraction** ✅ COMPLETE
 - ✅ Monorepo setup (#25) - npm workspaces
-- ✅ @cardgames/shared library (#21)
+- ✅ @plokmin/shared library (#21)
 - ✅ Shared components (7 total: Card, CardBack, EmptyCell, GameControls, DraggingCardPreview, SettingsModal, FoundationArea)
 - ✅ Shared hooks (useGameHistory, useCardInteraction)
 - ✅ Both games using shared library
@@ -78,7 +78,7 @@ We have TWO working games (FreeCell and Klondike), a monorepo architecture, shar
   - Win celebration (confetti + cascade)
 - [x] Day 2 (partial): Settings UI + Shared component consolidation ✅
   - Created unified SettingsModal with animation/interaction controls
-  - Moved SettingsModal and FoundationArea to @cardgames/shared
+  - Moved SettingsModal and FoundationArea to @plokmin/shared
   - Both games using shared components (~560 lines deduplicated)
 - [ ] Day 2-3: Mobile interactions + documentation (IN PROGRESS)
   - Smart tap-to-move implementation and testing
@@ -233,7 +233,7 @@ We have TWO working games (FreeCell and Klondike), a monorepo architecture, shar
 - **When:** After analytics show strong engagement and daily challenges are live
 
 ### ✅ Already Done - Don't Redo
-- ✅ ~~Extract Libraries~~ - @cardgames/shared exists (#21)
+- ✅ ~~Extract Libraries~~ - @plokmin/shared exists (#21)
 - ✅ ~~Build Second Game~~ - Klondike is live (#19)
 - ✅ ~~Mobile Optimization~~ - Accessibility settings handle this
 - ✅ ~~Undo/Redo~~ - useGameHistory hook is implemented (#16)
@@ -250,7 +250,7 @@ We have TWO working games (FreeCell and Klondike), a monorepo architecture, shar
 - [x] Undo/redo works correctly (useGameHistory)
 - [x] Game #2 launched (Klondike)
 - [x] Landing page with 2+ games
-- [x] Shared library extracted (@cardgames/shared)
+- [x] Shared library extracted (@plokmin/shared)
 - [x] Monorepo setup (npm workspaces)
 - [x] 1600+ tests passing
 

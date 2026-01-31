@@ -8,7 +8,7 @@
 ## Executive Summary
 
 Consolidate 600-700 lines of duplicate card movement code between FreeCell and Klondike by:
-1. Extracting shared validation rules to `@cardgames/shared`
+1. Extracting shared validation rules to `@plokmin/shared`
 2. Migrating both games to use the existing `useCardInteraction` hook
 3. Standardizing on `cardCount` (simplified, no dual representation)
 4. Refactoring FreeCell to use Klondike's generic `moveCards(from, to, count)` pattern
@@ -290,7 +290,7 @@ export function isValidTableauSequence(cards: Card[]): boolean {
 
 ```typescript
 // freecell-mvp/src/rules/validation.ts (UPDATE)
-import { canStackDescending, canStackOnFoundation } from '@cardgames/shared';
+import { canStackDescending, canStackOnFoundation } from '@plokmin/shared';
 
 export function canStackOnTableau(card: Card, target: Card | null): boolean {
   // FreeCell: Any card can go on empty tableau
@@ -304,7 +304,7 @@ export function canStackOnFreeCellFoundation(card: Card, foundation: Card[]): bo
 
 ```typescript
 // klondike-mvp/src/rules/klondikeRules.ts (UPDATE)
-import { canStackDescending, canStackOnFoundation } from '@cardgames/shared';
+import { canStackDescending, canStackOnFoundation } from '@plokmin/shared';
 
 export function canPlaceOnTableau(card: Card, target: Card): boolean {
   // Klondike: Must have target card (no empty column check here)
@@ -352,7 +352,7 @@ export const FEATURE_FLAGS = {
 ```typescript
 // freecell-mvp/src/components/GameBoard.tsx
 
-import { FEATURE_FLAGS } from '@cardgames/shared';
+import { FEATURE_FLAGS } from '@plokmin/shared';
 
 function GameBoard() {
   // ... existing state
@@ -572,7 +572,7 @@ function addCards(state, location, cards): GameState { /* ... */ }
 
 ### Phase 1: Extract Shared Validation (2 days)
 
-**Goal:** Create `@cardgames/shared/rules/` with generic validation functions.
+**Goal:** Create `@plokmin/shared/rules/` with generic validation functions.
 
 #### Step 1.1: Create Shared Rules File
 
@@ -675,7 +675,7 @@ export function canStackOnTableau(card: Card, targetCard: Card | null): boolean 
 }
 
 // AFTER
-import { canStackDescending } from '@cardgames/shared';
+import { canStackDescending } from '@plokmin/shared';
 
 export function canStackOnTableau(card: Card, targetCard: Card | null): boolean {
   return canStackDescending(card, targetCard, { allowEmpty: true });
@@ -690,7 +690,7 @@ import {
   canStackDescending,
   canStackOnFoundation,
   isValidTableauSequence,
-} from '@cardgames/shared';
+} from '@plokmin/shared';
 import type { Card } from '../core/types';
 
 /** FreeCell: Any card can go on empty tableau */
@@ -744,7 +744,7 @@ export function canPlaceOnTableau(cardToPlace: Card, targetCard: Card): boolean 
 }
 
 // AFTER
-import { canStackDescending } from '@cardgames/shared';
+import { canStackDescending } from '@plokmin/shared';
 
 export function canPlaceOnTableau(cardToPlace: Card, targetCard: Card): boolean {
   return canStackDescending(cardToPlace, targetCard, { allowEmpty: false });
@@ -759,7 +759,7 @@ import {
   canStackDescending,
   canStackOnFoundation,
   isValidTableauSequence,
-} from '@cardgames/shared';
+} from '@plokmin/shared';
 import type { Card } from '../core/types';
 
 /** Klondike: Descending rank, alternating colors */
@@ -1003,7 +1003,7 @@ export function useCardInteraction(
 **Implementation:**
 
 ```typescript
-import type { GameLocation } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
 import type { KlondikeGameState } from '../state/gameState';
 import { canPlaceOnTableau, canPlaceOnEmptyTableau, canPlaceOnFoundation } from './klondikeRules';
 
@@ -1119,7 +1119,7 @@ function getCardsAtLocation(
 **Implementation:**
 
 ```typescript
-import type { GameLocation } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
 import type { KlondikeGameState } from './gameState';
 import { moveCards } from './gameActions';
 
@@ -1190,7 +1190,7 @@ export function locationToGameLocation(loc: Location, cardCount?: number): GameL
 
 ```typescript
 // Add imports
-import { useCardInteraction, FEATURE_FLAGS, type GameLocation } from '@cardgames/shared';
+import { useCardInteraction, FEATURE_FLAGS, type GameLocation } from '@plokmin/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 
@@ -1245,7 +1245,7 @@ function GameBoard() {
 **Implementation:**
 
 ```typescript
-import type { CardInteractionState, CardInteractionHandlers, GameLocation } from '@cardgames/shared';
+import type { CardInteractionState, CardInteractionHandlers, GameLocation } from '@plokmin/shared';
 import type { KlondikeGameState } from '../state/gameState';
 import { Tableau } from './Tableau';
 import { WastePile } from './WastePile';
@@ -1446,7 +1446,7 @@ export function GameBoardWithSharedHook({
 **Implementation:**
 
 ```typescript
-import type { GameLocation } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
 import type { GameState } from '../state/gameState';
 import { canStackOnTableau, canStackOnFreeCellFoundation } from './validation';
 import { getMaxMovable } from './movement';
@@ -1574,7 +1574,7 @@ function getCardsAtLocation(
 **Implementation:**
 
 ```typescript
-import type { GameLocation } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
 import type { GameState } from './gameState';
 import {
   moveCardToFreeCell,
@@ -1646,7 +1646,7 @@ export function executeMove(
 **Similar pattern to Klondike:**
 
 ```typescript
-import { useCardInteraction, FEATURE_FLAGS, type GameLocation } from '@cardgames/shared';
+import { useCardInteraction, FEATURE_FLAGS, type GameLocation } from '@plokmin/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 
@@ -2098,7 +2098,7 @@ All games use the `useCardInteraction` hook for unified click/drag/touch interac
 **Step 1: Implement validation**
 ```typescript
 // your-game/src/rules/moveValidation.ts
-import type { GameLocation } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
 
 export function validateMove(
   state: YourGameState,
@@ -2124,7 +2124,7 @@ export function executeMove(
 **Step 3: Use hook in GameBoard**
 ```typescript
 // your-game/src/components/GameBoard.tsx
-import { useCardInteraction } from '@cardgames/shared';
+import { useCardInteraction } from '@plokmin/shared';
 
 const { state, handlers } = useCardInteraction({
   canMove: (from, to) => validateMove(gameState, from, to),

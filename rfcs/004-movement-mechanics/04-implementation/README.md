@@ -14,7 +14,7 @@ Three-phase migration with feature flags for safe rollback.
 
 ## Phase 1: Extract Shared Validation (2 days)
 
-**Goal:** Create `@cardgames/shared/rules/` with generic validation functions.
+**Goal:** Create `@plokmin/shared/rules/` with generic validation functions.
 
 **Key Deliverables:**
 - `shared/rules/solitaireRules.ts` with validation helpers

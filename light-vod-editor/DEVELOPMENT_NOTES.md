@@ -210,7 +210,7 @@ light-vod-editor/
 ```
 
 ### Key URLs
-- **Live Demo:** https://mikhaidn.github.io/CardGames/light-vod-editor/
+- **Live Demo:** https://mikhaidn.github.io/PlokminFun/light-vod-editor/
 - **FFmpeg Docs:** https://ffmpeg.org/ffmpeg-filters.html
 - **MediaRecorder API:** https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder
 

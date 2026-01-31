@@ -23,7 +23,7 @@ Helper scripts to streamline RFC creation and management.
 
 **Usage:**
 ```bash
-cd /home/user/CardGames/rfcs
+cd /home/user/PlokminFun/rfcs
 ./scripts/list-rfcs.sh
 ```
 
@@ -202,7 +202,7 @@ ls -la rfcs/scripts/*.sh  # Should be executable (-rwxr-xr-x)
 chmod +x rfcs/scripts/*.sh
 
 # Run from rfcs directory:
-cd /home/user/CardGames/rfcs
+cd /home/user/PlokminFun/rfcs
 ./scripts/list-rfcs.sh
 ```
 

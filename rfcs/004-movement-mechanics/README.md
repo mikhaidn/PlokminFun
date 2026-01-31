@@ -8,7 +8,7 @@
 ## TL;DR
 
 Remove 600-700 lines of duplicate code by consolidating card movement mechanics:
-- Extract shared validation rules to `@cardgames/shared`
+- Extract shared validation rules to `@plokmin/shared`
 - Migrate both games to use the existing `useCardInteraction` hook
 - Standardize on `cardCount` (simplified representation)
 - Refactor FreeCell to use Klondike's generic `moveCards(from, to, count)` pattern

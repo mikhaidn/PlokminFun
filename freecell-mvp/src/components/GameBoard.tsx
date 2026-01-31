@@ -22,7 +22,7 @@ import {
   HelpModal,
   getMinButtonHeight,
   getSettingsFromMode,
-} from '@cardgames/shared';
+} from '@plokmin/shared';
 import { validateMove } from '../rules/moveValidation';
 import { executeMove } from '../state/moveExecution';
 import { convertTableauToGeneric } from '../utils/tableauAdapter';

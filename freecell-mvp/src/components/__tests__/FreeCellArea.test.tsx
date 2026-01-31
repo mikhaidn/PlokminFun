@@ -6,7 +6,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { FreeCellArea } from '../FreeCellArea';
-import type { CardType, GameLocation } from '@cardgames/shared';
+import type { CardType, GameLocation } from '@plokmin/shared';
 
 describe('FreeCellArea', () => {
   const mockCard1: CardType = {

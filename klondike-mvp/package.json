@@ -13,7 +13,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@cardgames/shared": "*",
+    "@plokmin/shared": "*",
     "framer-motion": "^12.23.26",
     "react-confetti": "^6.4.0"
   },

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SettingsProvider } from '@cardgames/shared';
+import { SettingsProvider } from '@plokmin/shared';
 import { GameBoard } from './components/GameBoard';
 import { AnimationExperiments } from './components/AnimationExperiments';
 import { createInitialState } from './state/gameState';

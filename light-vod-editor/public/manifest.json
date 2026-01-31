@@ -2,14 +2,14 @@
   "name": "Light Vod Editor",
   "short_name": "Light Vod Editor",
   "description": "Light Vod Editor - Part of the Plokmin Consortium",
-  "start_url": "/CardGames/light-vod-editor/",
+  "start_url": "/PlokminFun/light-vod-editor/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#667eea",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/CardGames/light-vod-editor/icon.svg",
+      "src": "/PlokminFun/light-vod-editor/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

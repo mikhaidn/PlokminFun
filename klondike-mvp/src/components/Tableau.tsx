@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, EmptyCell, type LayoutSizes, type GameLocation } from '@cardgames/shared';
+import { Card, EmptyCell, type LayoutSizes, type GameLocation } from '@plokmin/shared';
 import { type TableauColumn, type KlondikeGameState } from '../state/gameState';
 import { isCardFaceUp } from '../state/cardDisplay';
 
@@ -89,7 +89,7 @@ export const Tableau: React.FC<TableauProps> = ({
               />
             ) : (
               column.cards.map((card, cardIndex) => {
-                // RFC-005 compatible: uses GameLocation from @cardgames/shared
+                // RFC-005 compatible: uses GameLocation from @plokmin/shared
                 const location: GameLocation = { type: 'tableau', index: columnIndex };
                 const faceUp = isCardFaceUp(gameState, location, cardIndex);
 

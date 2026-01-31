@@ -1,6 +1,6 @@
 import React from 'react';
-import { type CardType } from '@cardgames/shared';
-import { Card, EmptyCell } from '@cardgames/shared';
+import { type CardType } from '@plokmin/shared';
+import { Card, EmptyCell } from '@plokmin/shared';
 
 interface TableauProps {
   tableau: CardType[][];

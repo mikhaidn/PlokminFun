@@ -1,4 +1,4 @@
-import type { GameLocation } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
 import type { GameState } from './gameState';
 import {
   moveCardToFreeCell,

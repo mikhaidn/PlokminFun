@@ -1,612 +1,635 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Light VOD Editor - FFmpeg Command Generator</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Light VOD Editor - FFmpeg Command Generator</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-      background: #0a0a0a;
-      color: #e0e0e0;
-      line-height: 1.6;
-    }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #0a0a0a;
+        color: #e0e0e0;
+        line-height: 1.6;
+      }
 
-    h1 {
-      color: #4a9eff;
-      border-bottom: 3px solid #4a9eff;
-      padding-bottom: 15px;
-      margin-bottom: 10px;
-      font-size: 2.5em;
-    }
+      h1 {
+        color: #4a9eff;
+        border-bottom: 3px solid #4a9eff;
+        padding-bottom: 15px;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
 
-    .subtitle {
-      color: #8b949e;
-      font-size: 1.1em;
-      margin-bottom: 30px;
-    }
+      .subtitle {
+        color: #8b949e;
+        font-size: 1.1em;
+        margin-bottom: 30px;
+      }
 
-    .section {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 25px;
-      margin: 25px 0;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
+      .section {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 25px;
+        margin: 25px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      }
 
-    .section h2 {
-      margin-top: 0;
-      margin-bottom: 15px;
-      color: #6ab7ff;
-      font-size: 1.8em;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+      .section h2 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #6ab7ff;
+        font-size: 1.8em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-    .section p {
-      color: #c9d1d9;
-      margin-bottom: 15px;
-    }
+      .section p {
+        color: #c9d1d9;
+        margin-bottom: 15px;
+      }
 
-    input[type="file"] {
-      display: block;
-      margin: 15px 0;
-      padding: 15px;
-      background: #2a2a2a;
-      border: 2px dashed #4a9eff;
-      border-radius: 6px;
-      color: #e0e0e0;
-      cursor: pointer;
-      width: 100%;
-      transition: all 0.3s;
-    }
+      input[type='file'] {
+        display: block;
+        margin: 15px 0;
+        padding: 15px;
+        background: #2a2a2a;
+        border: 2px dashed #4a9eff;
+        border-radius: 6px;
+        color: #e0e0e0;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s;
+      }
 
-    input[type="file"]:hover {
-      background: #333;
-      border-color: #6ab7ff;
-      transform: translateY(-2px);
-    }
+      input[type='file']:hover {
+        background: #333;
+        border-color: #6ab7ff;
+        transform: translateY(-2px);
+      }
 
-    video {
-      width: 100%;
-      max-width: 900px;
-      background: #000;
-      border-radius: 6px;
-      display: block;
-      margin: 15px auto;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    }
+      video {
+        width: 100%;
+        max-width: 900px;
+        background: #000;
+        border-radius: 6px;
+        display: block;
+        margin: 15px auto;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      }
 
-    .controls {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin: 20px 0;
-    }
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
 
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
 
-    label {
-      font-weight: 600;
-      margin-bottom: 5px;
-      color: #a0a0a0;
-      font-size: 0.95em;
-    }
+      label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #a0a0a0;
+        font-size: 0.95em;
+      }
 
-    input[type="number"],
-    input[type="text"] {
-      padding: 12px;
-      border: 1px solid #444;
-      border-radius: 4px;
-      background: #2a2a2a;
-      color: #e0e0e0;
-      font-size: 15px;
-      transition: border-color 0.2s;
-    }
+      input[type='number'],
+      input[type='text'] {
+        padding: 12px;
+        border: 1px solid #444;
+        border-radius: 4px;
+        background: #2a2a2a;
+        color: #e0e0e0;
+        font-size: 15px;
+        transition: border-color 0.2s;
+      }
 
-    input[type="number"]:focus,
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #4a9eff;
-    }
+      input[type='number']:focus,
+      input[type='text']:focus {
+        outline: none;
+        border-color: #4a9eff;
+      }
 
-    button {
-      padding: 14px 28px;
-      background: #4a9eff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin: 5px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
+      button {
+        padding: 14px 28px;
+        background: #4a9eff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin: 5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-    button:hover {
-      background: #357abd;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(74, 158, 255, 0.3);
-    }
+      button:hover {
+        background: #357abd;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(74, 158, 255, 0.3);
+      }
 
-    button:active {
-      transform: translateY(0);
-    }
+      button:active {
+        transform: translateY(0);
+      }
 
-    button:disabled {
-      background: #555;
-      cursor: not-allowed;
-      transform: none;
-    }
+      button:disabled {
+        background: #555;
+        cursor: not-allowed;
+        transform: none;
+      }
 
-    button.secondary {
-      background: #30363d;
-    }
+      button.secondary {
+        background: #30363d;
+      }
 
-    button.secondary:hover {
-      background: #484f58;
-    }
+      button.secondary:hover {
+        background: #484f58;
+      }
 
-    button.success {
-      background: #238636;
-    }
+      button.success {
+        background: #238636;
+      }
 
-    button.success:hover {
-      background: #2ea043;
-    }
+      button.success:hover {
+        background: #2ea043;
+      }
 
-    .metadata {
-      background: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      padding: 20px;
-      margin: 20px 0;
-      font-family: 'Monaco', 'Courier New', monospace;
-      font-size: 13px;
-    }
+      .metadata {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 20px;
+        margin: 20px 0;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 13px;
+      }
 
-    .metadata dl {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      gap: 12px;
-      margin: 0;
-    }
+      .metadata dl {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 12px;
+        margin: 0;
+      }
 
-    .metadata dt {
-      font-weight: 600;
-      color: #8b949e;
-    }
+      .metadata dt {
+        font-weight: 600;
+        color: #8b949e;
+      }
 
-    .metadata dd {
-      margin: 0;
-      color: #c9d1d9;
-    }
+      .metadata dd {
+        margin: 0;
+        color: #c9d1d9;
+      }
 
-    .timeline {
-      position: relative;
-      height: 80px;
-      background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
-      border-radius: 6px;
-      margin: 25px 0;
-      cursor: pointer;
-      border: 1px solid #444;
-      overflow: hidden;
-    }
+      .timeline {
+        position: relative;
+        height: 80px;
+        background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+        border-radius: 6px;
+        margin: 25px 0;
+        cursor: pointer;
+        border: 1px solid #444;
+        overflow: hidden;
+      }
 
-    .timeline-track {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 6px;
-      background: #555;
-      transform: translateY(-50%);
-    }
+      .timeline-track {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: #555;
+        transform: translateY(-50%);
+      }
 
-    .playhead {
-      position: absolute;
-      top: 0;
-      width: 3px;
-      height: 100%;
-      background: #f85149;
-      pointer-events: none;
-      z-index: 5;
-      box-shadow: 0 0 8px rgba(248, 81, 73, 0.8);
-    }
+      .playhead {
+        position: absolute;
+        top: 0;
+        width: 3px;
+        height: 100%;
+        background: #f85149;
+        pointer-events: none;
+        z-index: 5;
+        box-shadow: 0 0 8px rgba(248, 81, 73, 0.8);
+      }
 
-    .trim-region {
-      position: absolute;
-      top: 50%;
-      height: 30px;
-      background: rgba(74, 158, 255, 0.25);
-      border: 2px solid #4a9eff;
-      transform: translateY(-50%);
-      pointer-events: none;
-      border-radius: 4px;
-    }
+      .trim-region {
+        position: absolute;
+        top: 50%;
+        height: 30px;
+        background: rgba(74, 158, 255, 0.25);
+        border: 2px solid #4a9eff;
+        transform: translateY(-50%);
+        pointer-events: none;
+        border-radius: 4px;
+      }
 
-    .trim-handle {
-      position: absolute;
-      top: 50%;
-      width: 14px;
-      height: 50px;
-      background: #4a9eff;
-      border-radius: 3px;
-      transform: translate(-50%, -50%);
-      cursor: ew-resize;
-      z-index: 10;
-      transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    }
+      .trim-handle {
+        position: absolute;
+        top: 50%;
+        width: 14px;
+        height: 50px;
+        background: #4a9eff;
+        border-radius: 3px;
+        transform: translate(-50%, -50%);
+        cursor: ew-resize;
+        z-index: 10;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
 
-    .trim-handle:hover {
-      background: #6ab7ff;
-      width: 18px;
-      height: 60px;
-      box-shadow: 0 4px 12px rgba(74, 158, 255, 0.6);
-    }
+      .trim-handle:hover {
+        background: #6ab7ff;
+        width: 18px;
+        height: 60px;
+        box-shadow: 0 4px 12px rgba(74, 158, 255, 0.6);
+      }
 
-    .trim-handle::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 2px;
-      height: 20px;
-      background: rgba(255, 255, 255, 0.5);
-    }
+      .trim-handle::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 2px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.5);
+      }
 
-    .command-output {
-      background: #0d1117;
-      border: 2px solid #30363d;
-      border-radius: 6px;
-      padding: 20px;
-      margin: 20px 0;
-      font-family: 'Monaco', 'Courier New', monospace;
-      font-size: 14px;
-      position: relative;
-      overflow-x: auto;
-    }
+      .command-output {
+        background: #0d1117;
+        border: 2px solid #30363d;
+        border-radius: 6px;
+        padding: 20px;
+        margin: 20px 0;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 14px;
+        position: relative;
+        overflow-x: auto;
+      }
 
-    .command-output pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      color: #58a6ff;
-      line-height: 1.8;
-    }
+      .command-output pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        color: #58a6ff;
+        line-height: 1.8;
+      }
 
-    .command-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #30363d;
-    }
+      .command-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #30363d;
+      }
 
-    .command-header h3 {
-      color: #8b949e;
-      font-size: 0.9em;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+      .command-header h3 {
+        color: #8b949e;
+        font-size: 0.9em;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-    .copy-btn {
-      padding: 8px 16px;
-      font-size: 13px;
-      background: #238636;
-    }
+      .copy-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+        background: #238636;
+      }
 
-    .copy-btn:hover {
-      background: #2ea043;
-    }
+      .copy-btn:hover {
+        background: #2ea043;
+      }
 
-    .copy-btn.copied {
-      background: #1f6feb;
-    }
+      .copy-btn.copied {
+        background: #1f6feb;
+      }
 
-    .help-section {
-      background: #161b22;
-      border-left: 4px solid #4a9eff;
-      padding: 15px 20px;
-      margin: 20px 0;
-      border-radius: 4px;
-    }
+      .help-section {
+        background: #161b22;
+        border-left: 4px solid #4a9eff;
+        padding: 15px 20px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
 
-    .help-section h4 {
-      color: #6ab7ff;
-      margin-bottom: 10px;
-    }
+      .help-section h4 {
+        color: #6ab7ff;
+        margin-bottom: 10px;
+      }
 
-    .help-section ul {
-      list-style: none;
-      padding-left: 20px;
-    }
+      .help-section ul {
+        list-style: none;
+        padding-left: 20px;
+      }
 
-    .help-section li {
-      margin: 8px 0;
-      color: #c9d1d9;
-    }
+      .help-section li {
+        margin: 8px 0;
+        color: #c9d1d9;
+      }
 
-    .help-section li::before {
-      content: '▸';
-      color: #4a9eff;
-      margin-right: 10px;
-    }
+      .help-section li::before {
+        content: '▸';
+        color: #4a9eff;
+        margin-right: 10px;
+      }
 
-    .help-section code {
-      background: #0d1117;
-      padding: 2px 6px;
-      border-radius: 3px;
-      color: #58a6ff;
-      font-family: 'Monaco', monospace;
-    }
+      .help-section code {
+        background: #0d1117;
+        padding: 2px 6px;
+        border-radius: 3px;
+        color: #58a6ff;
+        font-family: 'Monaco', monospace;
+      }
 
-    .time-display {
-      background: #0d1117;
-      padding: 8px 12px;
-      border-radius: 4px;
-      font-family: 'Monaco', monospace;
-      color: #58a6ff;
-      display: inline-block;
-      margin-top: 5px;
-    }
+      .time-display {
+        background: #0d1117;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-family: 'Monaco', monospace;
+        color: #58a6ff;
+        display: inline-block;
+        margin-top: 5px;
+      }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin: 20px 0;
-    }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
 
-    .stat-card {
-      background: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      padding: 15px;
-      text-align: center;
-    }
+      .stat-card {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 15px;
+        text-align: center;
+      }
 
-    .stat-value {
-      font-size: 1.8em;
-      font-weight: 700;
-      color: #4a9eff;
-      margin-bottom: 5px;
-    }
+      .stat-value {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: #4a9eff;
+        margin-bottom: 5px;
+      }
 
-    .stat-label {
-      color: #8b949e;
-      font-size: 0.9em;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+      .stat-label {
+        color: #8b949e;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-    details {
-      margin-top: 30px;
-    }
+      details {
+        margin-top: 30px;
+      }
 
-    summary {
-      cursor: pointer;
-      color: #6ab7ff;
-      font-weight: 600;
-      padding: 10px;
-      background: #161b22;
-      border-radius: 4px;
-      user-select: none;
-    }
+      summary {
+        cursor: pointer;
+        color: #6ab7ff;
+        font-weight: 600;
+        padding: 10px;
+        background: #161b22;
+        border-radius: 4px;
+        user-select: none;
+      }
 
-    summary:hover {
-      background: #1c2128;
-    }
+      summary:hover {
+        background: #1c2128;
+      }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    .section {
-      animation: fadeIn 0.3s ease-out;
-    }
-  </style>
-</head>
-<body>
-  <h1>🎬 Light VOD Editor</h1>
-  <p class="subtitle">Visual timeline trimmer that generates ffmpeg commands. Fast, local, private.</p>
+      .section {
+        animation: fadeIn 0.3s ease-out;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎬 Light VOD Editor</h1>
+    <p class="subtitle">
+      Visual timeline trimmer that generates ffmpeg commands. Fast, local, private.
+    </p>
 
-  <div class="section">
-    <h2>📂 Step 1: Load Your Video</h2>
-    <p>No upload needed - file stays on your computer. Works with any size (tested with 4-7 GB files).</p>
-    <input type="file" id="videoInput" accept="video/*">
-  </div>
-
-  <div class="section" id="metadataSection" style="display: none;">
-    <h2>📊 Video Information</h2>
-    <div class="metadata" id="metadata"></div>
-
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-value" id="statDuration">--:--:--</div>
-        <div class="stat-label">Duration</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="statSize">-- GB</div>
-        <div class="stat-label">File Size</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="statResolution">----x----</div>
-        <div class="stat-label">Resolution</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section" id="previewSection" style="display: none;">
-    <h2>👁️ Step 2: Preview & Find Trim Points</h2>
-    <p>Scrub through your video to find the perfect start and end points.</p>
-    <video id="preview" controls></video>
-  </div>
-
-  <div class="section" id="trimSection" style="display: none;">
-    <h2>✂️ Step 3: Set Trim Points</h2>
-    <p>Drag handles on timeline, click to seek, or use the buttons below to capture the current video position.</p>
-
-    <div class="timeline" id="timeline">
-      <div class="timeline-track"></div>
-      <div class="playhead" id="playhead"></div>
-      <div class="trim-region" id="trimRegion"></div>
-      <div class="trim-handle" id="trimStartHandle" style="left: 0%;"></div>
-      <div class="trim-handle" id="trimEndHandle" style="left: 100%;"></div>
+    <div class="section">
+      <h2>📂 Step 1: Load Your Video</h2>
+      <p>
+        No upload needed - file stays on your computer. Works with any size (tested with 4-7 GB
+        files).
+      </p>
+      <input type="file" id="videoInput" accept="video/*" />
     </div>
 
-    <div class="controls">
-      <div class="control-group">
-        <label for="trimStart">Trim Start</label>
-        <input type="number" id="trimStart" value="0" min="0" step="0.1">
-        <div class="time-display" id="trimStartDisplay">00:00:00.0</div>
-        <button onclick="setTrimStartToCurrent()" class="secondary">📍 Set to Current Time</button>
-      </div>
-      <div class="control-group">
-        <label for="trimEnd">Trim End</label>
-        <input type="number" id="trimEnd" value="60" min="0" step="0.1">
-        <div class="time-display" id="trimEndDisplay">00:01:00.0</div>
-        <button onclick="setTrimEndToCurrent()" class="secondary">📍 Set to Current Time</button>
-      </div>
-    </div>
+    <div class="section" id="metadataSection" style="display: none">
+      <h2>📊 Video Information</h2>
+      <div class="metadata" id="metadata"></div>
 
-    <div style="text-align: center; margin: 20px 0;">
-      <button id="previewTrimBtn">▶️ Preview Trim Region</button>
-      <button id="resetTrimBtn" class="secondary">🔄 Reset to Full Video</button>
-    </div>
-  </div>
-
-  <div class="section" id="commandSection" style="display: none;">
-    <h2>🚀 Step 4: Run FFmpeg Command</h2>
-
-    <div class="command-output">
-      <div class="command-header">
-        <h3>Trim-Only (Fast - No Re-encoding)</h3>
-        <button class="copy-btn" onclick="copyCommand('trimOnly')">📋 Copy Command</button>
-      </div>
-      <pre id="trimOnlyCommand"></pre>
-    </div>
-
-    <div class="help-section">
-      <h4>How to use:</h4>
-      <ul>
-        <li>Click "📋 Copy Command" above</li>
-        <li>Open Terminal (Mac/Linux) or Command Prompt (Windows)</li>
-        <li>Navigate to folder with your video: <code>cd /path/to/video/folder</code></li>
-        <li>Paste and run the command</li>
-        <li>Output file will be created in ~5-30 seconds (no matter how large the input!)</li>
-      </ul>
-    </div>
-
-    <details>
-      <summary>🎵 Advanced: Add Audio Overlay (Click to expand)</summary>
-      <div style="margin-top: 20px;">
-        <div class="control-group" style="max-width: 500px;">
-          <label for="audioFile">Audio Overlay File (optional)</label>
-          <input type="text" id="audioFile" placeholder="e.g., background-music.mp3">
-          <small style="color: #8b949e;">Enter the filename of an audio file in the same folder</small>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value" id="statDuration">--:--:--</div>
+          <div class="stat-label">Duration</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statSize">-- GB</div>
+          <div class="stat-label">File Size</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statResolution">----x----</div>
+          <div class="stat-label">Resolution</div>
+        </div>
+      </div>
+    </div>
 
-        <div class="command-output" style="margin-top: 20px;">
-          <div class="command-header">
-            <h3>Trim + Audio Overlay (Slower - Re-encodes Audio)</h3>
-            <button class="copy-btn" onclick="copyCommand('withAudio')">📋 Copy Command</button>
+    <div class="section" id="previewSection" style="display: none">
+      <h2>👁️ Step 2: Preview & Find Trim Points</h2>
+      <p>Scrub through your video to find the perfect start and end points.</p>
+      <video id="preview" controls></video>
+    </div>
+
+    <div class="section" id="trimSection" style="display: none">
+      <h2>✂️ Step 3: Set Trim Points</h2>
+      <p>
+        Drag handles on timeline, click to seek, or use the buttons below to capture the current
+        video position.
+      </p>
+
+      <div class="timeline" id="timeline">
+        <div class="timeline-track"></div>
+        <div class="playhead" id="playhead"></div>
+        <div class="trim-region" id="trimRegion"></div>
+        <div class="trim-handle" id="trimStartHandle" style="left: 0%"></div>
+        <div class="trim-handle" id="trimEndHandle" style="left: 100%"></div>
+      </div>
+
+      <div class="controls">
+        <div class="control-group">
+          <label for="trimStart">Trim Start</label>
+          <input type="number" id="trimStart" value="0" min="0" step="0.1" />
+          <div class="time-display" id="trimStartDisplay">00:00:00.0</div>
+          <button onclick="setTrimStartToCurrent()" class="secondary">
+            📍 Set to Current Time
+          </button>
+        </div>
+        <div class="control-group">
+          <label for="trimEnd">Trim End</label>
+          <input type="number" id="trimEnd" value="60" min="0" step="0.1" />
+          <div class="time-display" id="trimEndDisplay">00:01:00.0</div>
+          <button onclick="setTrimEndToCurrent()" class="secondary">📍 Set to Current Time</button>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin: 20px 0">
+        <button id="previewTrimBtn">▶️ Preview Trim Region</button>
+        <button id="resetTrimBtn" class="secondary">🔄 Reset to Full Video</button>
+      </div>
+    </div>
+
+    <div class="section" id="commandSection" style="display: none">
+      <h2>🚀 Step 4: Run FFmpeg Command</h2>
+
+      <div class="command-output">
+        <div class="command-header">
+          <h3>Trim-Only (Fast - No Re-encoding)</h3>
+          <button class="copy-btn" onclick="copyCommand('trimOnly')">📋 Copy Command</button>
+        </div>
+        <pre id="trimOnlyCommand"></pre>
+      </div>
+
+      <div class="help-section">
+        <h4>How to use:</h4>
+        <ul>
+          <li>Click "📋 Copy Command" above</li>
+          <li>Open Terminal (Mac/Linux) or Command Prompt (Windows)</li>
+          <li>Navigate to folder with your video: <code>cd /path/to/video/folder</code></li>
+          <li>Paste and run the command</li>
+          <li>Output file will be created in ~5-30 seconds (no matter how large the input!)</li>
+        </ul>
+      </div>
+
+      <details>
+        <summary>🎵 Advanced: Add Audio Overlay (Click to expand)</summary>
+        <div style="margin-top: 20px">
+          <div class="control-group" style="max-width: 500px">
+            <label for="audioFile">Audio Overlay File (optional)</label>
+            <input type="text" id="audioFile" placeholder="e.g., background-music.mp3" />
+            <small style="color: #8b949e"
+              >Enter the filename of an audio file in the same folder</small
+            >
           </div>
-          <pre id="withAudioCommand"></pre>
+
+          <div class="command-output" style="margin-top: 20px">
+            <div class="command-header">
+              <h3>Trim + Audio Overlay (Slower - Re-encodes Audio)</h3>
+              <button class="copy-btn" onclick="copyCommand('withAudio')">📋 Copy Command</button>
+            </div>
+            <pre id="withAudioCommand"></pre>
+          </div>
         </div>
+      </details>
+
+      <div class="help-section" style="margin-top: 30px; border-left-color: #d29922">
+        <h4>Don't have FFmpeg installed?</h4>
+        <ul>
+          <li><strong>Mac:</strong> <code>brew install ffmpeg</code></li>
+          <li><strong>Linux (Ubuntu/Debian):</strong> <code>sudo apt install ffmpeg</code></li>
+          <li>
+            <strong>Windows:</strong> Download from
+            <a href="https://ffmpeg.org/download.html" target="_blank" style="color: #4a9eff"
+              >ffmpeg.org</a
+            >
+          </li>
+        </ul>
       </div>
-    </details>
-
-    <div class="help-section" style="margin-top: 30px; border-left-color: #d29922;">
-      <h4>Don't have FFmpeg installed?</h4>
-      <ul>
-        <li><strong>Mac:</strong> <code>brew install ffmpeg</code></li>
-        <li><strong>Linux (Ubuntu/Debian):</strong> <code>sudo apt install ffmpeg</code></li>
-        <li><strong>Windows:</strong> Download from <a href="https://ffmpeg.org/download.html" target="_blank" style="color: #4a9eff;">ffmpeg.org</a></li>
-      </ul>
     </div>
-  </div>
 
-  <script>
-    // State
-    let currentFile = null;
-    let videoDuration = 0;
-    let isDragging = false;
-    let dragTarget = null;
+    <script>
+      // State
+      let currentFile = null;
+      let videoDuration = 0;
+      let isDragging = false;
+      let dragTarget = null;
 
-    // Elements
-    const videoInput = document.getElementById('videoInput');
-    const preview = document.getElementById('preview');
-    const trimStartInput = document.getElementById('trimStart');
-    const trimEndInput = document.getElementById('trimEnd');
-    const timeline = document.getElementById('timeline');
-    const playhead = document.getElementById('playhead');
-    const trimRegion = document.getElementById('trimRegion');
-    const trimStartHandle = document.getElementById('trimStartHandle');
-    const trimEndHandle = document.getElementById('trimEndHandle');
-    const audioFileInput = document.getElementById('audioFile');
+      // Elements
+      const videoInput = document.getElementById('videoInput');
+      const preview = document.getElementById('preview');
+      const trimStartInput = document.getElementById('trimStart');
+      const trimEndInput = document.getElementById('trimEnd');
+      const timeline = document.getElementById('timeline');
+      const playhead = document.getElementById('playhead');
+      const trimRegion = document.getElementById('trimRegion');
+      const trimStartHandle = document.getElementById('trimStartHandle');
+      const trimEndHandle = document.getElementById('trimEndHandle');
+      const audioFileInput = document.getElementById('audioFile');
 
-    // Format helpers
-    function formatBytes(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
-    }
+      // Format helpers
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+      }
 
-    function formatTime(seconds) {
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      const s = Math.floor(seconds % 60);
-      const ms = Math.floor((seconds % 1) * 10);
-      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}.${ms}`;
-    }
+      function formatTime(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+        const ms = Math.floor((seconds % 1) * 10);
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}.${ms}`;
+      }
 
-    function formatTimeFFmpeg(seconds) {
-      const h = Math.floor(seconds / 3600);
-      const m = Math.floor((seconds % 3600) / 60);
-      const s = seconds % 60;
-      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toFixed(2).padStart(5, '0')}`;
-    }
+      function formatTimeFFmpeg(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toFixed(2).padStart(5, '0')}`;
+      }
 
-    // Load video
-    videoInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+      // Load video
+      videoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-      currentFile = file;
-      const url = URL.createObjectURL(file);
-      preview.src = url;
+        currentFile = file;
+        const url = URL.createObjectURL(file);
+        preview.src = url;
 
-      preview.onloadedmetadata = () => {
-        videoDuration = preview.duration;
+        preview.onloadedmetadata = () => {
+          videoDuration = preview.duration;
 
-        // Update metadata
-        document.getElementById('metadata').innerHTML = `
+          // Update metadata
+          document.getElementById('metadata').innerHTML = `
           <dl>
             <dt>Filename:</dt>
             <dd>${file.name}</dd>
@@ -621,191 +644,194 @@
           </dl>
         `;
 
-        // Update stats
-        document.getElementById('statDuration').textContent = formatTime(videoDuration);
-        document.getElementById('statSize').textContent = formatBytes(file.size);
-        document.getElementById('statResolution').textContent = `${preview.videoWidth}x${preview.videoHeight}`;
+          // Update stats
+          document.getElementById('statDuration').textContent = formatTime(videoDuration);
+          document.getElementById('statSize').textContent = formatBytes(file.size);
+          document.getElementById('statResolution').textContent =
+            `${preview.videoWidth}x${preview.videoHeight}`;
 
-        // Show sections
-        document.getElementById('metadataSection').style.display = 'block';
-        document.getElementById('previewSection').style.display = 'block';
-        document.getElementById('trimSection').style.display = 'block';
-        document.getElementById('commandSection').style.display = 'block';
+          // Show sections
+          document.getElementById('metadataSection').style.display = 'block';
+          document.getElementById('previewSection').style.display = 'block';
+          document.getElementById('trimSection').style.display = 'block';
+          document.getElementById('commandSection').style.display = 'block';
 
-        // Set defaults
-        trimEndInput.value = videoDuration.toFixed(1);
-        trimEndInput.max = videoDuration;
-        trimStartInput.max = videoDuration;
+          // Set defaults
+          trimEndInput.value = videoDuration.toFixed(1);
+          trimEndInput.max = videoDuration;
+          trimStartInput.max = videoDuration;
+
+          updateTimeline();
+          updateCommands();
+        };
+      });
+
+      // Update playhead position during playback
+      preview.addEventListener('timeupdate', () => {
+        if (videoDuration > 0) {
+          const percent = (preview.currentTime / videoDuration) * 100;
+          playhead.style.left = `${percent}%`;
+        }
+      });
+
+      // Update timeline visualization
+      function updateTimeline() {
+        if (!videoDuration) return;
+
+        const startTime = parseFloat(trimStartInput.value);
+        const endTime = parseFloat(trimEndInput.value);
+
+        const startPercent = (startTime / videoDuration) * 100;
+        const endPercent = (endTime / videoDuration) * 100;
+
+        trimStartHandle.style.left = `${startPercent}%`;
+        trimEndHandle.style.left = `${endPercent}%`;
+
+        trimRegion.style.left = `${startPercent}%`;
+        trimRegion.style.width = `${endPercent - startPercent}%`;
+
+        // Update time displays
+        document.getElementById('trimStartDisplay').textContent = formatTime(startTime);
+        document.getElementById('trimEndDisplay').textContent = formatTime(endTime);
+
+        updateCommands();
+      }
+
+      // Update ffmpeg commands
+      function updateCommands() {
+        if (!currentFile) return;
+
+        const startTime = parseFloat(trimStartInput.value);
+        const endTime = parseFloat(trimEndInput.value);
+        const duration = endTime - startTime;
+        const inputFile = currentFile.name;
+        const outputFile = `trimmed_${inputFile}`;
+        const audioFile = audioFileInput.value.trim();
+
+        // Trim-only command (fast, no re-encode)
+        const trimOnlyCmd = `ffmpeg -ss ${formatTimeFFmpeg(startTime)} -t ${duration.toFixed(2)} -i "${inputFile}" -c copy "${outputFile}"`;
+        document.getElementById('trimOnlyCommand').textContent = trimOnlyCmd;
+
+        // With audio overlay (re-encodes audio, copies video)
+        if (audioFile) {
+          const withAudioCmd = `ffmpeg -ss ${formatTimeFFmpeg(startTime)} -t ${duration.toFixed(2)} -i "${inputFile}" -i "${audioFile}" -filter_complex "[0:a][1:a]amix=inputs=2:duration=first" -c:v copy -c:a aac "${outputFile.replace('.', '_with_audio.')}"`;
+          document.getElementById('withAudioCommand').textContent = withAudioCmd;
+        } else {
+          document.getElementById('withAudioCommand').textContent =
+            '// Enter audio filename above to generate command';
+        }
+      }
+
+      // Set trim points
+      window.setTrimStartToCurrent = () => {
+        trimStartInput.value = preview.currentTime.toFixed(1);
+        updateTimeline();
+      };
+
+      window.setTrimEndToCurrent = () => {
+        trimEndInput.value = preview.currentTime.toFixed(1);
+        updateTimeline();
+      };
+
+      // Timeline interactions
+      timeline.addEventListener('click', (e) => {
+        if (isDragging) return;
+        const rect = timeline.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percent = x / rect.width;
+        preview.currentTime = percent * videoDuration;
+      });
+
+      // Dragging
+      trimStartHandle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        dragTarget = 'start';
+        e.stopPropagation();
+      });
+
+      trimEndHandle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        dragTarget = 'end';
+        e.stopPropagation();
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging || !videoDuration) return;
+
+        const rect = timeline.getBoundingClientRect();
+        const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+        const percent = x / rect.width;
+        const time = percent * videoDuration;
+
+        if (dragTarget === 'start') {
+          const endTime = parseFloat(trimEndInput.value);
+          if (time < endTime) {
+            trimStartInput.value = time.toFixed(1);
+          }
+        } else if (dragTarget === 'end') {
+          const startTime = parseFloat(trimStartInput.value);
+          if (time > startTime) {
+            trimEndInput.value = time.toFixed(1);
+          }
+        }
 
         updateTimeline();
-        updateCommands();
-      };
-    });
+      });
 
-    // Update playhead position during playback
-    preview.addEventListener('timeupdate', () => {
-      if (videoDuration > 0) {
-        const percent = (preview.currentTime / videoDuration) * 100;
-        playhead.style.left = `${percent}%`;
-      }
-    });
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+        dragTarget = null;
+      });
 
-    // Update timeline visualization
-    function updateTimeline() {
-      if (!videoDuration) return;
+      // Input listeners
+      trimStartInput.addEventListener('input', updateTimeline);
+      trimEndInput.addEventListener('input', updateTimeline);
+      audioFileInput.addEventListener('input', updateCommands);
 
-      const startTime = parseFloat(trimStartInput.value);
-      const endTime = parseFloat(trimEndInput.value);
-
-      const startPercent = (startTime / videoDuration) * 100;
-      const endPercent = (endTime / videoDuration) * 100;
-
-      trimStartHandle.style.left = `${startPercent}%`;
-      trimEndHandle.style.left = `${endPercent}%`;
-
-      trimRegion.style.left = `${startPercent}%`;
-      trimRegion.style.width = `${endPercent - startPercent}%`;
-
-      // Update time displays
-      document.getElementById('trimStartDisplay').textContent = formatTime(startTime);
-      document.getElementById('trimEndDisplay').textContent = formatTime(endTime);
-
-      updateCommands();
-    }
-
-    // Update ffmpeg commands
-    function updateCommands() {
-      if (!currentFile) return;
-
-      const startTime = parseFloat(trimStartInput.value);
-      const endTime = parseFloat(trimEndInput.value);
-      const duration = endTime - startTime;
-      const inputFile = currentFile.name;
-      const outputFile = `trimmed_${inputFile}`;
-      const audioFile = audioFileInput.value.trim();
-
-      // Trim-only command (fast, no re-encode)
-      const trimOnlyCmd = `ffmpeg -ss ${formatTimeFFmpeg(startTime)} -t ${duration.toFixed(2)} -i "${inputFile}" -c copy "${outputFile}"`;
-      document.getElementById('trimOnlyCommand').textContent = trimOnlyCmd;
-
-      // With audio overlay (re-encodes audio, copies video)
-      if (audioFile) {
-        const withAudioCmd = `ffmpeg -ss ${formatTimeFFmpeg(startTime)} -t ${duration.toFixed(2)} -i "${inputFile}" -i "${audioFile}" -filter_complex "[0:a][1:a]amix=inputs=2:duration=first" -c:v copy -c:a aac "${outputFile.replace('.', '_with_audio.')}"`;
-        document.getElementById('withAudioCommand').textContent = withAudioCmd;
-      } else {
-        document.getElementById('withAudioCommand').textContent = '// Enter audio filename above to generate command';
-      }
-    }
-
-    // Set trim points
-    window.setTrimStartToCurrent = () => {
-      trimStartInput.value = preview.currentTime.toFixed(1);
-      updateTimeline();
-    };
-
-    window.setTrimEndToCurrent = () => {
-      trimEndInput.value = preview.currentTime.toFixed(1);
-      updateTimeline();
-    };
-
-    // Timeline interactions
-    timeline.addEventListener('click', (e) => {
-      if (isDragging) return;
-      const rect = timeline.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const percent = x / rect.width;
-      preview.currentTime = percent * videoDuration;
-    });
-
-    // Dragging
-    trimStartHandle.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      dragTarget = 'start';
-      e.stopPropagation();
-    });
-
-    trimEndHandle.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      dragTarget = 'end';
-      e.stopPropagation();
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (!isDragging || !videoDuration) return;
-
-      const rect = timeline.getBoundingClientRect();
-      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-      const percent = x / rect.width;
-      const time = percent * videoDuration;
-
-      if (dragTarget === 'start') {
-        const endTime = parseFloat(trimEndInput.value);
-        if (time < endTime) {
-          trimStartInput.value = time.toFixed(1);
-        }
-      } else if (dragTarget === 'end') {
+      // Preview trim
+      document.getElementById('previewTrimBtn').addEventListener('click', () => {
         const startTime = parseFloat(trimStartInput.value);
-        if (time > startTime) {
-          trimEndInput.value = time.toFixed(1);
+        const endTime = parseFloat(trimEndInput.value);
+
+        preview.currentTime = startTime;
+        preview.play();
+
+        const checkEnd = setInterval(() => {
+          if (preview.currentTime >= endTime) {
+            preview.pause();
+            clearInterval(checkEnd);
+          }
+        }, 100);
+      });
+
+      // Reset trim
+      document.getElementById('resetTrimBtn').addEventListener('click', () => {
+        trimStartInput.value = 0;
+        trimEndInput.value = videoDuration.toFixed(1);
+        updateTimeline();
+      });
+
+      // Copy command
+      window.copyCommand = async (type) => {
+        const cmd =
+          type === 'trimOnly'
+            ? document.getElementById('trimOnlyCommand').textContent
+            : document.getElementById('withAudioCommand').textContent;
+
+        try {
+          await navigator.clipboard.writeText(cmd);
+          const btn = event.target;
+          const originalText = btn.textContent;
+          btn.textContent = '✅ Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.classList.remove('copied');
+          }, 2000);
+        } catch (err) {
+          alert('Failed to copy. Please select and copy manually.');
         }
-      }
-
-      updateTimeline();
-    });
-
-    document.addEventListener('mouseup', () => {
-      isDragging = false;
-      dragTarget = null;
-    });
-
-    // Input listeners
-    trimStartInput.addEventListener('input', updateTimeline);
-    trimEndInput.addEventListener('input', updateTimeline);
-    audioFileInput.addEventListener('input', updateCommands);
-
-    // Preview trim
-    document.getElementById('previewTrimBtn').addEventListener('click', () => {
-      const startTime = parseFloat(trimStartInput.value);
-      const endTime = parseFloat(trimEndInput.value);
-
-      preview.currentTime = startTime;
-      preview.play();
-
-      const checkEnd = setInterval(() => {
-        if (preview.currentTime >= endTime) {
-          preview.pause();
-          clearInterval(checkEnd);
-        }
-      }, 100);
-    });
-
-    // Reset trim
-    document.getElementById('resetTrimBtn').addEventListener('click', () => {
-      trimStartInput.value = 0;
-      trimEndInput.value = videoDuration.toFixed(1);
-      updateTimeline();
-    });
-
-    // Copy command
-    window.copyCommand = async (type) => {
-      const cmd = type === 'trimOnly'
-        ? document.getElementById('trimOnlyCommand').textContent
-        : document.getElementById('withAudioCommand').textContent;
-
-      try {
-        await navigator.clipboard.writeText(cmd);
-        const btn = event.target;
-        const originalText = btn.textContent;
-        btn.textContent = '✅ Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => {
-          btn.textContent = originalText;
-          btn.classList.remove('copied');
-        }, 2000);
-      } catch (err) {
-        alert('Failed to copy. Please select and copy manually.');
-      }
-    };
-  </script>
-</body>
+      };
+    </script>
+  </body>
 </html>

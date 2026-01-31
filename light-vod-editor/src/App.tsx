@@ -15,9 +15,7 @@ function App() {
         <div className="card">
           <h2>Welcome! 👋</h2>
           <p>This is your new experience scaffold.</p>
-          <button onClick={() => setCount(count + 1)}>
-            Count: {count}
-          </button>
+          <button onClick={() => setCount(count + 1)}>Count: {count}</button>
           <p className="hint">
             Edit <code>src/App.tsx</code> to customize this page.
           </p>

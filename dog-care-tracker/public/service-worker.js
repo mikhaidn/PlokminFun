@@ -1,7 +1,7 @@
 /* Basic service worker for offline support */
 
 const CACHE_NAME = 'dog-tracker-v1';
-const urlsToCache = ['/CardGames/dog-care-tracker/', '/CardGames/dog-care-tracker/index.html'];
+const urlsToCache = ['/PlokminFun/dog-care-tracker/', '/PlokminFun/dog-care-tracker/index.html'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

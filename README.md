@@ -2,7 +2,7 @@
 
 A collection of interactive web experiences - each standalone, delightful, and mobile-first.
 
-🌐 **Live:** [mikhaidn.github.io/CardGames](https://mikhaidn.github.io/CardGames/)
+🌐 **Live:** [mikhaidn.github.io/PlokminFun](https://mikhaidn.github.io/PlokminFun/)
 
 ---
 
@@ -18,9 +18,9 @@ A collection of interactive web experiences - each standalone, delightful, and m
 
 | Experience | Type | Status | Try It |
 |------------|------|--------|--------|
-| **Dog Care Tracker** 🐕 | Productivity | ✅ Live | [Track](https://mikhaidn.github.io/CardGames/dog-care-tracker/) |
-| **FreeCell** 🃏 | Card Game | ✅ Live | [Play](https://mikhaidn.github.io/CardGames/freecell/) |
-| **Klondike** 🎴 | Card Game | ✅ Live | [Play](https://mikhaidn.github.io/CardGames/klondike/) |
+| **Dog Care Tracker** 🐕 | Productivity | ✅ Live | [Track](https://mikhaidn.github.io/PlokminFun/dog-care-tracker/) |
+| **FreeCell** 🃏 | Card Game | ✅ Live | [Play](https://mikhaidn.github.io/PlokminFun/freecell/) |
+| **Klondike** 🎴 | Card Game | ✅ Live | [Play](https://mikhaidn.github.io/PlokminFun/klondike/) |
 | Habit Tracker | Productivity | 🚧 Planned | - |
 | Spider Solitaire | Card Game | 🚧 Planned | - |
 
@@ -32,7 +32,7 @@ A collection of interactive web experiences - each standalone, delightful, and m
 
 ```
 Plokmin/
-├── shared/              # @cardgames/shared (card game utilities)
+├── shared/              # @plokmin/shared (card game utilities)
 ├── dog-care-tracker/    # Dog activity tracking PWA
 ├── freecell-mvp/        # FreeCell solitaire
 ├── klondike-mvp/        # Klondike solitaire
@@ -190,7 +190,7 @@ git push
 
 ## 🌐 Deployment
 
-**Live Site:** https://mikhaidn.github.io/CardGames/
+**Live Site:** https://mikhaidn.github.io/PlokminFun/
 
 ### Per-Experience URLs
 - Root: `/` (experience selector)
@@ -214,7 +214,7 @@ See **[docs/deployment/github-pages.md](docs/deployment/github-pages.md)** for d
 ### Near-Term (Next 2 Months)
 - Habit tracker (experiment with non-card PWA patterns)
 - Extract `@plokmin/pwa-common` (localStorage, PWA setup)
-- Split `@cardgames/shared` → `@plokmin/card-common`
+- Split `@plokmin/shared` → `@plokmin/card-common`
 - Add 2-3 more card games
 
 ### Long-Term Vision
@@ -235,7 +235,7 @@ See **[ROADMAP.md](ROADMAP.md)** for detailed plans.
 
 ## 🐛 Issues & Feedback
 
-- **Bug Reports:** [Create an issue](https://github.com/mikhaidn/CardGames/issues)
+- **Bug Reports:** [Create an issue](https://github.com/mikhaidn/PlokminFun/issues)
 - **Feature Requests:** Check [ROADMAP.md](ROADMAP.md) first, then create issue
 - **Questions:** See [DOCS.md](DOCS.md) for full documentation index
 

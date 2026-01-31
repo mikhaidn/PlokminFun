@@ -13,13 +13,13 @@
  * - docs/architecture/rfc-005-compatibility.md
  */
 
-import type { GameLocation } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
 import type { KlondikeGameState } from './gameState';
 
 /**
  * Determine if a card at a specific location should be rendered face-up.
  *
- * This is the RFC-005 compatible version that uses GameLocation from @cardgames/shared
+ * This is the RFC-005 compatible version that uses GameLocation from @plokmin/shared
  * instead of the local Location type.
  *
  * @param state - Current game state
@@ -111,7 +111,7 @@ export function isCardFaceUp(
 export function getCardsAtLocation(
   state: KlondikeGameState,
   location: GameLocation
-): import('@cardgames/shared').CardType[] {
+): import('@plokmin/shared').CardType[] {
   switch (location.type) {
     case 'tableau':
       return state.tableau[location.index]?.cards ?? [];
@@ -146,7 +146,7 @@ export function getCardsAtLocation(
 export function getCardAtLocation(
   state: KlondikeGameState,
   location: GameLocation
-): import('@cardgames/shared').CardType | null {
+): import('@plokmin/shared').CardType | null {
   const cards = getCardsAtLocation(state, location);
   return cards.length > 0 ? cards[cards.length - 1] : null;
 }

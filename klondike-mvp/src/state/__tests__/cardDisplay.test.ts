@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { isCardFaceUp, getCardsAtLocation, getCardAtLocation } from '../cardDisplay';
 import { createInitialState } from '../gameState';
-import type { CardType as Card } from '@cardgames/shared';
+import type { CardType as Card } from '@plokmin/shared';
 
 describe('isCardFaceUp (RFC-005 compatible)', () => {
   describe('Stock pile', () => {
@@ -294,12 +294,12 @@ describe('RFC-005 Migration Readiness', () => {
   });
 
   it('uses shared GameLocation type (not local Location type)', () => {
-    // This test ensures we're using the @cardgames/shared GameLocation type
+    // This test ensures we're using the @plokmin/shared GameLocation type
     // which is required for RFC-005 compatibility
 
     const state = createInitialState(12345);
 
-    // GameLocation from @cardgames/shared supports these location types
+    // GameLocation from @plokmin/shared supports these location types
     const tableauLocation = { type: 'tableau' as const, index: 0 };
     const stockLocation = { type: 'stock' as const, index: 0 };
     const wasteLocation = { type: 'waste' as const, index: 0 };

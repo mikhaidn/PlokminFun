@@ -18,7 +18,7 @@ This document describes the monorepo architecture for the CardGames project, inc
 
 The CardGames project uses a **monorepo architecture** with **npm workspaces** to manage multiple packages:
 
-- **@cardgames/shared** - Shared component library
+- **@plokmin/shared** - Shared component library
 - **freecell-mvp** - FreeCell game implementation
 - **klondike-mvp** - Klondike game implementation
 
@@ -43,7 +43,7 @@ CardGames/                    # Monorepo root (npm workspaces)
 ├── package.json              # Root workspace config
 ├── package-lock.json         # Unified lockfile for all packages
 │
-├── shared/                   # @cardgames/shared library
+├── shared/                   # @plokmin/shared library
 │   ├── components/           # Shared React components
 │   │   ├── GameControls.tsx  # New Game, Undo, Redo, Settings, Help
 │   │   └── DraggingCardPreview.tsx # Visual feedback during drag
@@ -63,7 +63,7 @@ CardGames/                    # Monorepo root (npm workspaces)
 │   │   ├── state/            # Game state management
 │   │   ├── components/       # React UI components
 │   │   └── App.tsx           # Main game component
-│   ├── package.json          # Dependencies include "@cardgames/shared"
+│   ├── package.json          # Dependencies include "@plokmin/shared"
 │   └── vite.config.ts        # Vite config
 │
 ├── klondike-mvp/             # Klondike game implementation
@@ -73,7 +73,7 @@ CardGames/                    # Monorepo root (npm workspaces)
 │   │   ├── state/            # Game state management
 │   │   ├── components/       # React UI components
 │   │   └── App.tsx           # Main game component
-│   ├── package.json          # Dependencies include "@cardgames/shared"
+│   ├── package.json          # Dependencies include "@plokmin/shared"
 │   └── vite.config.ts        # Vite config
 │
 └── .github/
@@ -112,7 +112,7 @@ The root `package.json` defines workspaces:
 
 1. **Unified lockfile** - Single `package-lock.json` for all packages
 2. **Hoisted dependencies** - Shared dependencies in root `node_modules`
-3. **Local package linking** - `@cardgames/shared` linked automatically
+3. **Local package linking** - `@plokmin/shared` linked automatically
 4. **Workspace commands** - Run scripts across all packages
 
 ## Package Management
@@ -145,7 +145,7 @@ Each game depends on the shared library:
   "name": "freecell-mvp",
   "version": "0.2.0",
   "dependencies": {
-    "@cardgames/shared": "*",  // Links to local package
+    "@plokmin/shared": "*",  // Links to local package
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }
@@ -172,7 +172,7 @@ Games import from the shared package:
 
 ```typescript
 // freecell-mvp/src/components/GameBoard.tsx
-import { GameControls, useGameHistory } from '@cardgames/shared';
+import { GameControls, useGameHistory } from '@plokmin/shared';
 ```
 
 ## Build Order and Dependencies
@@ -180,7 +180,7 @@ import { GameControls, useGameHistory } from '@cardgames/shared';
 ### Dependency Graph
 
 ```
-@cardgames/shared (no dependencies)
+@plokmin/shared (no dependencies)
        ↑
        |
        ├── freecell-mvp (depends on shared)
@@ -200,13 +200,13 @@ npm run build:pages      # Then build games
 npm run build            # Runs both in correct order
 
 # ❌ Wrong - will fail
-npm run build:pages      # Games can't find @cardgames/shared
+npm run build:pages      # Games can't find @plokmin/shared
 ```
 
 ### Why Build Order Matters
 
 1. **TypeScript compilation** - Games need shared types
-2. **Module resolution** - Games import from `@cardgames/shared`
+2. **Module resolution** - Games import from `@plokmin/shared`
 3. **Vite bundling** - Games bundle shared components
 
 **Note**: During development (`npm run dev`), Vite handles this automatically. Build order only matters for production builds.
@@ -314,7 +314,7 @@ npm init -y
     "lint": "eslint . --ext ts,tsx"
   },
   "dependencies": {
-    "@cardgames/shared": "*",
+    "@plokmin/shared": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -377,7 +377,7 @@ cd shared-analytics
 
 ### 1. Keep Shared Library Minimal
 
-Only move code to `@cardgames/shared` when:
+Only move code to `@plokmin/shared` when:
 
 - Used by 2+ games
 - Truly reusable and generic
@@ -401,14 +401,14 @@ Always use `"*"` for local workspace dependencies:
 // ✅ Good
 {
   "dependencies": {
-    "@cardgames/shared": "*"
+    "@plokmin/shared": "*"
   }
 }
 
 // ❌ Bad - specific version
 {
   "dependencies": {
-    "@cardgames/shared": "0.2.0"  // Will not auto-update
+    "@plokmin/shared": "0.2.0"  // Will not auto-update
   }
 }
 ```
@@ -469,7 +469,7 @@ npm install react -w freecell-mvp
 
 ## Common Gotchas
 
-### 1. Module Not Found: @cardgames/shared
+### 1. Module Not Found: @plokmin/shared
 
 **Problem**: Game can't find shared library
 

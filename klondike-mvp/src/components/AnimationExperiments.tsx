@@ -14,7 +14,7 @@
 import React, { useState } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import Confetti from 'react-confetti';
-import { Card, type Suit, type Value } from '@cardgames/shared';
+import { Card, type Suit, type Value } from '@plokmin/shared';
 
 // Card type matching shared library structure
 interface CardType {

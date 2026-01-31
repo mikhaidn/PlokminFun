@@ -1,8 +1,8 @@
-# @cardgames/shared Library Documentation
+# @plokmin/shared Library Documentation
 
 ## Overview
 
-The `@cardgames/shared` library is a collection of reusable React components, hooks, utilities, and TypeScript types that are shared across all card games in the CardGames monorepo. It provides a consistent UI/UX and eliminates code duplication.
+The `@plokmin/shared` library is a collection of reusable React components, hooks, utilities, and TypeScript types that are shared across all card games in the CardGames monorepo. It provides a consistent UI/UX and eliminates code duplication.
 
 **Package location**: `/shared/`
 
@@ -35,13 +35,13 @@ shared/
 
 ### In Game Packages
 
-Both FreeCell and Klondike depend on `@cardgames/shared`:
+Both FreeCell and Klondike depend on `@plokmin/shared`:
 
 ```json
 // freecell-mvp/package.json or klondike-mvp/package.json
 {
   "dependencies": {
-    "@cardgames/shared": "workspace:*",
+    "@plokmin/shared": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   }
@@ -52,16 +52,16 @@ Both FreeCell and Klondike depend on `@cardgames/shared`:
 
 ```typescript
 // Import components
-import { GameControls, DraggingCardPreview } from '@cardgames/shared';
+import { GameControls, DraggingCardPreview } from '@plokmin/shared';
 
 // Import hooks
-import { useGameHistory, useCardInteraction } from '@cardgames/shared';
+import { useGameHistory, useCardInteraction } from '@plokmin/shared';
 
 // Import utilities
-import { HistoryManager } from '@cardgames/shared';
+import { HistoryManager } from '@plokmin/shared';
 
 // Import types
-import type { CardLocation, DragState } from '@cardgames/shared';
+import type { CardLocation, DragState } from '@plokmin/shared';
 ```
 
 ## Components
@@ -105,7 +105,7 @@ interface GameControlsProps {
 **Usage Example**:
 
 ```typescript
-import { GameControls } from '@cardgames/shared';
+import { GameControls } from '@plokmin/shared';
 
 function GameBoard() {
   const { undo, redo, canUndo, canRedo } = useGameHistory(gameState, setGameState);
@@ -169,7 +169,7 @@ interface DraggingCardPreviewProps {
 **Usage Example**:
 
 ```typescript
-import { DraggingCardPreview, useCardInteraction } from '@cardgames/shared';
+import { DraggingCardPreview, useCardInteraction } from '@plokmin/shared';
 
 function GameBoard() {
   const {
@@ -245,7 +245,7 @@ function useGameHistory<T>(
 **Usage Example**:
 
 ```typescript
-import { useGameHistory } from '@cardgames/shared';
+import { useGameHistory } from '@plokmin/shared';
 
 function GameBoard() {
   const [gameState, setGameState] = useState(initializeGame());
@@ -344,7 +344,7 @@ interface DragState<TLocation> {
 **Usage Example**:
 
 ```typescript
-import { useCardInteraction } from '@cardgames/shared';
+import { useCardInteraction } from '@plokmin/shared';
 
 function GameBoard() {
   const [gameState, setGameState] = useState(initializeGame());
@@ -461,7 +461,7 @@ class HistoryManager<T> {
 **Usage Example**:
 
 ```typescript
-import { HistoryManager } from '@cardgames/shared';
+import { HistoryManager } from '@plokmin/shared';
 
 interface GameState {
   tableau: Card[][];
@@ -562,9 +562,9 @@ npm run test
 
 ## Integration Checklist
 
-When adding `@cardgames/shared` to a new game:
+When adding `@plokmin/shared` to a new game:
 
-- [ ] Add dependency in `package.json`: `"@cardgames/shared": "workspace:*"`
+- [ ] Add dependency in `package.json`: `"@plokmin/shared": "workspace:*"`
 - [ ] Import `GameControls` component
 - [ ] Implement `useGameHistory` hook for undo/redo
 - [ ] Implement `useCardInteraction` hook for drag-and-drop
@@ -604,7 +604,7 @@ When adding `@cardgames/shared` to a new game:
 **Phase 2**: Extract shared hooks (useGameHistory, useCardInteraction)
 **Phase 3**: Consolidate and remove duplicates
 
-Both FreeCell and Klondike now exclusively use `@cardgames/shared` for:
+Both FreeCell and Klondike now exclusively use `@plokmin/shared` for:
 - Game controls
 - Undo/redo functionality
 - Drag-and-drop interactions

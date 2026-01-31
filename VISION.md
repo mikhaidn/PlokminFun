@@ -27,7 +27,7 @@ Each experience is **independently deployable** but shares common infrastructure
 
 ```
 Plokmin/
-├── shared/              # @cardgames/shared (will become @plokmin/shared)
+├── shared/              # @plokmin/shared (will become @plokmin/shared)
 │   └── card-common/     # Card-specific utilities (future split)
 ├── pwa-common/          # PWA, localStorage patterns (future extraction)
 ├── dog-care-tracker/    # Standalone experience #1

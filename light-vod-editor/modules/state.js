@@ -168,18 +168,18 @@ export function addVoiceoverTrack(track) {
 }
 
 export function getVoiceoverTrack(id) {
-  return state.voiceoverTracks.find(t => t.id === id);
+  return state.voiceoverTracks.find((t) => t.id === id);
 }
 
 export function updateVoiceoverTrack(id, updates) {
-  const track = state.voiceoverTracks.find(t => t.id === id);
+  const track = state.voiceoverTracks.find((t) => t.id === id);
   if (track) {
     Object.assign(track, updates);
   }
 }
 
 export function removeVoiceoverTrack(id) {
-  const index = state.voiceoverTracks.findIndex(t => t.id === id);
+  const index = state.voiceoverTracks.findIndex((t) => t.id === id);
   if (index >= 0) {
     state.voiceoverTracks.splice(index, 1);
   }

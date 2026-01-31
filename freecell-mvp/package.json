@@ -14,7 +14,7 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
-    "@cardgames/shared": "*"
+    "@plokmin/shared": "*"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

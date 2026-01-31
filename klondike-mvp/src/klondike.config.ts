@@ -8,9 +8,9 @@
  * the existing Klondike game logic.
  */
 
-import type { GameConfig, GameActions } from '@cardgames/shared';
-import type { GameLocation } from '@cardgames/shared';
-import type { CardType as Card } from '@cardgames/shared';
+import type { GameConfig, GameActions } from '@plokmin/shared';
+import type { GameLocation } from '@plokmin/shared';
+import type { CardType as Card } from '@plokmin/shared';
 import type { KlondikeGameState, Location } from './state/gameState';
 import {
   createInitialState,
@@ -120,7 +120,7 @@ class KlondikeGameActions implements GameActions<KlondikeGameState> {
  * This config can be used with createGame() to instantiate the game.
  *
  * @example
- * import { createGame } from '@cardgames/shared';
+ * import { createGame } from '@plokmin/shared';
  * import { KlondikeConfig } from './klondike.config';
  *
  * const klondike = createGame(KlondikeConfig);

@@ -252,7 +252,7 @@ Add new sections to the existing settings modal:
 
 ```typescript
 import { useContext } from 'react';
-import { SettingsContext } from '@cardgames/shared';
+import { SettingsContext } from '@plokmin/shared';
 
 export function useGameAnimations() {
   const { settings } = useContext(SettingsContext);
@@ -276,8 +276,8 @@ export function useGameAnimations() {
 
 ```typescript
 import { useContext } from 'react';
-import { SettingsContext } from '@cardgames/shared';
-import type { GameLocation } from '@cardgames/shared';
+import { SettingsContext } from '@plokmin/shared';
+import type { GameLocation } from '@plokmin/shared';
 
 export function useSmartTap(getValidMoves: (from: GameLocation) => GameLocation[]) {
   const { settings } = useContext(SettingsContext);

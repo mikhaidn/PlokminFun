@@ -6,7 +6,7 @@
  *
  * Usage:
  * ```typescript
- * import { trackEvent } from '@cardgames/shared';
+ * import { trackEvent } from '@plokmin/shared';
  *
  * trackEvent('game_start', { game: 'klondike', mode: 'draw-3' });
  * trackEvent('game_won', { game: 'freecell', moves: 87, time: 245 });

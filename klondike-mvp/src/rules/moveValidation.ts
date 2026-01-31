@@ -1,6 +1,6 @@
-import type { GameLocation } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
 import type { KlondikeGameState, Location } from '../state/gameState';
-import { type CardType as Card } from '@cardgames/shared';
+import { type CardType as Card } from '@plokmin/shared';
 import {
   canPlaceOnTableau,
   canPlaceOnEmptyTableau,

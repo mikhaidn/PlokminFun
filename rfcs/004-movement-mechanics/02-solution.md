@@ -4,7 +4,7 @@
 
 Consolidate movement mechanics through four key changes:
 
-1. **Extract shared validation rules** - Move color/rank checking to `@cardgames/shared`
+1. **Extract shared validation rules** - Move color/rank checking to `@plokmin/shared`
 2. **Standardize on cardCount** - Use count-based selection (not index-based)
 3. **Use useCardInteraction hook** - Single hook for all click/drag/touch interactions
 4. **Generic move execution** - Adopt Klondike's `moveCards(from, to, count)` pattern

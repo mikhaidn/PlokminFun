@@ -23,7 +23,7 @@ import { useSettings } from '../contexts/SettingsContext';
  * @example
  * ```tsx
  * // Using GameLocation (recommended for new code)
- * import type { GameLocation } from '@cardgames/shared';
+ * import type { GameLocation } from '@plokmin/shared';
  *
  * const { state, handlers } = useCardInteraction<GameLocation>({
  *   validateMove: (from, to) => isValidMove(gameState, from, to),

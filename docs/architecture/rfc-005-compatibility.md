@@ -35,7 +35,7 @@ Klondike needs to show:
 **File:** `klondike-mvp/src/state/cardDisplay.ts` (new file)
 
 ```typescript
-import type { GameLocation } from '@cardgames/shared';
+import type { GameLocation } from '@plokmin/shared';
 import type { KlondikeGameState } from '../core/types';
 
 /**
@@ -99,7 +99,7 @@ export function isCardFaceUp(
 **File:** `klondike-mvp/src/components/KlondikeBoard.tsx`
 
 ```typescript
-import { Card } from '@cardgames/shared';
+import { Card } from '@plokmin/shared';
 import { isCardFaceUp } from '../state/cardDisplay';
 
 // When rendering tableau cards
@@ -316,7 +316,7 @@ When we implement RFC-005, here's the migration path:
 **File:** `klondike-mvp/src/state/KlondikeGameActions.ts`
 
 ```typescript
-import type { GameActions } from '@cardgames/shared';
+import type { GameActions } from '@plokmin/shared';
 import type { KlondikeGameState } from '../core/types';
 import { isCardFaceUp } from './cardDisplay'; // Import existing function
 
@@ -345,7 +345,7 @@ export class KlondikeGameActions implements GameActions<KlondikeGameState> {
 **File:** `klondike-mvp/src/klondike.config.ts`
 
 ```typescript
-import type { GameConfig } from '@cardgames/shared';
+import type { GameConfig } from '@plokmin/shared';
 import type { KlondikeGameState } from './core/types';
 import { KlondikeGameActions } from './state/KlondikeGameActions';
 

@@ -1,5 +1,5 @@
 import { type GameState } from './gameState';
-import { type CardType as Card } from '@cardgames/shared';
+import { type CardType as Card } from '@plokmin/shared';
 import { canStackOnTableau, canStackOnFoundation } from '../rules/validation';
 import { isValidStack, getMaxMovable } from '../rules/movement';
 

@@ -1,7 +1,7 @@
 {
-  "name": "card-games-monorepo",
+  "name": "plokmin-fun-monorepo",
   "private": true,
-  "description": "Monorepo for Solitaire Games",
+  "description": "Monorepo for PlokminFun experiences",
   "workspaces": [
     "freecell-mvp",
     "klondike-mvp",

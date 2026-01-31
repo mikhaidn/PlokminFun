@@ -52,7 +52,7 @@
 
 ```
 CardGames/                    # Monorepo root
-├── shared/                   # @cardgames/shared library
+├── shared/                   # @plokmin/shared library
 ├── freecell-mvp/             # FreeCell game
 ├── klondike-mvp/             # Klondike game
 ├── docs/                     # Detailed documentation

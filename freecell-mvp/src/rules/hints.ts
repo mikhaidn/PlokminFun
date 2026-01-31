@@ -1,5 +1,5 @@
 import { type GameState } from '../state/gameState';
-import { type CardType as Card } from '@cardgames/shared';
+import { type CardType as Card } from '@plokmin/shared';
 
 /**
  * Returns the IDs of cards that are the lowest unplayed cards for each suit

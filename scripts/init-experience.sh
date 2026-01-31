@@ -465,6 +465,20 @@ cat > "$EXPERIENCE_NAME/src/App.css" <<'EOF'
 EOF
 success "src/App.css created"
 
+# Create __tests__ directory and basic test
+info "Generating tests..."
+mkdir -p "$EXPERIENCE_NAME/src/__tests__"
+cat > "$EXPERIENCE_NAME/src/__tests__/App.test.tsx" <<EOF
+import { describe, it, expect } from 'vitest';
+
+describe('$TITLE_CASE', () => {
+  it('should pass basic test', () => {
+    expect(true).toBe(true);
+  });
+});
+EOF
+success "Basic test created"
+
 # Create README.md
 info "Generating README.md..."
 cat > "$EXPERIENCE_NAME/README.md" <<EOF

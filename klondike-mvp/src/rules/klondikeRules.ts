@@ -1,10 +1,10 @@
-import { type CardType as Card } from '@cardgames/shared';
+import { type CardType as Card } from '@plokmin/shared';
 import {
   isRed,
   canStackDescending,
   canStackOnFoundation,
   isValidTableauSequence as sharedIsValidTableauSequence,
-} from '@cardgames/shared';
+} from '@plokmin/shared';
 
 /**
  * Klondike Solitaire Rules

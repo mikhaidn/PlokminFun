@@ -8,9 +8,9 @@
  * the existing FreeCell game logic.
  */
 
-import type { GameConfig, GameActions } from '@cardgames/shared';
-import type { GameLocation } from '@cardgames/shared';
-import type { CardType as Card } from '@cardgames/shared';
+import type { GameConfig, GameActions } from '@plokmin/shared';
+import type { GameLocation } from '@plokmin/shared';
+import type { CardType as Card } from '@plokmin/shared';
 import type { GameState } from './state/gameState';
 import type { SourceLocation, DestinationLocation } from './state/gameActions';
 import { initializeGame, checkWinCondition } from './state/gameState';
@@ -140,7 +140,7 @@ class FreeCellGameActions implements GameActions<GameState> {
  * This config can be used with createGame() to instantiate the game.
  *
  * @example
- * import { createGame } from '@cardgames/shared';
+ * import { createGame } from '@plokmin/shared';
  * import { FreeCellConfig } from './freecell.config';
  *
  * const freecell = createGame(FreeCellConfig);

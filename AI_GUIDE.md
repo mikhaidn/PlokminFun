@@ -15,7 +15,7 @@
 **Structure:**
 ```
 Plokmin/
-├── shared/              # @cardgames/shared (card game utilities - will split later)
+├── shared/              # @plokmin/shared (card game utilities - will split later)
 ├── dog-care-tracker/    # Dog activity tracking PWA (NEW!)
 ├── freecell-mvp/        # FreeCell solitaire
 ├── klondike-mvp/        # Klondike solitaire
@@ -57,7 +57,7 @@ npm run dev:klondike     # Klondike
 4. **Don't prematurely abstract** - let patterns emerge from real use
 
 ### Current Shared Library State
-- `@cardgames/shared` - Card game components/hooks (will rename to `@plokmin/card-common`)
+- `@plokmin/shared` - Card game components/hooks (will rename to `@plokmin/card-common`)
 - **Future extractions:**
   - `@plokmin/pwa-common` - PWA setup, localStorage hooks
   - `@plokmin/ui-common` - Generic UI primitives (if needed)
@@ -72,16 +72,16 @@ npm run dev:klondike     # Klondike
 
 ## ⚠️ Critical Rules (Must Follow)
 
-### 1. **Working on Card Games? Import from @cardgames/shared**
+### 1. **Working on Card Games? Import from @plokmin/shared**
 ```typescript
 // ✅ CORRECT (FreeCell/Klondike)
-import { GameControls, useGameHistory } from '@cardgames/shared';
+import { GameControls, useGameHistory } from '@plokmin/shared';
 
 // ❌ WRONG
 import { GameControls } from './components/GameControls';
 ```
 
-**Note:** Dog tracker and other non-card experiences don't use `@cardgames/shared`. They're standalone.
+**Note:** Dog tracker and other non-card experiences don't use `@plokmin/shared`. They're standalone.
 
 ### 2. **Immutable State Updates**
 ```typescript
@@ -237,7 +237,7 @@ npm run build:pages    # Then build games
 ## 🐛 Common Gotchas
 
 ### 1. **Vite base path**
-- `vite.config.ts` has `base: '/CardGames/[experience]/'` for GitHub Pages
+- `vite.config.ts` has `base: '/PlokminFun/[experience]/'` for GitHub Pages
 - Only applies to production builds
 - Use `npm run dev` for local development
 
@@ -251,13 +251,13 @@ const cardId = 0;     // Not a numeric index
 ```
 
 ### 3. **Experience isolation**
-- Dog tracker doesn't import from `@cardgames/shared`
+- Dog tracker doesn't import from `@plokmin/shared`
 - Card games don't import from dog-care-tracker
 - Keep experiences decoupled (shared libraries only)
 
 ### 4. **PWA patterns (dog tracker)**
 - localStorage keys: `dog-log-YYYY-MM-DD`
-- Service worker: `/CardGames/dog-care-tracker/service-worker.js`
+- Service worker: `/PlokminFun/dog-care-tracker/service-worker.js`
 - Each experience has own manifest.json
 
 ---
@@ -266,11 +266,11 @@ const cardId = 0;     // Not a numeric index
 
 **Current deployment:**
 - GitHub Pages (auto-deploy on push to `main`)
-- Root: https://mikhaidn.github.io/CardGames/
-- Dog Tracker: https://mikhaidn.github.io/CardGames/dog-care-tracker/
-- Pet Care: https://mikhaidn.github.io/CardGames/pet-care/
-- FreeCell: https://mikhaidn.github.io/CardGames/freecell/
-- Klondike: https://mikhaidn.github.io/CardGames/klondike/
+- Root: https://mikhaidn.github.io/PlokminFun/
+- Dog Tracker: https://mikhaidn.github.io/PlokminFun/dog-care-tracker/
+- Pet Care: https://mikhaidn.github.io/PlokminFun/pet-care/
+- FreeCell: https://mikhaidn.github.io/PlokminFun/freecell/
+- Klondike: https://mikhaidn.github.io/PlokminFun/klondike/
 
 **Deployment process:**
 ```bash
@@ -286,7 +286,7 @@ git push origin main  # Triggers GitHub Actions
 Quick checklist:
 1. ✅ Add to deploy.yml build step: `npm run build -w new-app`
 2. ✅ Add to deploy.yml copy step: `cp -r new-app/dist _site/new-app`
-3. ✅ Set base path in vite.config.ts: `base: '/CardGames/new-app/'`
+3. ✅ Set base path in vite.config.ts: `base: '/PlokminFun/new-app/'`
 4. ✅ Add to root package.json workspaces
 5. ✅ Add to index.html landing page
 6. ✅ Test local build: `npm run build -w new-app`
@@ -362,7 +362,7 @@ Quick checklist:
 **Near-term:**
 - Habit tracker (next diverse experience)
 - Extract `@plokmin/pwa-common` (after 2-3 non-card experiences)
-- Split `@cardgames/shared` → `@plokmin/card-common`
+- Split `@plokmin/shared` → `@plokmin/card-common`
 
 **See [ROADMAP.md](ROADMAP.md) for detailed plans**
 

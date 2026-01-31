@@ -10,7 +10,7 @@
  */
 
 import React, { useState } from 'react';
-import { useSettings, type GameSettings } from '@cardgames/shared';
+import { useSettings, type GameSettings } from '@plokmin/shared';
 import { KlondikeSettingsSection } from './KlondikeSettingsSection';
 import {
   loadKlondikeSettings,

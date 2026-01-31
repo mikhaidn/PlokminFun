@@ -3,7 +3,7 @@
  * Rules, valid moves, tips, and keyboard shortcuts
  */
 
-import type { HelpContent } from '@cardgames/shared';
+import type { HelpContent } from '@plokmin/shared';
 
 export const klondikeHelpContent: HelpContent = {
   gameName: 'Klondike',

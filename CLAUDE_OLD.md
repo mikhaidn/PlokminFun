@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a card games collection featuring **FreeCell** and **Klondike** as playable games, built with React, TypeScript, and Vite in a **monorepo architecture** (npm workspaces). The codebase features a shared component library (@cardgames/shared) with reusable game controls, drag-and-drop interactions, undo/redo system, and card interaction hooks.
+This is a card games collection featuring **FreeCell** and **Klondike** as playable games, built with React, TypeScript, and Vite in a **monorepo architecture** (npm workspaces). The codebase features a shared component library (@plokmin/shared) with reusable game controls, drag-and-drop interactions, undo/redo system, and card interaction hooks.
 
-**Live Demo**: https://mikhaidn.github.io/CardGames/
-- **FreeCell**: https://mikhaidn.github.io/CardGames/freecell/
-- **Klondike**: https://mikhaidn.github.io/CardGames/klondike/
+**Live Demo**: https://mikhaidn.github.io/PlokminFun/
+- **FreeCell**: https://mikhaidn.github.io/PlokminFun/freecell/
+- **Klondike**: https://mikhaidn.github.io/PlokminFun/klondike/
 
 ## 📚 Documentation Map
 
@@ -41,7 +41,7 @@ CardGames/                    # Monorepo root (npm workspaces)
 ├── package.json              # Root workspace config
 ├── package-lock.json         # Unified lockfile for all packages
 │
-├── shared/                   # @cardgames/shared library
+├── shared/                   # @plokmin/shared library
 │   ├── components/           # Shared React components
 │   │   ├── GameControls.tsx  # New Game, Undo, Redo, Settings, Help buttons
 │   │   └── DraggingCardPreview.tsx # Visual feedback during drag
@@ -65,8 +65,8 @@ CardGames/                    # Monorepo root (npm workspaces)
 │   │   ├── App.tsx           # Main game component
 │   │   └── main.tsx          # Entry point
 │   ├── public/               # Static assets (app icons, manifest)
-│   ├── package.json          # Dependencies include "@cardgames/shared"
-│   ├── vite.config.ts        # Vite config (base: /CardGames/freecell/)
+│   ├── package.json          # Dependencies include "@plokmin/shared"
+│   ├── vite.config.ts        # Vite config (base: /PlokminFun/freecell/)
 │   └── vitest.config.ts      # Test runner config
 │
 ├── klondike-mvp/             # Klondike game implementation
@@ -80,8 +80,8 @@ CardGames/                    # Monorepo root (npm workspaces)
 │   │   ├── App.tsx           # Main game component
 │   │   └── main.tsx          # Entry point
 │   ├── public/               # Static assets
-│   ├── package.json          # Dependencies include "@cardgames/shared"
-│   ├── vite.config.ts        # Vite config (base: /CardGames/klondike/)
+│   ├── package.json          # Dependencies include "@plokmin/shared"
+│   ├── vite.config.ts        # Vite config (base: /PlokminFun/klondike/)
 │   └── vitest.config.ts      # Test runner config
 │
 ├── rfcs/                     # Technical design documents (Request for Comments)
@@ -298,8 +298,8 @@ npx changeset version  # Updates versions
 
 ### Current Status
 ✅ **Deployed to GitHub Pages** via GitHub Actions
-- **Repository**: `mikhaidn/CardGames`
-- **Live URL**: https://mikhaidn.github.io/CardGames/
+- **Repository**: `mikhaidn/PlokminFun`
+- **Live URL**: https://mikhaidn.github.io/PlokminFun/
 - **Auto-deploy**: Pushes to `main` trigger deployment
 
 ### CI/CD Workflows
@@ -320,12 +320,12 @@ npx changeset version  # Updates versions
 - **Must pass** before merging
 
 ### Base Path Configuration
-The FreeCell app is configured to run at `/CardGames/freecell/`:
+The FreeCell app is configured to run at `/PlokminFun/freecell/`:
 
 ```typescript
 // freecell-mvp/vite.config.ts
 export default defineConfig({
-  base: '/CardGames/freecell/',
+  base: '/PlokminFun/freecell/',
   plugins: [react()],
 })
 ```
@@ -675,7 +675,7 @@ Feature flags are defined in `src/config/featureFlags.ts`. Check this file befor
 - [x] Undo/Redo buttons in GameControls component
 - [x] Keyboard shortcuts (Ctrl+Z, Ctrl+Y)
 - [x] History limit configuration (default 100 states)
-- [x] Implemented in both FreeCell and Klondike via @cardgames/shared
+- [x] Implemented in both FreeCell and Klondike via @plokmin/shared
 
 #### 2.2 Game Persistence ❌ NOT DONE (Moved to P6 in ROADMAP.md)
 - [ ] Save current game to localStorage on each move
@@ -690,7 +690,7 @@ Feature flags are defined in `src/config/featureFlags.ts`. Check this file befor
 - [x] Responsive header, buttons, and modals
 - [x] One-handed mode (button position: top/bottom)
 
-#### 2.4 Touch Optimization ✅ COMPLETE (via @cardgames/shared)
+#### 2.4 Touch Optimization ✅ COMPLETE (via @plokmin/shared)
 - [x] useCardInteraction hook with touch drag-and-drop support
 - [x] Touch event handlers integrated into shared interaction system
 - [x] Tap-to-select interaction (click-to-select fallback)
@@ -709,10 +709,10 @@ Feature flags are defined in `src/config/featureFlags.ts`. Check this file befor
 - [x] Draw-1 and Draw-3 modes
 - [x] Stock pile, waste pile, tableau (7 columns), foundations
 - [x] 1415+ comprehensive tests (cardPack, deck, rng, rules, actions, state)
-- [x] Live at https://mikhaidn.github.io/CardGames/klondike/
+- [x] Live at https://mikhaidn.github.io/PlokminFun/klondike/
 
 #### 3.2 Shared Library ✅ COMPLETE (#21)
-- [x] @cardgames/shared extracted
+- [x] @plokmin/shared extracted
 - [x] GameControls component (New Game, Undo, Redo, Settings, Help)
 - [x] DraggingCardPreview component
 - [x] useGameHistory hook (undo/redo)
@@ -737,8 +737,8 @@ Feature flags are defined in `src/config/featureFlags.ts`. Check this file befor
 
 ### Current Status
 Both games are **live on GitHub Pages** and fully optimized for mobile:
-- ✅ **FreeCell**: https://mikhaidn.github.io/CardGames/freecell/
-- ✅ **Klondike**: https://mikhaidn.github.io/CardGames/klondike/
+- ✅ **FreeCell**: https://mikhaidn.github.io/PlokminFun/freecell/
+- ✅ **Klondike**: https://mikhaidn.github.io/PlokminFun/klondike/
 - ✅ Accessible via web browser on any device
 - ✅ **Responsive layout** - accessibility settings provide card sizing and one-handed mode
 - ✅ **Touch optimized** - useCardInteraction hook handles drag-and-drop and tap interactions
@@ -760,7 +760,7 @@ npm install -D vite-plugin-pwa
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/CardGames/freecell/',
+  base: '/PlokminFun/freecell/',
   plugins: [
     react(),
     VitePWA({
@@ -773,8 +773,8 @@ export default defineConfig({
         background_color: '#2c5f2d',
         theme_color: '#2c5f2d',
         icons: [
-          { src: '/CardGames/freecell/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/CardGames/freecell/icon-512.png', sizes: '512x512', type: 'image/png' }
+          { src: '/PlokminFun/freecell/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/PlokminFun/freecell/icon-512.png', sizes: '512x512', type: 'image/png' }
         ]
       }
     })
@@ -976,7 +976,7 @@ git push origin main  # Automatic via GitHub Actions
 - `.github/workflows/deploy.yml` - Deployment pipeline (builds both games)
 - `.github/workflows/pr-validation.yml` - CI checks (lint, test, build)
 
-### Shared Library (@cardgames/shared) **MOST IMPORTANT**
+### Shared Library (@plokmin/shared) **MOST IMPORTANT**
 - `shared/index.ts` - Barrel exports for all shared code
 - `shared/components/GameControls.tsx` - New Game, Undo, Redo, Settings, Help buttons
 - `shared/components/DraggingCardPreview.tsx` - Visual feedback during drag
@@ -986,7 +986,7 @@ git push origin main  # Automatic via GitHub Actions
 - `shared/types/` - Shared TypeScript types
 - `shared/package.json` - Library dependencies
 
-**Note**: All redundant local copies of shared components/hooks have been removed from individual games. Both FreeCell and Klondike now exclusively import from `@cardgames/shared`.
+**Note**: All redundant local copies of shared components/hooks have been removed from individual games. Both FreeCell and Klondike now exclusively import from `@plokmin/shared`.
 
 ### FreeCell Game
 - `freecell-mvp/src/core/` - Card primitives (types, deck, RNG, cardPack)
@@ -994,16 +994,16 @@ git push origin main  # Automatic via GitHub Actions
 - `freecell-mvp/src/state/` - Game state management
 - `freecell-mvp/src/components/` - React UI components
 - `freecell-mvp/src/config/accessibilitySettings.ts` - Accessibility configuration
-- `freecell-mvp/vite.config.ts` - Build config (base: /CardGames/freecell/)
-- `freecell-mvp/package.json` - Depends on @cardgames/shared
+- `freecell-mvp/vite.config.ts` - Build config (base: /PlokminFun/freecell/)
+- `freecell-mvp/package.json` - Depends on @plokmin/shared
 
 ### Klondike Game
 - `klondike-mvp/src/core/` - Card primitives (types, deck, RNG, cardPack)
 - `klondike-mvp/src/rules/` - Klondike game rules (draw-1, draw-3)
 - `klondike-mvp/src/state/` - Game state management
 - `klondike-mvp/src/components/` - React UI components
-- `klondike-mvp/vite.config.ts` - Build config (base: /CardGames/klondike/)
-- `klondike-mvp/package.json` - Depends on @cardgames/shared
+- `klondike-mvp/vite.config.ts` - Build config (base: /PlokminFun/klondike/)
+- `klondike-mvp/package.json` - Depends on @plokmin/shared
 
 ### Documentation
 - `ROADMAP.md` - Strategic priorities and what to build next
@@ -1027,7 +1027,7 @@ git push origin main  # Automatic via GitHub Actions
 1. **Always run tests** after making changes to game logic
 2. **Check ESLint** before committing (`npm run lint`)
 3. **Don't mutate state** - all state updates must be immutable
-4. **Use shared library** - Import GameControls, useGameHistory, useCardInteraction, and HistoryManager from `@cardgames/shared`, never create local copies
+4. **Use shared library** - Import GameControls, useGameHistory, useCardInteraction, and HistoryManager from `@plokmin/shared`, never create local copies
 5. **Use feature flags** for new optional features
 6. **Write tests first** when possible (TDD approach)
 7. **Update documentation** if making architectural changes

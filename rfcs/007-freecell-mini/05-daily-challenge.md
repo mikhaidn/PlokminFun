@@ -279,7 +279,7 @@ ${date}
 ⏱️ ${formatTime(stats.time)}
 🔥 ${stats.streak} day streak
 
-Play at: https://mikhaidn.github.io/CardGames/freecell-mini/?mode=daily`;
+Play at: https://mikhaidn.github.io/PlokminFun/freecell-mini/?mode=daily`;
 }
 
 function shareResults() {

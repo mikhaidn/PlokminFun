@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/CardGames/pet-care/',
+  base: '/PlokminFun/pet-care/',
   build: {
     outDir: 'dist',
   },

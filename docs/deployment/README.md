@@ -15,9 +15,9 @@ This directory contains deployment documentation for the CardGames project.
 ## 🚀 Quick Start
 
 **Current deployment:**
-- **Live URL:** https://mikhaidn.github.io/CardGames/
-- **FreeCell:** https://mikhaidn.github.io/CardGames/freecell/
-- **Klondike:** https://mikhaidn.github.io/CardGames/klondike/
+- **Live URL:** https://mikhaidn.github.io/PlokminFun/
+- **FreeCell:** https://mikhaidn.github.io/PlokminFun/freecell/
+- **Klondike:** https://mikhaidn.github.io/PlokminFun/klondike/
 - **Auto-deploy:** Push to `main` branch triggers deployment
 
 **To deploy:**

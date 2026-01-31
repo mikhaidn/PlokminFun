@@ -142,8 +142,8 @@ function encodeGame(session: GameSession): string {
 
 **URL Scheme:**
 ```
-https://mikhaidn.github.io/CardGames/freecell/?game=g4z3m.A7B2C5D8E1...W
-https://mikhaidn.github.io/CardGames/freecell/?replay=g4z3m.A7B2C5D8E1...W
+https://mikhaidn.github.io/PlokminFun/freecell/?game=g4z3m.A7B2C5D8E1...W
+https://mikhaidn.github.io/PlokminFun/freecell/?replay=g4z3m.A7B2C5D8E1...W
 ```
 
 **Short Code (optional):**

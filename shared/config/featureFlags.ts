@@ -7,7 +7,7 @@ export const FEATURE_FLAGS = {
   /**
    * RFC-004: Use shared useCardInteraction hook
    *
-   * When true: Games use the shared interaction hook from @cardgames/shared
+   * When true: Games use the shared interaction hook from @plokmin/shared
    * When false: Games use their original interaction code (fallback)
    *
    * This flag enables easy rollback during the Phase 2 migration.

@@ -25,7 +25,7 @@ This document captures the UI requirements discovered during RFC-005 Phase 1 (An
 
 ### Implementation Status
 
-**Location:** `@cardgames/shared`
+**Location:** `@plokmin/shared`
 - `types/GameSettings.ts` - Interface and defaults
 - `contexts/SettingsContext.tsx` - React context provider
 - `components/SettingsModal.tsx` - Unified settings UI
@@ -642,7 +642,7 @@ animateFinalMove().then(() => {
 2. **Animation Controls:** Three levels (full/reduced/none) + toggles
 3. **Interaction Controls:** Smart tap, drag physics, auto-complete toggles
 4. **Accessibility:** prefers-reduced-motion support, game mode presets
-5. **Shared Components:** SettingsModal, FoundationArea in @cardgames/shared
+5. **Shared Components:** SettingsModal, FoundationArea in @plokmin/shared
 
 ### Ready for Phase 2 ✅
 

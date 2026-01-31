@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { type AccessibilitySettings, type GameMode } from '@cardgames/shared';
+import { type AccessibilitySettings, type GameMode } from '@plokmin/shared';
 
 interface SettingsModalProps {
   isOpen: boolean;

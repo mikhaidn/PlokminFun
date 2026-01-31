@@ -60,7 +60,7 @@ ${moves !== undefined ? `Moves: ${moves}` : ''}
 
   const title = seed !== undefined ? `[BUG] Issue in game seed ${seed}` : '[BUG] ';
 
-  const url = new URL('https://github.com/mikhaidn/CardGames/issues/new');
+  const url = new URL('https://github.com/mikhaidn/PlokminFun/issues/new');
   url.searchParams.set('template', 'bug_report.md');
   url.searchParams.set('title', title);
   url.searchParams.set('body', body);

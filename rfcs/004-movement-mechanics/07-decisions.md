@@ -99,7 +99,7 @@ export function canStackOnFoundation(card: Card, foundation: Card[], options?): 
 export function isValidTableauSequence(cards: Card[]): boolean
 
 // Game-specific usage
-import { canStackDescending } from '@cardgames/shared';
+import { canStackDescending } from '@plokmin/shared';
 
 export function canStackOnTableau(card: Card, target: Card | null): boolean {
   // FreeCell: Any card can go on empty tableau

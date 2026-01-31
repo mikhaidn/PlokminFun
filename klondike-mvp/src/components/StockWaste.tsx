@@ -1,6 +1,6 @@
 import React from 'react';
-import { CardFlip, EmptyCell, type LayoutSizes } from '@cardgames/shared';
-import type { CardType } from '@cardgames/shared';
+import { CardFlip, EmptyCell, type LayoutSizes } from '@plokmin/shared';
+import type { CardType } from '@plokmin/shared';
 
 interface StockWasteProps {
   stock: CardType[];

@@ -11,7 +11,7 @@ import {
   updateSegment as updateSegmentInState,
   removeSegment as removeSegmentFromState,
   setSelectedSegmentIndex,
-  getVideoDuration
+  getVideoDuration,
 } from './state.js';
 import { formatTime } from './utils.js';
 
@@ -161,15 +161,17 @@ export function renderSegmentsList(container, callbacks = {}) {
   const selectedIndex = getSelectedSegmentIndex();
 
   if (segments.length === 0) {
-    container.innerHTML = '<p style="color: #8b949e; text-align: center; padding: 20px;">No segments added yet. Mark start and end points above.</p>';
+    container.innerHTML =
+      '<p style="color: #8b949e; text-align: center; padding: 20px;">No segments added yet. Mark start and end points above.</p>';
     return;
   }
 
-  container.innerHTML = segments.map((seg, i) => {
-    const duration = seg.end - seg.start;
-    const isSelected = selectedIndex === i;
+  container.innerHTML = segments
+    .map((seg, i) => {
+      const duration = seg.end - seg.start;
+      const isSelected = selectedIndex === i;
 
-    return `
+      return `
       <div class="segment-item ${isSelected ? 'selected' : ''}" data-segment-index="${i}">
         <div class="segment-number">${i + 1}</div>
         <div class="segment-info">
@@ -192,10 +194,11 @@ export function renderSegmentsList(container, callbacks = {}) {
         </div>
       </div>
     `;
-  }).join('');
+    })
+    .join('');
 
   // Attach event listeners
-  container.querySelectorAll('[data-segment-index]').forEach(el => {
+  container.querySelectorAll('[data-segment-index]').forEach((el) => {
     el.addEventListener('click', (e) => {
       if (!e.target.closest('[data-action]')) {
         const index = parseInt(el.dataset.segmentIndex);
@@ -204,7 +207,7 @@ export function renderSegmentsList(container, callbacks = {}) {
     });
   });
 
-  container.querySelectorAll('[data-action="preview"]').forEach(btn => {
+  container.querySelectorAll('[data-action="preview"]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const index = parseInt(btn.dataset.index);
@@ -212,7 +215,7 @@ export function renderSegmentsList(container, callbacks = {}) {
     });
   });
 
-  container.querySelectorAll('[data-action="delete"]').forEach(btn => {
+  container.querySelectorAll('[data-action="delete"]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const index = parseInt(btn.dataset.index);
@@ -228,7 +231,7 @@ export function renderSegmentsList(container, callbacks = {}) {
  */
 export function getSegmentAtTime(time) {
   const segments = getSegments();
-  return segments.findIndex(seg => time >= seg.start && time <= seg.end);
+  return segments.findIndex((seg) => time >= seg.start && time <= seg.end);
 }
 
 /**

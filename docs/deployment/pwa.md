@@ -6,8 +6,8 @@ This guide covers deploying the CardGames applications as Progressive Web Apps (
 
 Both FreeCell and Klondike games are **live on GitHub Pages** with PWA support:
 
-- ✅ **FreeCell**: https://mikhaidn.github.io/CardGames/freecell/
-- ✅ **Klondike**: https://mikhaidn.github.io/CardGames/klondike/
+- ✅ **FreeCell**: https://mikhaidn.github.io/PlokminFun/freecell/
+- ✅ **Klondike**: https://mikhaidn.github.io/PlokminFun/klondike/
 - ✅ **PWA configured** - manifest and service worker via vite-plugin-pwa
 - ✅ **Custom app icons** - 192x192 and 512x512 icons with game-specific branding
 - ✅ **Installable** - "Add to Home Screen" works on iOS Safari and Android Chrome
@@ -57,7 +57,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/CardGames/freecell/',  // Adjust for your deployment path
+  base: '/PlokminFun/freecell/',  // Adjust for your deployment path
   plugins: [
     react(),
     VitePWA({
@@ -72,12 +72,12 @@ export default defineConfig({
         theme_color: '#2c5f2d',
         icons: [
           {
-            src: '/CardGames/freecell/icon-192.png',
+            src: '/PlokminFun/freecell/icon-192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/CardGames/freecell/icon-512.png',
+            src: '/PlokminFun/freecell/icon-512.png',
             sizes: '512x512',
             type: 'image/png'
           }
@@ -213,7 +213,7 @@ For better iOS support, add these meta tags to your `index.html`:
 <meta name="apple-mobile-web-app-title" content="FreeCell">
 
 <!-- iOS app icons -->
-<link rel="apple-touch-icon" href="/CardGames/freecell/icon-180.png">
+<link rel="apple-touch-icon" href="/PlokminFun/freecell/icon-180.png">
 ```
 
 **Note:** iOS requires a 180x180 icon in addition to the 192x192 and 512x512 icons.
@@ -345,7 +345,7 @@ Run Lighthouse audit to verify PWA compliance:
 1. Verify icon paths match manifest configuration
 2. Check icon files exist in `public/` directory
 3. Ensure icons are at least 192x192 and 512x512 pixels
-4. Use absolute paths in manifest: `/CardGames/freecell/icon-192.png`
+4. Use absolute paths in manifest: `/PlokminFun/freecell/icon-192.png`
 5. Clear browser cache and reinstall app
 
 ### App Not Installing

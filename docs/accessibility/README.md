@@ -35,7 +35,7 @@ This directory contains documentation for accessibility features and responsive 
 **For developers:**
 ```typescript
 // Get responsive layout sizes
-import { calculateLayoutSizes } from '@cardgames/shared';
+import { calculateLayoutSizes } from '@plokmin/shared';
 
 const layoutSizes = calculateLayoutSizes(
   window.innerWidth,
