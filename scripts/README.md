@@ -1,8 +1,38 @@
 # Development Scripts
 
+Helper scripts for the Plokmin Consortium monorepo.
+
+---
+
+## 🚀 init-experience.sh - Create New Experiences
+
+**Create a new Plokmin Consortium experience in ~30 seconds.**
+
+### Usage
+
+```bash
+./scripts/init-experience.sh experience-name
+
+# Example
+./scripts/init-experience.sh habit-tracker
+```
+
+**What it creates:**
+- ✅ Full React + TypeScript + Vite PWA setup
+- ✅ Default icon, manifest, service worker
+- ✅ Integrated into monorepo (workspaces, scripts)
+- ✅ Added to landing page (index.html)
+- ✅ Ready to deploy to GitHub Pages immediately
+
+**📖 Full documentation:** [docs/development/adding-experiences.md](../docs/development/adding-experiences.md)
+
+---
+
+## 🛠️ Code Quality Scripts
+
 Helper scripts for maintaining code quality and preventing issues before they reach GitHub.
 
-## Quick Start
+### Quick Start
 
 ```bash
 # Install git hooks (one-time setup)
