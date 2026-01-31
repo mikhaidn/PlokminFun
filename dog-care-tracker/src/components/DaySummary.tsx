@@ -27,7 +27,6 @@ export function DaySummary({ dayLog, onChange }: DaySummaryProps) {
             rows={3}
           />
         </div>
-
       </div>
     </div>
   );

@@ -119,6 +119,87 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       }
 
+      .scheduled-games {
+        margin-top: 60px;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        backdrop-filter: blur(10px);
+      }
+
+      .scheduled-games summary {
+        cursor: pointer;
+        list-style: none;
+        text-align: center;
+        color: white;
+        padding: 20px;
+        user-select: none;
+      }
+
+      .scheduled-games summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .scheduled-games summary h3 {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .scheduled-games summary h3::after {
+        content: '▼';
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+      }
+
+      .scheduled-games[open] summary h3::after {
+        transform: rotate(180deg);
+      }
+
+      .scheduled-subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-top: 4px;
+      }
+
+      .scheduled-games summary:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+      }
+
+      .scheduled-grid {
+        margin-top: 30px;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .game-card.scheduled {
+        opacity: 0.75;
+        cursor: default;
+      }
+
+      .game-card.scheduled:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+        opacity: 0.85;
+      }
+
+      .status.coming-soon {
+        background: #8b5cf6;
+      }
+
       footer {
         text-align: center;
         color: white;
@@ -170,6 +251,16 @@
             <span class="status available">Try Now</span>
           </a>
 
+          <a href="./pet-care/" class="game-card">
+            <div class="game-icon">🐾</div>
+            <h2>Pet Care Instructions</h2>
+            <p>
+              Create reusable care instructions for your pet and share them with caretakers. Track
+              daily tasks.
+            </p>
+            <span class="status available">Try Now</span>
+          </a>
+
           <a href="./freecell/" class="game-card">
             <div class="game-icon">🃏</div>
             <h2>FreeCell</h2>
@@ -180,41 +271,50 @@
             <span class="status available">Play Now</span>
           </a>
 
-          <div class="game-card disabled">
-            <div class="game-icon">🂱</div>
-            <h2>Spider Solitaire</h2>
-            <p>Arrange cards in descending sequences. Master one, two, or four suits!</p>
-            <span class="status coming-soon">Coming Soon</span>
-          </div>
-
           <a href="./klondike/" class="game-card">
             <div class="game-icon">🎴</div>
             <h2>Klondike</h2>
             <p>The classic solitaire game everyone knows and loves. Draw one card at a time!</p>
             <span class="status available">Play Now</span>
           </a>
-
-          <div class="game-card disabled">
-            <div class="game-icon">♠️</div>
-            <h2>Pyramid</h2>
-            <p>Match pairs of cards that add up to 13. Clear the pyramid to win!</p>
-            <span class="status coming-soon">Coming Soon</span>
-          </div>
-
-          <div class="game-card disabled">
-            <div class="game-icon">♦️</div>
-            <h2>Tri-Peaks</h2>
-            <p>Clear three peaks of cards by matching ranks. Fast-paced solitaire action!</p>
-            <span class="status coming-soon">Coming Soon</span>
-          </div>
-
-          <div class="game-card disabled">
-            <div class="game-icon">♣️</div>
-            <h2>Yukon</h2>
-            <p>FreeCell meets Klondike. Move face-up sequences without using free cells!</p>
-            <span class="status coming-soon">Coming Soon</span>
-          </div>
         </div>
+
+        <details class="scheduled-games">
+          <summary>
+            <h3>🗓️ Scheduled Games</h3>
+            <p class="scheduled-subtitle">Games planned for future releases</p>
+          </summary>
+
+          <div class="games-grid scheduled-grid">
+            <div class="game-card scheduled">
+              <div class="game-icon">🂱</div>
+              <h2>Spider Solitaire</h2>
+              <p>Arrange cards in descending sequences. Master one, two, or four suits!</p>
+              <span class="status coming-soon">Planned</span>
+            </div>
+
+            <div class="game-card scheduled">
+              <div class="game-icon">♠️</div>
+              <h2>Pyramid</h2>
+              <p>Match pairs of cards that add up to 13. Clear the pyramid to win!</p>
+              <span class="status coming-soon">Planned</span>
+            </div>
+
+            <div class="game-card scheduled">
+              <div class="game-icon">♦️</div>
+              <h2>Tri-Peaks</h2>
+              <p>Clear three peaks of cards by matching ranks. Fast-paced solitaire action!</p>
+              <span class="status coming-soon">Planned</span>
+            </div>
+
+            <div class="game-card scheduled">
+              <div class="game-icon">♣️</div>
+              <h2>Yukon</h2>
+              <p>FreeCell meets Klondike. Move face-up sequences without using free cells!</p>
+              <span class="status coming-soon">Planned</span>
+            </div>
+          </div>
+        </details>
       </main>
 
       <footer>

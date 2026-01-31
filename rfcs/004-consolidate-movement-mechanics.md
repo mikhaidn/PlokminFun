@@ -804,7 +804,7 @@ export function isValidKlondikeSequence(cards: Card[]): boolean {
 
 **Actions:**
 1. Build shared library: `npm run build:shared`
-2. Build all games: `npm run build:games`
+2. Build all games: `npm run build:pages`
 3. Run all tests: `npm test`
 4. Run linter: `npm run lint`
 5. Test locally: `cd freecell-mvp && npm run dev` + `cd klondike-mvp && npm run dev`
@@ -1752,7 +1752,7 @@ function GameBoard() {
 **Actions:**
 1. Set `USE_SHARED_INTERACTION_HOOK: true`
 2. Build shared: `npm run build:shared`
-3. Build games: `npm run build:games`
+3. Build games: `npm run build:pages`
 4. Run all tests: `npm test`
 5. Run linter: `npm run lint`
 6. Test both games in browser

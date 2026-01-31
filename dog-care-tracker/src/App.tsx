@@ -18,17 +18,16 @@ function App() {
   const [selectedDate, setSelectedDate] = useState<string>(getTodayString());
   const { dayLog, updatePeriod, updateDayLog, importLog, clearLog } = useDayLog(selectedDate);
 
-
-// For the display text
-const formatDate = (dateString: string) => {
-  const [y, m, d] = dateString.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString(undefined, {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
+  // For the display text
+  const formatDate = (dateString: string) => {
+    const [y, m, d] = dateString.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
   const periods: Period[] = ['morning', 'afternoon', 'night'];
   const isToday = selectedDate === getTodayString();
 
