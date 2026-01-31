@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Large File Video Trimmer - Proof of Concept</title>
+  <script src="https://cdn.jsdelivr.net/npm/mp4box@0.5.2/dist/mp4box.all.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #0a0a0a;
+      color: #e0e0e0;
+    }
+    h1 {
+      color: #4a9eff;
+      border-bottom: 2px solid #4a9eff;
+      padding-bottom: 10px;
+    }
+    .section {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #6ab7ff;
+    }
+    input[type="file"] {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      background: #2a2a2a;
+      border: 2px dashed #4a9eff;
+      border-radius: 4px;
+      color: #e0e0e0;
+      cursor: pointer;
+      width: 100%;
+    }
+    input[type="file"]:hover {
+      background: #333;
+      border-color: #6ab7ff;
+    }
+    video {
+      width: 100%;
+      max-width: 800px;
+      background: #000;
+      border-radius: 4px;
+      display: block;
+      margin: 10px 0;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 15px 0;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #a0a0a0;
+    }
+    input[type="number"],
+    input[type="text"] {
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #2a2a2a;
+      color: #e0e0e0;
+      font-size: 14px;
+    }
+    button {
+      padding: 12px 24px;
+      background: #4a9eff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin: 10px 5px 10px 0;
+    }
+    button:hover {
+      background: #357abd;
+    }
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+    }
+    #status {
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .status-line {
+      padding: 3px 0;
+      border-bottom: 1px solid #21262d;
+    }
+    .status-info { color: #58a6ff; }
+    .status-success { color: #3fb950; }
+    .status-warning { color: #d29922; }
+    .status-error { color: #f85149; }
+    .metadata {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 15px;
+      margin: 15px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+    .metadata dl {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 8px;
+      margin: 0;
+    }
+    .metadata dt {
+      font-weight: 600;
+      color: #8b949e;
+    }
+    .metadata dd {
+      margin: 0;
+      color: #c9d1d9;
+    }
+    .timeline {
+      position: relative;
+      height: 60px;
+      background: #2a2a2a;
+      border-radius: 4px;
+      margin: 20px 0;
+      cursor: pointer;
+      border: 1px solid #444;
+    }
+    .timeline-track {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #555;
+      transform: translateY(-50%);
+    }
+    .trim-region {
+      position: absolute;
+      top: 50%;
+      height: 20px;
+      background: rgba(74, 158, 255, 0.3);
+      border: 2px solid #4a9eff;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    .trim-handle {
+      position: absolute;
+      top: 50%;
+      width: 12px;
+      height: 40px;
+      background: #4a9eff;
+      border-radius: 2px;
+      transform: translate(-50%, -50%);
+      cursor: ew-resize;
+      z-index: 10;
+    }
+    .trim-handle:hover {
+      background: #6ab7ff;
+      width: 16px;
+    }
+    .keyframe-marker {
+      position: absolute;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background: rgba(255, 200, 0, 0.4);
+      pointer-events: none;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #2a2a2a;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid #444;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4a9eff, #357abd);
+      width: 0%;
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎬 Large File Video Trimmer - Proof of Concept</h1>
+
+  <div class="section">
+    <h2>📂 Step 1: Load Video File</h2>
+    <p>This spike tests if we can handle 4-7 GB files without crashing the browser.</p>
+    <input type="file" id="videoInput" accept="video/mp4,video/quicktime,video/x-matroska">
+    <div id="loadProgress" style="display: none;">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="metadataSection" style="display: none;">
+    <h2>📊 Video Metadata</h2>
+    <div class="metadata" id="metadata"></div>
+  </div>
+
+  <div class="section" id="previewSection" style="display: none;">
+    <h2>👁️ Step 2: Preview (First 50MB chunk)</h2>
+    <p>Loading entire 7GB file would crash browser. We only load what we need.</p>
+    <video id="preview" controls></video>
+  </div>
+
+  <div class="section" id="trimSection" style="display: none;">
+    <h2>✂️ Step 3: Set Trim Points</h2>
+    <p>Drag handles on timeline or enter times manually. We'll snap to keyframes for clean cuts.</p>
+
+    <div class="timeline" id="timeline">
+      <div class="timeline-track"></div>
+      <div class="trim-region" id="trimRegion"></div>
+      <div class="trim-handle" id="trimStartHandle" style="left: 10%;"></div>
+      <div class="trim-handle" id="trimEndHandle" style="left: 90%;"></div>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label for="trimStart">Trim Start (seconds)</label>
+        <input type="number" id="trimStart" value="0" min="0" step="0.1">
+      </div>
+      <div class="control-group">
+        <label for="trimEnd">Trim End (seconds)</label>
+        <input type="number" id="trimEnd" value="60" min="0" step="0.1">
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="outputName">Output filename</label>
+      <input type="text" id="outputName" value="trimmed-video.mp4">
+    </div>
+
+    <button id="trimBtn" disabled>⬇️ Trim & Download</button>
+    <button id="previewTrimBtn" disabled>▶️ Preview Trim Region</button>
+  </div>
+
+  <div class="section">
+    <h2>📋 Status Log</h2>
+    <div id="status"></div>
+  </div>
+
+  <script>
+    // State
+    let currentFile = null;
+    let mp4boxFile = null;
+    let videoMetadata = null;
+    let keyframeTimes = [];
+    let isDragging = false;
+    let dragTarget = null;
+
+    // Elements
+    const videoInput = document.getElementById('videoInput');
+    const preview = document.getElementById('preview');
+    const trimBtn = document.getElementById('trimBtn');
+    const previewTrimBtn = document.getElementById('previewTrimBtn');
+    const trimStartInput = document.getElementById('trimStart');
+    const trimEndInput = document.getElementById('trimEnd');
+    const outputNameInput = document.getElementById('outputName');
+    const timeline = document.getElementById('timeline');
+    const trimRegion = document.getElementById('trimRegion');
+    const trimStartHandle = document.getElementById('trimStartHandle');
+    const trimEndHandle = document.getElementById('trimEndHandle');
+
+    // Logging
+    function log(message, type = 'info') {
+      const status = document.getElementById('status');
+      const line = document.createElement('div');
+      line.className = `status-line status-${type}`;
+      const timestamp = new Date().toLocaleTimeString();
+      line.textContent = `[${timestamp}] ${message}`;
+      status.appendChild(line);
+      status.scrollTop = status.scrollHeight;
+      console.log(`[${type.toUpperCase()}] ${message}`);
+    }
+
+    // Format bytes to human readable
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // Format seconds to HH:MM:SS
+    function formatTime(seconds) {
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    // Step 1: Load and parse video file
+    videoInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      currentFile = file;
+      log(`Selected file: ${file.name} (${formatBytes(file.size)})`, 'info');
+
+      if (file.size > 10 * 1024 * 1024 * 1024) {
+        log('Warning: File is very large (>10GB). Browser may struggle.', 'warning');
+      }
+
+      try {
+        // Parse MP4 metadata using mp4box.js
+        log('Parsing MP4 metadata (reading first 20MB only)...', 'info');
+        await parseMP4Metadata(file);
+
+        // Load preview (first chunk only)
+        log('Loading video preview (first 50MB chunk)...', 'info');
+        await loadPreview(file);
+
+        // Show sections
+        document.getElementById('metadataSection').style.display = 'block';
+        document.getElementById('previewSection').style.display = 'block';
+        document.getElementById('trimSection').style.display = 'block';
+
+        // Enable trim button
+        trimBtn.disabled = false;
+        previewTrimBtn.disabled = false;
+
+        // Initialize trim end time
+        trimEndInput.value = Math.min(60, videoMetadata.duration);
+        trimEndInput.max = videoMetadata.duration;
+        updateTimeline();
+
+        log('✅ Ready to trim!', 'success');
+      } catch (error) {
+        log(`❌ Error loading video: ${error.message}`, 'error');
+        console.error(error);
+      }
+    });
+
+    // Parse MP4 metadata without loading full file
+    async function parseMP4Metadata(file) {
+      return new Promise((resolve, reject) => {
+        mp4boxFile = MP4Box.createFile();
+
+        mp4boxFile.onError = (e) => {
+          reject(new Error(`MP4Box error: ${e}`));
+        };
+
+        mp4boxFile.onReady = (info) => {
+          log(`Duration: ${info.duration / info.timescale} seconds`, 'info');
+          log(`Tracks: ${info.tracks.length}`, 'info');
+
+          const videoTrack = info.videoTracks[0];
+          if (videoTrack) {
+            log(`Resolution: ${videoTrack.video.width}x${videoTrack.video.height}`, 'info');
+            log(`Codec: ${videoTrack.codec}`, 'info');
+          }
+
+          // Extract keyframe times
+          keyframeTimes = extractKeyframes(info);
+          log(`Found ${keyframeTimes.length} keyframes`, 'info');
+
+          if (keyframeTimes.length > 0) {
+            const avgInterval = videoMetadata.duration / keyframeTimes.length;
+            log(`Average keyframe interval: ${avgInterval.toFixed(2)}s`, 'info');
+          }
+
+          // Store metadata
+          videoMetadata = {
+            duration: info.duration / info.timescale,
+            timescale: info.timescale,
+            width: videoTrack?.video.width || 0,
+            height: videoTrack?.video.height || 0,
+            codec: videoTrack?.codec || 'unknown',
+            tracks: info.tracks,
+            info: info
+          };
+
+          // Display metadata
+          displayMetadata(videoMetadata);
+
+          // Draw keyframe markers on timeline
+          drawKeyframeMarkers();
+
+          resolve();
+        };
+
+        // Read first 20MB (metadata is usually in first few MB)
+        const chunkSize = 20 * 1024 * 1024;
+        const chunk = file.slice(0, Math.min(chunkSize, file.size));
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const arrayBuffer = e.target.result;
+          arrayBuffer.fileStart = 0;
+          mp4boxFile.appendBuffer(arrayBuffer);
+          mp4boxFile.flush();
+        };
+        reader.readAsArrayBuffer(chunk);
+      });
+    }
+
+    // Extract keyframe times from MP4 info
+    function extractKeyframes(info) {
+      const videoTrack = info.videoTracks[0];
+      if (!videoTrack) return [];
+
+      const track = info.tracks.find(t => t.id === videoTrack.id);
+      if (!track || !track.samples) return [];
+
+      const timescale = info.timescale;
+      const keyframes = [];
+
+      for (const sample of track.samples) {
+        if (sample.is_sync) { // is_sync = keyframe
+          keyframes.push(sample.dts / timescale);
+        }
+      }
+
+      return keyframes;
+    }
+
+    // Display metadata
+    function displayMetadata(metadata) {
+      const metadataDiv = document.getElementById('metadata');
+      metadataDiv.innerHTML = `
+        <dl>
+          <dt>Duration:</dt>
+          <dd>${formatTime(metadata.duration)} (${metadata.duration.toFixed(2)}s)</dd>
+
+          <dt>Resolution:</dt>
+          <dd>${metadata.width}x${metadata.height}</dd>
+
+          <dt>Codec:</dt>
+          <dd>${metadata.codec}</dd>
+
+          <dt>Timescale:</dt>
+          <dd>${metadata.timescale}</dd>
+
+          <dt>Tracks:</dt>
+          <dd>${metadata.tracks.length} (${metadata.tracks.map(t => t.type).join(', ')})</dd>
+
+          <dt>Keyframes:</dt>
+          <dd>${keyframeTimes.length} frames (avg ${(metadata.duration / keyframeTimes.length).toFixed(2)}s apart)</dd>
+
+          <dt>File Size:</dt>
+          <dd>${formatBytes(currentFile.size)}</dd>
+        </dl>
+      `;
+    }
+
+    // Load preview using blob URL (simple approach for spike)
+    async function loadPreview(file) {
+      // For the spike, we'll use simple blob URL
+      // In production, we'd use Media Source Extensions for streaming
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+
+      return new Promise((resolve) => {
+        preview.onloadedmetadata = () => {
+          log(`Preview loaded (duration: ${formatTime(preview.duration)})`, 'success');
+          resolve();
+        };
+      });
+    }
+
+    // Draw keyframe markers on timeline
+    function drawKeyframeMarkers() {
+      if (!videoMetadata || keyframeTimes.length === 0) return;
+
+      // Clear existing markers
+      const existingMarkers = timeline.querySelectorAll('.keyframe-marker');
+      existingMarkers.forEach(m => m.remove());
+
+      // Add new markers (limit to every Nth keyframe to avoid clutter)
+      const step = Math.max(1, Math.floor(keyframeTimes.length / 50)); // Max 50 markers
+
+      for (let i = 0; i < keyframeTimes.length; i += step) {
+        const time = keyframeTimes[i];
+        const percent = (time / videoMetadata.duration) * 100;
+
+        const marker = document.createElement('div');
+        marker.className = 'keyframe-marker';
+        marker.style.left = `${percent}%`;
+        marker.title = `Keyframe at ${formatTime(time)}`;
+        timeline.appendChild(marker);
+      }
+    }
+
+    // Update timeline visualization
+    function updateTimeline() {
+      if (!videoMetadata) return;
+
+      const startTime = parseFloat(trimStartInput.value);
+      const endTime = parseFloat(trimEndInput.value);
+
+      const startPercent = (startTime / videoMetadata.duration) * 100;
+      const endPercent = (endTime / videoMetadata.duration) * 100;
+
+      trimStartHandle.style.left = `${startPercent}%`;
+      trimEndHandle.style.left = `${endPercent}%`;
+
+      trimRegion.style.left = `${startPercent}%`;
+      trimRegion.style.width = `${endPercent - startPercent}%`;
+    }
+
+    // Timeline click to seek
+    timeline.addEventListener('click', (e) => {
+      if (isDragging) return;
+
+      const rect = timeline.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const percent = x / rect.width;
+      const time = percent * videoMetadata.duration;
+
+      preview.currentTime = time;
+      log(`Seeked to ${formatTime(time)}`, 'info');
+    });
+
+    // Trim handle dragging
+    trimStartHandle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragTarget = 'start';
+      e.stopPropagation();
+    });
+
+    trimEndHandle.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      dragTarget = 'end';
+      e.stopPropagation();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging || !videoMetadata) return;
+
+      const rect = timeline.getBoundingClientRect();
+      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+      const percent = x / rect.width;
+      const time = percent * videoMetadata.duration;
+
+      // Snap to nearest keyframe
+      const snappedTime = snapToKeyframe(time);
+
+      if (dragTarget === 'start') {
+        const endTime = parseFloat(trimEndInput.value);
+        if (snappedTime < endTime) {
+          trimStartInput.value = snappedTime.toFixed(2);
+        }
+      } else if (dragTarget === 'end') {
+        const startTime = parseFloat(trimStartInput.value);
+        if (snappedTime > startTime) {
+          trimEndInput.value = snappedTime.toFixed(2);
+        }
+      }
+
+      updateTimeline();
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      dragTarget = null;
+    });
+
+    // Snap time to nearest keyframe
+    function snapToKeyframe(time) {
+      if (keyframeTimes.length === 0) return time;
+
+      let nearest = keyframeTimes[0];
+      let minDiff = Math.abs(time - nearest);
+
+      for (const kfTime of keyframeTimes) {
+        const diff = Math.abs(time - kfTime);
+        if (diff < minDiff) {
+          minDiff = diff;
+          nearest = kfTime;
+        }
+      }
+
+      return nearest;
+    }
+
+    // Input change listeners
+    trimStartInput.addEventListener('input', updateTimeline);
+    trimEndInput.addEventListener('input', updateTimeline);
+
+    // Preview trim region
+    previewTrimBtn.addEventListener('click', () => {
+      const startTime = parseFloat(trimStartInput.value);
+      preview.currentTime = startTime;
+      preview.play();
+
+      // Stop at end time
+      const checkEnd = setInterval(() => {
+        const endTime = parseFloat(trimEndInput.value);
+        if (preview.currentTime >= endTime) {
+          preview.pause();
+          clearInterval(checkEnd);
+          log('Preview complete', 'info');
+        }
+      }, 100);
+    });
+
+    // Step 3: Trim and download
+    trimBtn.addEventListener('click', async () => {
+      const startTime = parseFloat(trimStartInput.value);
+      const endTime = parseFloat(trimEndInput.value);
+      const outputName = outputNameInput.value || 'trimmed-video.mp4';
+
+      if (startTime >= endTime) {
+        log('❌ Start time must be before end time', 'error');
+        return;
+      }
+
+      log(`Starting trim: ${formatTime(startTime)} → ${formatTime(endTime)}`, 'info');
+      log('⚠️ NOTE: This spike uses a simple approach. Production version will use byte-level extraction.', 'warning');
+
+      try {
+        trimBtn.disabled = true;
+        trimBtn.textContent = '⏳ Processing...';
+
+        // For spike: Use canvas + MediaRecorder to extract trim
+        // In production: Use mp4box.js to extract byte ranges
+        await trimVideoSimple(currentFile, startTime, endTime, outputName);
+
+        log('✅ Trim complete! Download started.', 'success');
+        trimBtn.disabled = false;
+        trimBtn.textContent = '⬇️ Trim & Download';
+      } catch (error) {
+        log(`❌ Trim failed: ${error.message}`, 'error');
+        console.error(error);
+        trimBtn.disabled = false;
+        trimBtn.textContent = '⬇️ Trim & Download';
+      }
+    });
+
+    // Simple trim approach for spike (re-encodes, slow but works)
+    async function trimVideoSimple(file, startTime, endTime, outputName) {
+      log('Using MediaRecorder approach (re-encodes video)...', 'warning');
+      log('Production version will extract bytes directly (much faster)', 'info');
+
+      // Create video element for processing
+      const video = document.createElement('video');
+      video.src = URL.createObjectURL(file);
+      video.muted = true;
+
+      await new Promise(resolve => {
+        video.onloadedmetadata = resolve;
+      });
+
+      // Create canvas and capture stream
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+
+      const stream = canvas.captureStream(30); // 30 fps
+
+      // Add audio track from original video
+      const audioContext = new AudioContext();
+      const source = audioContext.createMediaElementSource(video);
+      const dest = audioContext.createMediaStreamDestination();
+      source.connect(dest);
+      source.connect(audioContext.destination);
+
+      stream.addTrack(dest.stream.getAudioTracks()[0]);
+
+      // Setup MediaRecorder
+      const chunks = [];
+      const recorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 5000000
+      });
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunks.push(e.data);
+        }
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        downloadBlob(blob, outputName.replace('.mp4', '.webm'));
+      };
+
+      // Start recording at trim start
+      video.currentTime = startTime;
+
+      await new Promise(resolve => {
+        video.onseeked = resolve;
+      });
+
+      recorder.start();
+      video.play();
+
+      // Draw frames to canvas
+      const drawFrame = () => {
+        if (video.currentTime >= endTime) {
+          recorder.stop();
+          video.pause();
+          audioContext.close();
+          return;
+        }
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        requestAnimationFrame(drawFrame);
+      };
+
+      drawFrame();
+    }
+
+    // Download blob as file
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      log(`Downloaded: ${filename} (${formatBytes(blob.size)})`, 'success');
+    }
+
+    // Initial log
+    log('🚀 Large File Video Trimmer Spike loaded', 'success');
+    log('This tests if we can handle 4-7 GB files in the browser', 'info');
+    log('Key features: Metadata parsing, keyframe detection, trim & download', 'info');
+  </script>
+</body>
+</html>
