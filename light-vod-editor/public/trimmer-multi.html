@@ -1,0 +1,1947 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Light VOD Editor - Multi-Segment Trimmer</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #0a0a0a;
+        color: #e0e0e0;
+        line-height: 1.6;
+      }
+
+      h1 {
+        color: #4a9eff;
+        border-bottom: 3px solid #4a9eff;
+        padding-bottom: 15px;
+        margin-bottom: 10px;
+        font-size: 2.5em;
+      }
+
+      .subtitle {
+        color: #8b949e;
+        font-size: 1.1em;
+        margin-bottom: 30px;
+      }
+
+      .section {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 25px;
+        margin: 25px 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      .section h2 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #6ab7ff;
+        font-size: 1.8em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section p {
+        color: #c9d1d9;
+        margin-bottom: 15px;
+      }
+
+      input[type='file'] {
+        display: block;
+        margin: 15px 0;
+        padding: 15px;
+        background: #2a2a2a;
+        border: 2px dashed #4a9eff;
+        border-radius: 6px;
+        color: #e0e0e0;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s;
+      }
+
+      input[type='file']:hover {
+        background: #333;
+        border-color: #6ab7ff;
+        transform: translateY(-2px);
+      }
+
+      video {
+        width: 100%;
+        max-width: 900px;
+        background: #000;
+        border-radius: 6px;
+        display: block;
+        margin: 15px auto;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      label {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #a0a0a0;
+        font-size: 0.95em;
+      }
+
+      input[type='number'],
+      input[type='text'] {
+        padding: 12px;
+        border: 1px solid #444;
+        border-radius: 4px;
+        background: #2a2a2a;
+        color: #e0e0e0;
+        font-size: 15px;
+        transition: border-color 0.2s;
+      }
+
+      input[type='number']:focus,
+      input[type='text']:focus {
+        outline: none;
+        border-color: #4a9eff;
+      }
+
+      button {
+        padding: 14px 28px;
+        background: #4a9eff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin: 5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      button:hover {
+        background: #357abd;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(74, 158, 255, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button:disabled {
+        background: #555;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      button.secondary {
+        background: #30363d;
+      }
+
+      button.secondary:hover {
+        background: #484f58;
+      }
+
+      button.success {
+        background: #238636;
+      }
+
+      button.success:hover {
+        background: #2ea043;
+      }
+
+      button.danger {
+        background: #da3633;
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+
+      button.danger:hover {
+        background: #f85149;
+      }
+
+      button.small {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .metadata {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 20px;
+        margin: 20px 0;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 13px;
+      }
+
+      .metadata dl {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 12px;
+        margin: 0;
+      }
+
+      .metadata dt {
+        font-weight: 600;
+        color: #8b949e;
+      }
+
+      .metadata dd {
+        margin: 0;
+        color: #c9d1d9;
+      }
+
+      .timeline {
+        position: relative;
+        height: 80px;
+        background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+        border-radius: 6px;
+        margin: 25px 0;
+        cursor: pointer;
+        border: 1px solid #444;
+        overflow: hidden;
+      }
+
+      .timeline-track {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: #555;
+        transform: translateY(-50%);
+      }
+
+      .playhead {
+        position: absolute;
+        top: 0;
+        width: 3px;
+        height: 100%;
+        background: #f85149;
+        pointer-events: none;
+        z-index: 5;
+        box-shadow: 0 0 8px rgba(248, 81, 73, 0.8);
+      }
+
+      .trim-region {
+        position: absolute;
+        top: 50%;
+        height: 30px;
+        background: rgba(74, 158, 255, 0.25);
+        border: 2px solid #4a9eff;
+        transform: translateY(-50%);
+        pointer-events: auto;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        color: #4a9eff;
+        cursor: move;
+      }
+
+      .trim-region:hover {
+        background: rgba(74, 158, 255, 0.35);
+      }
+
+      .trim-region.selected {
+        background: rgba(74, 158, 255, 0.4);
+        border-color: #6ab7ff;
+        border-width: 3px;
+      }
+
+      .trim-region.dragging {
+        opacity: 0.8;
+        cursor: grabbing;
+      }
+
+      .trim-handle {
+        position: absolute;
+        top: 50%;
+        width: 14px;
+        height: 50px;
+        background: #4a9eff;
+        border-radius: 3px;
+        transform: translate(-50%, -50%);
+        cursor: ew-resize;
+        z-index: 15;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        pointer-events: auto;
+      }
+
+      .trim-handle:hover {
+        background: #6ab7ff;
+        width: 18px;
+        height: 60px;
+        box-shadow: 0 4px 12px rgba(74, 158, 255, 0.6);
+      }
+
+      .trim-handle::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 2px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .trim-handle.dragging {
+        background: #58a6ff;
+        width: 20px;
+        height: 70px;
+      }
+
+      .marker {
+        position: absolute;
+        top: 0;
+        width: 2px;
+        height: 100%;
+        background: #f85149;
+        z-index: 8;
+        cursor: pointer;
+      }
+
+      .marker::before {
+        content: '📍';
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .marker-label {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #f85149;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      .marker:hover .marker-label {
+        opacity: 1;
+      }
+
+      .markers-list {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 15px 0;
+      }
+
+      .marker-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        background: #161b22;
+        border-radius: 4px;
+        margin: 5px 0;
+      }
+
+      .marker-item:hover {
+        background: #1c2128;
+      }
+
+      .marker-name {
+        flex: 1;
+        color: #c9d1d9;
+        font-weight: 600;
+      }
+
+      .marker-time {
+        font-family: 'Monaco', monospace;
+        color: #8b949e;
+        font-size: 13px;
+      }
+
+      .voiceover-track {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 12px;
+        margin: 10px 0;
+      }
+
+      .voiceover-track-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .voiceover-track-number {
+        background: #f85149;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .segment-list {
+        margin: 20px 0;
+      }
+
+      .segment-item {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.2s;
+      }
+
+      .segment-item:hover {
+        border-color: #4a9eff;
+        background: #161b22;
+      }
+
+      .segment-item.selected {
+        border-color: #4a9eff;
+        border-width: 2px;
+        background: #161b22;
+      }
+
+      .segment-number {
+        background: #4a9eff;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      .segment-info {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 15px;
+      }
+
+      .segment-time {
+        font-family: 'Monaco', monospace;
+        color: #58a6ff;
+        font-size: 14px;
+      }
+
+      .segment-duration {
+        color: #8b949e;
+        font-size: 13px;
+      }
+
+      .segment-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .command-output {
+        background: #0d1117;
+        border: 2px solid #30363d;
+        border-radius: 6px;
+        padding: 20px;
+        margin: 20px 0;
+        font-family: 'Monaco', 'Courier New', monospace;
+        font-size: 14px;
+        position: relative;
+        overflow-x: auto;
+      }
+
+      .command-output pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        color: #58a6ff;
+        line-height: 1.8;
+      }
+
+      .command-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #30363d;
+      }
+
+      .command-header h3 {
+        color: #8b949e;
+        font-size: 0.9em;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .copy-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+        background: #238636;
+      }
+
+      .copy-btn:hover {
+        background: #2ea043;
+      }
+
+      .copy-btn.copied {
+        background: #1f6feb;
+      }
+
+      .help-section {
+        background: #161b22;
+        border-left: 4px solid #4a9eff;
+        padding: 15px 20px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+
+      .help-section h4 {
+        color: #6ab7ff;
+        margin-bottom: 10px;
+      }
+
+      .help-section ul {
+        list-style: none;
+        padding-left: 20px;
+      }
+
+      .help-section li {
+        margin: 8px 0;
+        color: #c9d1d9;
+      }
+
+      .help-section li::before {
+        content: '▸';
+        color: #4a9eff;
+        margin-right: 10px;
+      }
+
+      .help-section code {
+        background: #0d1117;
+        padding: 2px 6px;
+        border-radius: 3px;
+        color: #58a6ff;
+        font-family: 'Monaco', monospace;
+      }
+
+      .time-display {
+        background: #0d1117;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-family: 'Monaco', monospace;
+        color: #58a6ff;
+        display: inline-block;
+        margin-top: 5px;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .stat-card {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 15px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: #4a9eff;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        color: #8b949e;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .mode-selector {
+        display: flex;
+        gap: 10px;
+        margin: 20px 0;
+        padding: 15px;
+        background: #0d1117;
+        border-radius: 6px;
+        border: 1px solid #30363d;
+      }
+
+      .mode-option {
+        flex: 1;
+        padding: 15px;
+        background: #1a1a1a;
+        border: 2px solid #30363d;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+      }
+
+      .mode-option:hover {
+        border-color: #4a9eff;
+        background: #21262d;
+      }
+
+      .mode-option.active {
+        border-color: #4a9eff;
+        background: #1c2d3f;
+      }
+
+      .mode-option h4 {
+        color: #6ab7ff;
+        margin-bottom: 8px;
+      }
+
+      .mode-option p {
+        color: #8b949e;
+        font-size: 13px;
+        margin: 0;
+      }
+
+      details {
+        margin-top: 30px;
+      }
+
+      summary {
+        cursor: pointer;
+        color: #6ab7ff;
+        font-weight: 600;
+        padding: 10px;
+        background: #161b22;
+        border-radius: 4px;
+        user-select: none;
+      }
+
+      summary:hover {
+        background: #1c2128;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section {
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      .voiceover-panel {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .recording-controls {
+        display: flex;
+        gap: 10px;
+        margin: 15px 0;
+        align-items: center;
+      }
+
+      .recording-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #f85149;
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      .waveform {
+        height: 60px;
+        background: #1a1a1a;
+        border-radius: 4px;
+        margin: 10px 0;
+        border: 1px solid #30363d;
+      }
+
+      audio {
+        width: 100%;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎬 Light VOD Editor - Multi-Segment</h1>
+    <p class="subtitle">
+      Cut multiple segments and merge into one video or export as separate files. Fast, local,
+      private.
+    </p>
+
+    <div class="section">
+      <h2>📂 Step 1: Load Your Video</h2>
+      <p>
+        No upload needed - file stays on your computer. Works with any size (tested with 4-7 GB
+        files).
+      </p>
+      <input type="file" id="videoInput" accept="video/*" />
+    </div>
+
+    <div class="section" id="metadataSection" style="display: none">
+      <h2>📊 Video Information</h2>
+      <div class="metadata" id="metadata"></div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value" id="statDuration">--:--:--</div>
+          <div class="stat-label">Duration</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statSize">-- GB</div>
+          <div class="stat-label">File Size</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statResolution">----x----</div>
+          <div class="stat-label">Resolution</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statSegments">0</div>
+          <div class="stat-label">Segments</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="previewSection" style="display: none">
+      <h2>👁️ Step 2: Preview & Find Trim Points</h2>
+      <p>Scrub through your video to find the perfect start and end points for each segment.</p>
+      <video id="preview" controls></video>
+    </div>
+
+    <div class="section" id="trimSection" style="display: none">
+      <h2>✂️ Step 3: Mark Segments</h2>
+      <p>
+        Click timeline to seek, use buttons to capture start/end points, or enter times manually.
+      </p>
+
+      <div class="timeline" id="timeline">
+        <div class="timeline-track"></div>
+        <div class="playhead" id="playhead"></div>
+        <div id="timelineMarkers"></div>
+        <div id="timelineRegions"></div>
+      </div>
+
+      <div style="text-align: center; margin: 20px 0">
+        <button onclick="addNewSegment()" class="success">➕ Add New Segment</button>
+        <button onclick="addSegmentAtCurrent()" class="success">
+          📍 Add Segment at Current Time
+        </button>
+        <button onclick="addSegmentManual()" class="secondary">⌨️ Enter Times Manually</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0">
+        <div>
+          <h3 style="color: #6ab7ff; margin-bottom: 10px; font-size: 1.2em">📍 Markers</h3>
+          <p style="color: #8b949e; font-size: 13px; margin-bottom: 10px">
+            Add labeled markers to remember important moments. Use marker names in voiceover timing!
+          </p>
+          <button onclick="addMarker()" class="success small">➕ Add Marker at Current Time</button>
+          <div id="markersList" class="markers-list" style="display: none"></div>
+        </div>
+        <div>
+          <h3 style="color: #6ab7ff; margin-bottom: 10px; font-size: 1.2em">💡 Navigation Tips</h3>
+          <ul style="padding-left: 20px; margin: 0; color: #c9d1d9; font-size: 13px">
+            <li><strong>Click timeline</strong> - Jump to position</li>
+            <li><strong>Drag handles</strong> - Adjust segments (video scrubs)</li>
+            <li><strong>Horizontal scroll</strong> - Scrub with trackpad swipe</li>
+            <li><strong>← / →</strong> - 1 frame back/forward</li>
+            <li><strong>Shift + ← / →</strong> - Jump 5 seconds</li>
+            <li><strong>Spacebar</strong> - Play/pause</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="segment-list" id="segmentList">
+        <p style="color: #8b949e; text-align: center; padding: 20px">
+          No segments added yet. Mark start and end points above.
+        </p>
+      </div>
+    </div>
+
+    <div class="section" id="commandSection" style="display: none">
+      <h2>🚀 Step 4: Choose Export Mode</h2>
+
+      <div class="mode-selector">
+        <div class="mode-option active" onclick="selectMode('concat')" id="modeConcatBtn">
+          <h4>🔗 Merge All Segments</h4>
+          <p>Combine all segments into one video file</p>
+        </div>
+        <div class="mode-option" onclick="selectMode('split')" id="modeSplitBtn">
+          <h4>📦 Split Into Separate Files</h4>
+          <p>Export each segment as its own file</p>
+        </div>
+      </div>
+
+      <div id="concatCommands">
+        <div class="command-output">
+          <div class="command-header">
+            <h3>Merge Segments (Fast - No Re-encoding)</h3>
+            <button class="copy-btn" onclick="copyCommand('concat', event)">📋 Copy Command</button>
+          </div>
+          <pre id="concatCommand">// Add segments to generate command</pre>
+        </div>
+      </div>
+
+      <div id="splitCommands" style="display: none">
+        <div class="command-output">
+          <div class="command-header">
+            <h3>Split Into Separate Files (Fast - No Re-encoding)</h3>
+            <button class="copy-btn" onclick="copyCommand('split', event)">
+              📋 Copy All Commands
+            </button>
+          </div>
+          <pre id="splitCommand">// Add segments to generate commands</pre>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <h4>How to use:</h4>
+        <ul>
+          <li>Click "📋 Copy Command" above</li>
+          <li>Open Terminal (Mac/Linux) or Command Prompt (Windows)</li>
+          <li>Navigate to folder with your video: <code>cd /path/to/video/folder</code></li>
+          <li>Paste and run the command(s)</li>
+          <li>Output file(s) will be created in ~5-30 seconds</li>
+        </ul>
+      </div>
+
+      <details>
+        <summary>🎤 Advanced: Add Voiceover Recording (Click to expand)</summary>
+        <div class="voiceover-panel">
+          <h4 style="color: #6ab7ff; margin-bottom: 15px">Record Multiple Voiceover Tracks</h4>
+          <p style="color: #8b949e; margin-bottom: 15px">
+            Record multiple audio clips for different parts of your video. You can use marker names
+            or timestamps for positioning.
+          </p>
+
+          <div style="margin-bottom: 20px">
+            <button onclick="addVoiceoverTrack()" class="success">➕ Add Voiceover Track</button>
+          </div>
+
+          <div id="voiceoverTracks"></div>
+
+          <div id="voiceoverCommandSection" style="display: none">
+            <div class="command-output" style="margin-top: 20px">
+              <div class="command-header">
+                <h3>Mix All Voiceovers Command (After downloading files)</h3>
+                <button class="copy-btn" onclick="copyCommand('voiceover', event)">
+                  📋 Copy Command
+                </button>
+              </div>
+              <pre id="voiceoverCommand">// Add voiceover tracks first</pre>
+            </div>
+
+            <div
+              style="
+                background: #161b22;
+                padding: 12px;
+                border-radius: 4px;
+                margin-top: 10px;
+                border-left: 3px solid #d29922;
+              "
+            >
+              <p style="color: #c9d1d9; font-size: 13px; margin: 0">
+                <strong style="color: #d29922">Note:</strong> Download all voiceover files and place
+                them in the same folder as your video before running the mix command. Adjust volume
+                levels if needed (0.0 = mute, 1.0 = full volume).
+              </p>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <div class="help-section" style="margin-top: 30px; border-left-color: #d29922">
+        <h4>Don't have FFmpeg installed?</h4>
+        <ul>
+          <li><strong>Mac:</strong> <code>brew install ffmpeg</code></li>
+          <li><strong>Linux (Ubuntu/Debian):</strong> <code>sudo apt install ffmpeg</code></li>
+          <li>
+            <strong>Windows:</strong> Download from
+            <a href="https://ffmpeg.org/download.html" target="_blank" style="color: #4a9eff"
+              >ffmpeg.org</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      /**
+       * Light VOD Editor - Multi-Segment Trimmer
+       *
+       * A browser-based tool for generating FFmpeg commands to trim, merge, and edit videos.
+       * All processing happens on the user's machine - no uploads, no cloud services.
+       *
+       * Key Features:
+       * - Multiple trim segments with visual timeline
+       * - Draggable handles for precise boundary control
+       * - Labeled markers for timestamp navigation
+       * - Multiple voiceover track recording
+       * - FFmpeg command generation (merge, split, audio mix)
+       *
+       * Architecture:
+       * - Vanilla JavaScript (no dependencies)
+       * - State managed in global variables
+       * - DOM manipulation for UI updates
+       * - Browser APIs: createObjectURL, MediaRecorder, getUserMedia
+       *
+       * @version 0.1.0
+       * @date 2025-01-31
+       */
+
+      // ============================================================================
+      // STATE MANAGEMENT
+      // ============================================================================
+
+      // Video state
+      let currentFile = null; // File object from <input type="file">
+      let videoDuration = 0; // Total video duration in seconds
+
+      // Segment state
+      let segments = []; // Array of { start: number, end: number }
+      let selectedSegmentIndex = null; // Currently selected segment for highlight
+      let tempStartTime = null; // Temporary storage for two-click segment creation (deprecated)
+      let exportMode = 'concat'; // 'concat' (merge) or 'split' (separate files)
+
+      // Dragging state
+      let isDragging = false; // True when user is dragging
+      let dragSegmentIndex = null; // Index of segment being dragged
+      let dragHandleType = null; // 'start', 'end', or 'segment' (whole segment drag)
+      let dragStartX = null; // Mouse X position when drag started
+      let dragStartSegment = null; // Segment state snapshot { start, end }
+
+      // Markers state
+      let markers = []; // Array of { name: string, time: number }
+
+      // Voiceover state
+      let voiceoverTracks = []; // Array of { id, startTime, startMarker, blob, filename }
+      let currentRecordingTrackId = null; // ID of track currently being recorded
+      let mediaRecorder = null; // MediaRecorder instance for audio capture
+      let audioChunks = []; // Audio data chunks during recording
+      let recordingStartTime = null; // Timestamp when recording started
+      let recordingInterval = null; // setInterval ID for recording timer
+      let nextTrackId = 1; // Auto-increment ID for voiceover tracks
+
+      // ============================================================================
+      // DOM ELEMENTS
+      // ============================================================================
+
+      const videoInput = document.getElementById('videoInput');
+      const preview = document.getElementById('preview');
+      const timeline = document.getElementById('timeline');
+      const playhead = document.getElementById('playhead');
+      const timelineRegions = document.getElementById('timelineRegions');
+      const segmentList = document.getElementById('segmentList');
+
+      // ============================================================================
+      // UTILITY FUNCTIONS
+      // ============================================================================
+
+      /**
+       * Format bytes to human-readable size (KB, MB, GB)
+       * @param {number} bytes - File size in bytes
+       * @returns {string} Formatted string (e.g., "4.27 GB")
+       */
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+      }
+
+      /**
+       * Format seconds to HH:MM:SS.d (display format)
+       * @param {number} seconds - Time in seconds
+       * @returns {string} Formatted time (e.g., "01:23:45.3")
+       */
+      function formatTime(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+        const ms = Math.floor((seconds % 1) * 10);
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}.${ms}`;
+      }
+
+      /**
+       * Format seconds to HH:MM:SS.ss (FFmpeg format)
+       * @param {number} seconds - Time in seconds
+       * @returns {string} FFmpeg-compatible timestamp (e.g., "01:23:45.30")
+       */
+      function formatTimeFFmpeg(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toFixed(2).padStart(5, '0')}`;
+      }
+
+      // ============================================================================
+      // VIDEO LOADING
+      // ============================================================================
+
+      // Load video
+      videoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        currentFile = file;
+        const url = URL.createObjectURL(file);
+        preview.src = url;
+
+        preview.onloadedmetadata = () => {
+          videoDuration = preview.duration;
+
+          // Update metadata
+          document.getElementById('metadata').innerHTML = `
+          <dl>
+            <dt>Filename:</dt>
+            <dd>${file.name}</dd>
+            <dt>File Size:</dt>
+            <dd>${formatBytes(file.size)}</dd>
+            <dt>Duration:</dt>
+            <dd>${formatTime(videoDuration)} (${videoDuration.toFixed(2)}s)</dd>
+            <dt>Resolution:</dt>
+            <dd>${preview.videoWidth}x${preview.videoHeight}</dd>
+            <dt>Type:</dt>
+            <dd>${file.type || 'unknown'}</dd>
+          </dl>
+        `;
+
+          // Update stats
+          document.getElementById('statDuration').textContent = formatTime(videoDuration);
+          document.getElementById('statSize').textContent = formatBytes(file.size);
+          document.getElementById('statResolution').textContent =
+            `${preview.videoWidth}x${preview.videoHeight}`;
+
+          // Show sections
+          document.getElementById('metadataSection').style.display = 'block';
+          document.getElementById('previewSection').style.display = 'block';
+          document.getElementById('trimSection').style.display = 'block';
+          document.getElementById('commandSection').style.display = 'block';
+        };
+      });
+
+      // Update playhead position during playback
+      preview.addEventListener('timeupdate', () => {
+        if (videoDuration > 0) {
+          const percent = (preview.currentTime / videoDuration) * 100;
+          playhead.style.left = `${percent}%`;
+        }
+      });
+
+      // Timeline click to seek (improved to work even with segments)
+      timeline.addEventListener('click', (e) => {
+        // Don't seek if clicking on a handle
+        if (e.target.classList.contains('trim-handle')) return;
+
+        if (!videoDuration) return;
+        const rect = timeline.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percent = x / rect.width;
+        preview.currentTime = percent * videoDuration;
+      });
+
+      // Horizontal scroll wheel to scrub video
+      timeline.addEventListener(
+        'wheel',
+        (e) => {
+          if (!videoDuration) return;
+
+          // Detect horizontal scroll (shift+scroll or trackpad horizontal swipe)
+          const delta =
+            Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.shiftKey ? e.deltaY : 0;
+
+          if (delta !== 0) {
+            e.preventDefault();
+
+            // Scroll sensitivity: 1 pixel = 0.1 seconds (inverted for natural scrolling)
+            const scrollSpeed = 0.1;
+            const timeChange = (-delta / 10) * scrollSpeed; // Negative to invert
+
+            preview.currentTime = Math.max(
+              0,
+              Math.min(videoDuration, preview.currentTime + timeChange)
+            );
+          }
+        },
+        { passive: false }
+      );
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (!videoDuration) return;
+
+        // Don't interfere with typing in inputs
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        switch (e.key) {
+          case 'ArrowLeft':
+            e.preventDefault();
+            // Frame back (assuming 30fps, 1 frame ≈ 0.033s)
+            preview.currentTime = Math.max(0, preview.currentTime - (e.shiftKey ? 5 : 0.033));
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            // Frame forward
+            preview.currentTime = Math.min(
+              videoDuration,
+              preview.currentTime + (e.shiftKey ? 5 : 0.033)
+            );
+            break;
+          case ' ':
+            e.preventDefault();
+            // Spacebar to play/pause
+            if (preview.paused) {
+              preview.play();
+            } else {
+              preview.pause();
+            }
+            break;
+        }
+      });
+
+      // Add new segment (creates a default segment that can be dragged)
+      window.addNewSegment = () => {
+        if (!videoDuration) return;
+
+        // Create a 10-second segment starting at current time
+        const startTime = Math.max(0, preview.currentTime);
+        const endTime = Math.min(videoDuration, startTime + 10);
+
+        addSegment(startTime, endTime);
+        selectedSegmentIndex = segments.length - 1;
+        renderSegments();
+        renderTimeline();
+      };
+
+      // Add segment at current time
+      window.addSegmentAtCurrent = () => {
+        if (!videoDuration) return;
+
+        const currentTime = preview.currentTime;
+        const duration = 10; // Default 10 seconds
+
+        const startTime = Math.max(0, currentTime - duration / 2);
+        const endTime = Math.min(videoDuration, startTime + duration);
+
+        addSegment(startTime, endTime);
+        selectedSegmentIndex = segments.length - 1;
+        renderSegments();
+        renderTimeline();
+      };
+
+      // Add segment manually
+      window.addSegmentManual = () => {
+        const start = prompt('Enter start time in seconds:', '0');
+        const end = prompt('Enter end time in seconds:', '60');
+
+        if (start === null || end === null) return;
+
+        const startTime = parseFloat(start);
+        const endTime = parseFloat(end);
+
+        if (isNaN(startTime) || isNaN(endTime)) {
+          alert('Please enter valid numbers');
+          return;
+        }
+
+        if (startTime < 0 || endTime > videoDuration || startTime >= endTime) {
+          alert('Invalid time range');
+          return;
+        }
+
+        addSegment(startTime, endTime);
+      };
+
+      // Add segment to list
+      function addSegment(start, end) {
+        segments.push({ start, end });
+        renderSegments();
+        renderTimeline();
+        updateCommands();
+        updateStats();
+      }
+
+      // Remove segment
+      function removeSegment(index) {
+        if (confirm(`Delete segment ${index + 1}?`)) {
+          segments.splice(index, 1);
+          if (selectedSegmentIndex === index) {
+            selectedSegmentIndex = null;
+          } else if (selectedSegmentIndex > index) {
+            selectedSegmentIndex--;
+          }
+          renderSegments();
+          renderTimeline();
+          updateCommands();
+          updateStats();
+        }
+      }
+
+      // Select segment
+      function selectSegment(index) {
+        selectedSegmentIndex = index;
+        renderSegments();
+        renderTimeline();
+
+        // Seek to segment start
+        preview.currentTime = segments[index].start;
+      }
+
+      // Preview segment
+      function previewSegment(index) {
+        const segment = segments[index];
+        preview.currentTime = segment.start;
+        preview.play();
+
+        const checkEnd = setInterval(() => {
+          if (preview.currentTime >= segment.end) {
+            preview.pause();
+            clearInterval(checkEnd);
+          }
+        }, 100);
+      }
+
+      // Render segments list
+      function renderSegments() {
+        if (segments.length === 0) {
+          segmentList.innerHTML =
+            '<p style="color: #8b949e; text-align: center; padding: 20px;">No segments added yet. Mark start and end points above.</p>';
+          return;
+        }
+
+        segmentList.innerHTML = segments
+          .map((seg, i) => {
+            const duration = seg.end - seg.start;
+            const isSelected = selectedSegmentIndex === i;
+            return `
+          <div class="segment-item ${isSelected ? 'selected' : ''}" onclick="selectSegment(${i})">
+            <div class="segment-number">${i + 1}</div>
+            <div class="segment-info">
+              <div>
+                <div class="segment-time">Start: ${formatTime(seg.start)}</div>
+                <small class="segment-duration">${seg.start.toFixed(2)}s</small>
+              </div>
+              <div>
+                <div class="segment-time">End: ${formatTime(seg.end)}</div>
+                <small class="segment-duration">${seg.end.toFixed(2)}s</small>
+              </div>
+              <div>
+                <div class="segment-time">Duration: ${formatTime(duration)}</div>
+                <small class="segment-duration">${duration.toFixed(2)}s</small>
+              </div>
+            </div>
+            <div class="segment-actions">
+              <button class="secondary small" onclick="event.stopPropagation(); previewSegment(${i})">▶️</button>
+              <button class="danger small" onclick="event.stopPropagation(); removeSegment(${i})">🗑️</button>
+            </div>
+          </div>
+        `;
+          })
+          .join('');
+      }
+
+      // Render timeline regions
+      function renderTimeline() {
+        if (!videoDuration) return;
+
+        const colors = ['#4a9eff', '#3fb950', '#d29922', '#f85149', '#bc8cff'];
+
+        timelineRegions.innerHTML = segments
+          .map((seg, i) => {
+            const startPercent = (seg.start / videoDuration) * 100;
+            const endPercent = (seg.end / videoDuration) * 100;
+            const widthPercent = endPercent - startPercent;
+            const isSelected = selectedSegmentIndex === i;
+            const color = colors[i % colors.length];
+
+            return `
+          <div class="trim-region ${isSelected ? 'selected' : ''}"
+               data-segment="${i}"
+               style="left: ${startPercent}%; width: ${widthPercent}%; border-color: ${color}; background: ${color}33;">
+            ${i + 1}
+          </div>
+          <div class="trim-handle"
+               data-segment="${i}"
+               data-handle="start"
+               style="left: ${startPercent}%; background: ${color};">
+          </div>
+          <div class="trim-handle"
+               data-segment="${i}"
+               data-handle="end"
+               style="left: ${endPercent}%; background: ${color};">
+          </div>
+        `;
+          })
+          .join('');
+
+        // Attach drag listeners to handles and regions
+        attachDragListeners();
+      }
+
+      // Attach drag event listeners to handles and regions
+      function attachDragListeners() {
+        // Handle dragging
+        const handles = document.querySelectorAll('.trim-handle');
+        handles.forEach((handle) => {
+          handle.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            isDragging = true;
+            dragSegmentIndex = parseInt(handle.dataset.segment);
+            dragHandleType = handle.dataset.handle;
+            handle.classList.add('dragging');
+
+            // Prevent text selection while dragging
+            e.preventDefault();
+          });
+        });
+
+        // Segment (region) dragging
+        const regions = document.querySelectorAll('.trim-region');
+        regions.forEach((region) => {
+          region.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            isDragging = true;
+            dragSegmentIndex = parseInt(region.dataset.segment);
+            dragHandleType = 'segment';
+            dragStartX = e.clientX;
+            const seg = segments[dragSegmentIndex];
+            dragStartSegment = { start: seg.start, end: seg.end };
+            region.classList.add('dragging');
+
+            // Prevent text selection while dragging
+            e.preventDefault();
+          });
+        });
+      }
+
+      // Global mouse move handler
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging || dragSegmentIndex === null || !videoDuration) return;
+
+        const rect = timeline.getBoundingClientRect();
+        const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+        const percent = x / rect.width;
+        const time = percent * videoDuration;
+
+        const segment = segments[dragSegmentIndex];
+
+        if (dragHandleType === 'start') {
+          // Dragging start handle
+          if (time < segment.end - 0.5) {
+            segment.start = Math.max(0, time);
+            preview.currentTime = segment.start; // Scrub video in real-time!
+          }
+        } else if (dragHandleType === 'end') {
+          // Dragging end handle
+          if (time > segment.start + 0.5) {
+            segment.end = Math.min(videoDuration, time);
+            preview.currentTime = segment.end; // Scrub video in real-time!
+          }
+        } else if (dragHandleType === 'segment') {
+          // Dragging entire segment
+          const deltaX = e.clientX - dragStartX;
+          const deltaPercent = deltaX / rect.width;
+          const deltaTime = deltaPercent * videoDuration;
+
+          const duration = dragStartSegment.end - dragStartSegment.start;
+          let newStart = dragStartSegment.start + deltaTime;
+          let newEnd = dragStartSegment.end + deltaTime;
+
+          // Keep segment within bounds
+          if (newStart < 0) {
+            newStart = 0;
+            newEnd = duration;
+          } else if (newEnd > videoDuration) {
+            newEnd = videoDuration;
+            newStart = videoDuration - duration;
+          }
+
+          segment.start = newStart;
+          segment.end = newEnd;
+
+          // Scrub to middle of segment
+          preview.currentTime = (newStart + newEnd) / 2;
+        }
+
+        renderTimeline();
+        renderSegments();
+        updateCommands();
+      });
+
+      // Global mouse up handler
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          dragSegmentIndex = null;
+          dragHandleType = null;
+          dragStartX = null;
+          dragStartSegment = null;
+
+          // Remove dragging class from all handles and regions
+          document.querySelectorAll('.trim-handle').forEach((h) => h.classList.remove('dragging'));
+          document.querySelectorAll('.trim-region').forEach((r) => r.classList.remove('dragging'));
+        }
+      });
+
+      // Update stats
+      function updateStats() {
+        document.getElementById('statSegments').textContent = segments.length;
+      }
+
+      // Select export mode
+      window.selectMode = (mode) => {
+        exportMode = mode;
+
+        // Update UI
+        document.getElementById('modeConcatBtn').classList.toggle('active', mode === 'concat');
+        document.getElementById('modeSplitBtn').classList.toggle('active', mode === 'split');
+
+        document.getElementById('concatCommands').style.display =
+          mode === 'concat' ? 'block' : 'none';
+        document.getElementById('splitCommands').style.display =
+          mode === 'split' ? 'block' : 'none';
+      };
+
+      // Generate commands
+      function updateCommands() {
+        if (!currentFile || segments.length === 0) {
+          document.getElementById('concatCommand').textContent =
+            '// Add segments to generate command';
+          document.getElementById('splitCommand').textContent =
+            '// Add segments to generate commands';
+          return;
+        }
+
+        const inputFile = currentFile.name;
+        const baseName = inputFile.replace(/\.[^/.]+$/, '');
+        const ext = inputFile.match(/\.[^/.]+$/)?.[0] || '.mp4';
+
+        // Generate concat command
+        const videoFilters = segments
+          .map(
+            (seg, i) =>
+              `[0:v]trim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},setpts=PTS-STARTPTS[v${i}]`
+          )
+          .join('; ');
+
+        const audioFilters = segments
+          .map(
+            (seg, i) =>
+              `[0:a]atrim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},asetpts=PTS-STARTPTS[a${i}]`
+          )
+          .join('; ');
+
+        const concatInputs = segments.map((_, i) => `[v${i}][a${i}]`).join('');
+        const concatFilter = `${concatInputs}concat=n=${segments.length}:v=1:a=1[outv][outa]`;
+
+        const concatCmd = `ffmpeg -i "${inputFile}" -filter_complex "${videoFilters}; ${audioFilters}; ${concatFilter}" -map "[outv]" -map "[outa]" "${baseName}_merged${ext}"`;
+
+        document.getElementById('concatCommand').textContent = concatCmd;
+
+        // Generate split commands
+        const splitCmds = segments
+          .map((seg, i) => {
+            const duration = seg.end - seg.start;
+            return `ffmpeg -ss ${formatTimeFFmpeg(seg.start)} -t ${duration.toFixed(2)} -i "${inputFile}" -c copy "${baseName}_segment${i + 1}${ext}"`;
+          })
+          .join('\n\n');
+
+        document.getElementById('splitCommand').textContent = splitCmds;
+      }
+
+      // Copy command (fixed to receive event properly)
+      window.copyCommand = async (type, event) => {
+        let cmd = '';
+
+        if (type === 'concat') {
+          cmd = document.getElementById('concatCommand').textContent;
+        } else if (type === 'split') {
+          cmd = document.getElementById('splitCommand').textContent;
+        } else if (type === 'voiceover') {
+          cmd = document.getElementById('voiceoverCommand').textContent;
+        }
+
+        try {
+          await navigator.clipboard.writeText(cmd);
+          const btn = event ? event.target : null;
+          if (btn) {
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+              btn.textContent = originalText;
+              btn.classList.remove('copied');
+            }, 2000);
+          }
+        } catch (err) {
+          alert('Failed to copy. Please select and copy manually.\n\nError: ' + err.message);
+          console.error('Copy error:', err);
+        }
+      };
+
+      // Marker functions
+      window.addMarker = () => {
+        const name = prompt(
+          'Enter marker name (e.g., "Intro", "Kill #1", "Boss Fight"):',
+          `Marker ${markers.length + 1}`
+        );
+        if (!name) return;
+
+        const time = preview.currentTime;
+        markers.push({ name, time });
+        renderMarkers();
+      };
+
+      function removeMarker(index) {
+        if (confirm(`Delete marker "${markers[index].name}"?`)) {
+          markers.splice(index, 1);
+          renderMarkers();
+        }
+      }
+
+      function jumpToMarker(index) {
+        preview.currentTime = markers[index].time;
+      }
+
+      function renderMarkers() {
+        const markersList = document.getElementById('markersList');
+        const timelineMarkers = document.getElementById('timelineMarkers');
+
+        if (markers.length === 0) {
+          markersList.style.display = 'none';
+          timelineMarkers.innerHTML = '';
+          return;
+        }
+
+        markersList.style.display = 'block';
+
+        // Render list
+        markersList.innerHTML = markers
+          .map(
+            (marker, i) => `
+        <div class="marker-item">
+          <div class="marker-name">${marker.name}</div>
+          <div class="marker-time">${formatTime(marker.time)}</div>
+          <button class="secondary small" onclick="jumpToMarker(${i})">Go</button>
+          <button class="danger small" onclick="removeMarker(${i})">🗑️</button>
+        </div>
+      `
+          )
+          .join('');
+
+        // Render timeline markers
+        timelineMarkers.innerHTML = markers
+          .map((marker, i) => {
+            const percent = (marker.time / videoDuration) * 100;
+            return `
+          <div class="marker" style="left: ${percent}%;" onclick="jumpToMarker(${i})" title="${marker.name} - ${formatTime(marker.time)}">
+            <div class="marker-label">${marker.name}</div>
+          </div>
+        `;
+          })
+          .join('');
+      }
+
+      // Voiceover functions
+      window.addVoiceoverTrack = () => {
+        const trackId = nextTrackId++;
+        const track = {
+          id: trackId,
+          startTime: preview.currentTime,
+          startMarker: null,
+          blob: null,
+          filename: `voiceover_${trackId}.webm`,
+        };
+
+        voiceoverTracks.push(track);
+        renderVoiceoverTracks();
+      };
+
+      function removeVoiceoverTrack(trackId) {
+        const index = voiceoverTracks.findIndex((t) => t.id === trackId);
+        if (index >= 0 && confirm('Delete this voiceover track?')) {
+          voiceoverTracks.splice(index, 1);
+          renderVoiceoverTracks();
+          updateVoiceoverCommand();
+        }
+      }
+
+      function renderVoiceoverTracks() {
+        const container = document.getElementById('voiceoverTracks');
+
+        if (voiceoverTracks.length === 0) {
+          container.innerHTML =
+            '<p style="color: #8b949e; text-align: center; padding: 20px;">No voiceover tracks yet. Click "Add Voiceover Track" to start.</p>';
+          document.getElementById('voiceoverCommandSection').style.display = 'none';
+          return;
+        }
+
+        container.innerHTML = voiceoverTracks
+          .map((track) => {
+            const isRecording = currentRecordingTrackId === track.id;
+            const hasRecording = track.blob !== null;
+
+            return `
+          <div class="voiceover-track">
+            <div class="voiceover-track-header">
+              <div class="voiceover-track-number">${track.id}</div>
+              <div style="flex: 1;">
+                <strong style="color: #c9d1d9;">Track ${track.id}</strong>
+                <div style="color: #8b949e; font-size: 13px;">
+                  Start: ${track.startMarker || formatTime(track.startTime)}
+                </div>
+              </div>
+              <button class="danger small" onclick="removeVoiceoverTrack(${track.id})">🗑️</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+              <div class="control-group">
+                <label style="font-size: 13px;">Start Time:</label>
+                <select onchange="setVoiceoverStart(${track.id}, this.value)" style="padding: 8px; background: #0d1117; color: #e0e0e0; border: 1px solid #30363d; border-radius: 4px;">
+                  <option value="time:${track.startTime}">${formatTime(track.startTime)}</option>
+                  ${markers.map((m, i) => `<option value="marker:${i}" ${track.startMarker === m.name ? 'selected' : ''}>${m.name} (${formatTime(m.time)})</option>`).join('')}
+                </select>
+              </div>
+              <div class="control-group">
+                <label style="font-size: 13px;">Actions:</label>
+                <button onclick="setCurrentVoiceoverTrack(${track.id})" class="secondary small">📍 Set to Current Time</button>
+              </div>
+            </div>
+
+            ${
+              !hasRecording
+                ? `
+              <div class="recording-controls">
+                ${
+                  !isRecording
+                    ? `
+                  <button onclick="startRecordingTrack(${track.id})" class="success small">🎤 Start Recording</button>
+                `
+                    : `
+                  <button onclick="stopRecordingTrack(${track.id})" class="danger small">⏹️ Stop Recording</button>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="recording-indicator"></div>
+                    <span style="color: #f85149; font-weight: 600;">Recording...</span>
+                    <span id="recordingTime${track.id}">00:00</span>
+                  </div>
+                `
+                }
+              </div>
+            `
+                : `
+              <audio controls src="${URL.createObjectURL(track.blob)}" style="width: 100%; margin: 10px 0;"></audio>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="downloadVoiceoverTrack(${track.id})" class="success small">💾 Download ${track.filename}</button>
+                <button onclick="reRecordTrack(${track.id})" class="secondary small">🔄 Re-record</button>
+              </div>
+            `
+            }
+          </div>
+        `;
+          })
+          .join('');
+
+        // Show command section if any tracks have recordings
+        const hasRecordings = voiceoverTracks.some((t) => t.blob !== null);
+        document.getElementById('voiceoverCommandSection').style.display = hasRecordings
+          ? 'block'
+          : 'none';
+      }
+
+      function setVoiceoverStart(trackId, value) {
+        const track = voiceoverTracks.find((t) => t.id === trackId);
+        if (!track) return;
+
+        if (value.startsWith('marker:')) {
+          const markerIndex = parseInt(value.split(':')[1]);
+          track.startMarker = markers[markerIndex].name;
+          track.startTime = markers[markerIndex].time;
+        } else {
+          const time = parseFloat(value.split(':')[1]);
+          track.startMarker = null;
+          track.startTime = time;
+        }
+
+        renderVoiceoverTracks();
+        updateVoiceoverCommand();
+      }
+
+      window.setCurrentVoiceoverTrack = (trackId) => {
+        const track = voiceoverTracks.find((t) => t.id === trackId);
+        if (!track) return;
+
+        track.startTime = preview.currentTime;
+        track.startMarker = null;
+        renderVoiceoverTracks();
+        updateVoiceoverCommand();
+      };
+
+      window.startRecordingTrack = async (trackId) => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          currentRecordingTrackId = trackId;
+
+          mediaRecorder.ondataavailable = (e) => {
+            audioChunks.push(e.data);
+          };
+
+          mediaRecorder.onstop = () => {
+            const track = voiceoverTracks.find((t) => t.id === trackId);
+            if (track) {
+              track.blob = new Blob(audioChunks, { type: 'audio/webm' });
+            }
+            currentRecordingTrackId = null;
+            clearInterval(recordingInterval);
+            renderVoiceoverTracks();
+            updateVoiceoverCommand();
+          };
+
+          mediaRecorder.start();
+          recordingStartTime = Date.now();
+
+          renderVoiceoverTracks();
+
+          // Update recording time
+          recordingInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            const timeEl = document.getElementById(`recordingTime${trackId}`);
+            if (timeEl) {
+              timeEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+          }, 1000);
+        } catch (err) {
+          alert('Microphone access denied or not available: ' + err.message);
+        }
+      };
+
+      window.stopRecordingTrack = (trackId) => {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+          mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+        }
+      };
+
+      window.downloadVoiceoverTrack = (trackId) => {
+        const track = voiceoverTracks.find((t) => t.id === trackId);
+        if (!track || !track.blob) return;
+
+        const url = URL.createObjectURL(track.blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = track.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert(`Downloaded ${track.filename}! Place it in the same folder as your video.`);
+      };
+
+      window.reRecordTrack = (trackId) => {
+        const track = voiceoverTracks.find((t) => t.id === trackId);
+        if (!track) return;
+
+        if (confirm('Delete this recording and record again?')) {
+          track.blob = null;
+          renderVoiceoverTracks();
+          updateVoiceoverCommand();
+        }
+      };
+
+      window.startRecording = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = (e) => {
+            audioChunks.push(e.data);
+          };
+
+          mediaRecorder.onstop = () => {
+            voiceoverBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioUrl = URL.createObjectURL(voiceoverBlob);
+            document.getElementById('voiceoverAudio').src = audioUrl;
+            document.getElementById('voiceoverPreview').style.display = 'block';
+            updateVoiceoverCommand();
+          };
+
+          mediaRecorder.start();
+          recordingStartTime = Date.now();
+
+          // Update UI
+          document.getElementById('recordBtn').style.display = 'none';
+          document.getElementById('stopBtn').style.display = 'inline-flex';
+          document.getElementById('recordingIndicator').style.display = 'flex';
+
+          // Update recording time
+          recordingInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            document.getElementById('recordingTime').textContent =
+              `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+          }, 1000);
+        } catch (err) {
+          alert('Microphone access denied or not available: ' + err.message);
+        }
+      };
+
+      window.stopRecording = () => {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+          mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+
+          clearInterval(recordingInterval);
+
+          // Update UI
+          document.getElementById('recordBtn').style.display = 'inline-flex';
+          document.getElementById('stopBtn').style.display = 'none';
+          document.getElementById('recordingIndicator').style.display = 'none';
+        }
+      };
+
+      window.downloadVoiceover = () => {
+        if (!voiceoverBlob) return;
+
+        const url = URL.createObjectURL(voiceoverBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'voiceover.webm';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert(
+          'Voiceover downloaded! Place it in the same folder as your video before running the mix command.'
+        );
+      };
+
+      window.resetVoiceover = () => {
+        if (confirm('Delete this recording and start over?')) {
+          voiceoverBlob = null;
+          audioChunks = [];
+          document.getElementById('voiceoverPreview').style.display = 'none';
+          document.getElementById('voiceoverAudio').src = '';
+        }
+      };
+
+      function updateVoiceoverCommand() {
+        const recordedTracks = voiceoverTracks.filter((t) => t.blob !== null);
+        if (!currentFile || recordedTracks.length === 0) return;
+
+        const inputFile = currentFile.name;
+        const baseName = inputFile.replace(/\.[^/.]+$/, '');
+        const ext = inputFile.match(/\.[^/.]+$/)?.[0] || '.mp4';
+
+        // Build ffmpeg command for multiple voiceover tracks
+        const inputs = [
+          `-i "${inputFile}"`,
+          ...recordedTracks.map((t) => `-i "${t.filename}"`),
+        ].join(' ');
+
+        // Build filter complex
+        const filters = [];
+
+        // Original audio at reduced volume
+        filters.push('[0:a]volume=0.3[orig]');
+
+        // Each voiceover track with delay
+        recordedTracks.forEach((track, i) => {
+          const delayMs = Math.round(track.startTime * 1000);
+          const inputIndex = i + 1; // +1 because input 0 is the video
+          filters.push(`[${inputIndex}:a]adelay=${delayMs}|${delayMs},volume=1.0[vo${i}]`);
+        });
+
+        // Mix all audio tracks
+        const mixInputs = ['[orig]', ...recordedTracks.map((_, i) => `[vo${i}]`)].join('');
+        const mixCount = recordedTracks.length + 1;
+        filters.push(`${mixInputs}amix=inputs=${mixCount}:duration=first[audio]`);
+
+        const filterComplex = filters.join(';');
+
+        const cmd = `ffmpeg ${inputs} -filter_complex "${filterComplex}" -map 0:v -map "[audio]" -c:v copy -c:a aac "${baseName}_with_voiceovers${ext}"`;
+
+        document.getElementById('voiceoverCommand').textContent = cmd;
+      }
+    </script>
+  </body>
+</html>

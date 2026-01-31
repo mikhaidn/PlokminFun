@@ -1,29 +1,30 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0);
+  useEffect(() => {
+    // Redirect to the working video editor
+    window.location.href = './trimmer-multi.html';
+  }, []);
 
   return (
     <div className="app">
       <header className="header">
         <h1>Light Vod Editor</h1>
-        <p className="subtitle">Part of the Plokmin Consortium</p>
+        <p className="subtitle">Redirecting to video editor...</p>
       </header>
 
       <main className="main">
         <div className="card">
-          <h2>Welcome! 👋</h2>
-          <p>This is your new experience scaffold.</p>
-          <button onClick={() => setCount(count + 1)}>Count: {count}</button>
-          <p className="hint">
-            Edit <code>src/App.tsx</code> to customize this page.
-          </p>
+          <p>If you are not redirected automatically, click below:</p>
+          <a href="./trimmer-multi.html" className="redirect-link">
+            Open Video Editor
+          </a>
         </div>
       </main>
 
       <footer className="footer">
-        <a href="/CardGames/">← Back to Plokmin Consortium</a>
+        <a href="/PlokminFun/">← Back to Plokmin Consortium</a>
       </footer>
     </div>
   );
