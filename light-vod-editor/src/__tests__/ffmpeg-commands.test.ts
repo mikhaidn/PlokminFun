@@ -3,13 +3,15 @@ import { generateConcatCommand, generateSplitCommands } from '../utils/ffmpeg-co
 
 describe('FFmpeg Command Generation', () => {
   describe('concat (merge segments)', () => {
-    it('merges single segment', () => {
+    it('single segment uses fast stream copy (no re-encoding)', () => {
       const cmd = generateConcatCommand('video.mp4', [{ start: 10, end: 20 }]);
 
-      expect(cmd).toContain('ffmpeg -i "video.mp4"');
-      expect(cmd).toContain('trim=start=10.00:end=20.00');
-      expect(cmd).toContain('concat=n=1:v=1:a=1');
-      expect(cmd).toContain('video_merged.mp4');
+      // Single segment should use -c copy optimization
+      expect(cmd).toContain('ffmpeg -ss 00:00:10.00 -t 10.00');
+      expect(cmd).toContain('-c copy');
+      expect(cmd).toContain('video.mp4'); // No _merged suffix for single segment
+      expect(cmd).not.toContain('filter_complex'); // Should NOT use filter_complex
+      expect(cmd).not.toContain('trim='); // Should NOT use trim filter
     });
 
     it('merges multiple segments', () => {

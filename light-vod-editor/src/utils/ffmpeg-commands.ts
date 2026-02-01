@@ -8,6 +8,8 @@ export interface Segment {
 
 /**
  * Generate FFmpeg concat command to merge multiple segments
+ * For single segment: uses fast -c copy (no re-encoding)
+ * For multiple segments: uses filter_complex (requires re-encoding)
  */
 export function generateConcatCommand(inputFile: string, segments: Segment[], outputName?: string): string {
   if (segments.length === 0) {
@@ -24,9 +26,17 @@ export function generateConcatCommand(inputFile: string, segments: Segment[], ou
   } else if (segments[0]?.name) {
     finalName = segments[0].name;
   } else {
-    finalName = `${baseName}_merged`;
+    finalName = segments.length === 1 ? baseName : `${baseName}_merged`;
   }
 
+  // OPTIMIZATION: Single segment = use fast stream copy (no re-encoding)
+  if (segments.length === 1) {
+    const seg = segments[0];
+    const duration = seg.end - seg.start;
+    return `ffmpeg -ss ${formatTimeFFmpeg(seg.start)} -t ${duration.toFixed(2)} -i "${inputFile}" -c copy "${finalName}${ext}"`;
+  }
+
+  // Multiple segments: use filter_complex to merge
   // Video filters: trim each segment
   const videoFilters = segments
     .map((seg, i) => `[0:v]trim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},setpts=PTS-STARTPTS[v${i}]`)

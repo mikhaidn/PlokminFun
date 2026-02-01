@@ -7,4 +7,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
+  optimizeDeps: {
+    exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
+  },
 });
