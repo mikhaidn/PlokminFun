@@ -224,10 +224,10 @@ npm install <package> -w klondike-mvp
 npm install <package> -w shared
 ```
 
-**Build order matters (for card games):**
+**Shared library has no build step:**
+- `@plokmin/shared` is a no-emit source library — apps import its TypeScript source directly (via workspace link + Vite alias), so shared changes apply immediately. See [shared/README.md](shared/README.md).
 ```bash
-npm run build:shared   # Build shared first
-npm run build:pages    # Then build games
+npm run build:pages    # Build apps (build:shared is a no-op kept for ordering)
 ```
 
 **Dog tracker:** Standalone, no shared library dependency
@@ -329,7 +329,7 @@ Quick checklist:
 ## 🆘 Need Help?
 
 **Common issues:**
-- Build failing? `npm run build:shared` (for card games)
+- Build failing? Run `npm install` (shared needs no build — it's a no-emit source library)
 - Tests failing? Check you're in right directory
 - Import errors? Check tsconfig path mappings
 - Type errors? Run `npm run lint` for details

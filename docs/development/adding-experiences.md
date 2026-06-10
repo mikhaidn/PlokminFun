@@ -294,9 +294,9 @@ rm -rf my-experience-name
 
 ### Build Fails: "Cannot find module"
 ```bash
-# Reinstall dependencies
+# Reinstall dependencies (restores the @plokmin/shared workspace link;
+# shared itself needs no build — it's a no-emit source library)
 npm install
-npm run build:shared  # If using @plokmin/shared
 npm run build -w my-experience-name
 ```
 
