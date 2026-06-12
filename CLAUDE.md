@@ -153,7 +153,8 @@ See [docs/deployment/github-pages.md](docs/deployment/github-pages.md) for detai
 ## 🆘 Common Issues
 
 **Build failing?**
-- Check if shared library is built: `npm run build:shared`
+- Note: `@plokmin/shared` is a no-emit source library (no build step) — see [shared/README.md](shared/README.md)
+- Check the workspace link exists: `npm install` from the repo root
 
 **Tests failing?**
 - Make sure you're in the right directory

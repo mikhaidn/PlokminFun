@@ -22,14 +22,14 @@ npm run validate
 
 | Command | Description |
 |---------|-------------|
-| `npm run build` | Build everything (shared + all games) |
-| `npm run build:shared` | Build shared library only |
-| `npm run build:pages` | Build all games (requires shared built first) |
+| `npm run build` | Build everything (all apps) |
+| `npm run build:shared` | No-op (shared is a no-emit source library, kept for pipeline ordering) |
+| `npm run build:pages` | Build all apps |
+
+**Note:** `@plokmin/shared` is consumed as TypeScript source — it has no build step, and shared changes are picked up by apps immediately. See [shared/README.md](shared/README.md).
 
 **Typical workflow:**
 ```bash
-# During development
-npm run build:shared   # After changing shared library
 npm run build          # Before deployment
 ```
 
@@ -143,14 +143,11 @@ npm run dev:klondike
 ### Making Changes to Shared Library
 
 ```bash
-# 1. Make changes in shared/
-# 2. Rebuild shared
-npm run build:shared
-
-# 3. Test changes
+# 1. Make changes in shared/ (no rebuild needed — apps import the source directly)
+# 2. Test changes
 npm test
 
-# 4. Restart dev server (picks up changes)
+# 3. Dev servers pick up changes automatically (restart if stale)
 npm run dev:klondike
 ```
 
@@ -262,8 +259,8 @@ npm run test:watch
 
 **Solution:**
 ```bash
-# Always build shared first!
-npm run build:shared
+# Shared needs no build (no-emit source library) — check the workspace link
+npm install
 npm run build:pages
 ```
 
@@ -308,8 +305,7 @@ npm run validate            # Before commit
 
 **Working on shared library:**
 ```bash
-npm run build:shared        # Rebuild after changes
-npm test                    # Verify all games work
+npm test                    # Verify all games work (no rebuild needed)
 ```
 
 **Documentation:**

@@ -187,29 +187,23 @@ import { GameControls, useGameHistory } from '@plokmin/shared';
        └── klondike-mvp (depends on shared)
 ```
 
+### Distribution Decision: No-Emit Source Library
+
+**Decision (June 2026):** `@plokmin/shared` is a **no-emit source library** — apps import its TypeScript source directly. There is no compile step and no `dist/`; the shared `build` script is intentionally a no-op. Each app's Vite config aliases `@plokmin/shared` to `../shared/index.ts`, and the package's `main`/`types` point at `index.ts`.
+
+This means **there is no real build-order dependency**: changes to shared code are picked up immediately by every app's dev server, type check, and production build — no rebuild step required.
+
+The decision is deliberately easy to reverse if the library ever needs to be consumed outside the monorepo (e.g., published to npm). See [shared/README.md](../../shared/README.md) for the full rationale and reversal path.
+
 ### Build Order
 
-**Critical**: Must build shared library before building games:
+The root `build` script still runs `build:shared` before `build:pages`:
 
 ```bash
-# ✅ Correct order
-npm run build:shared     # Build shared library first
-npm run build:pages      # Then build games
-
-# Or use combined command
-npm run build            # Runs both in correct order
-
-# ❌ Wrong - will fail
-npm run build:pages      # Games can't find @plokmin/shared
+npm run build            # build:shared (no-op) → build:pages
 ```
 
-### Why Build Order Matters
-
-1. **TypeScript compilation** - Games need shared types
-2. **Module resolution** - Games import from `@plokmin/shared`
-3. **Vite bundling** - Games bundle shared components
-
-**Note**: During development (`npm run dev`), Vite handles this automatically. Build order only matters for production builds.
+`build:shared` is currently a no-op kept for pipeline ordering — if the library ever switches to emitting build artifacts, the root scripts and CI need no changes.
 
 ## Workspace Commands
 
@@ -273,10 +267,7 @@ npm test
 # Lint everything
 npm run lint
 
-# Build shared library (required before building games)
-npm run build:shared
-
-# Build all games
+# Build all games (shared needs no build — no-emit source library)
 npm run build:pages
 
 # Clean and reinstall
@@ -413,31 +404,20 @@ Always use `"*"` for local workspace dependencies:
 }
 ```
 
-### 3. Build Shared Before Games
+### 3. No Build Step for Shared
 
-Always build in dependency order:
-
-```bash
-# ✅ Correct
-npm run build:shared && npm run build:pages
-
-# ❌ Wrong
-npm run build:pages  # Will fail if shared not built
-```
+The shared library is consumed as TypeScript source (see [Distribution Decision](#distribution-decision-no-emit-source-library)) — there is nothing to build. Don't add a compile step or `dist/` output to `shared/` without revisiting that decision.
 
 ### 4. Test Changes Across Packages
 
 When changing shared library:
 
 ```bash
-# 1. Make changes to shared
+# 1. Make changes to shared (picked up by apps immediately — no rebuild)
 cd shared
 npm run test:watch
 
-# 2. Build shared
-npm run build
-
-# 3. Test in both games
+# 2. Test in both games
 cd ../freecell-mvp && npm test
 cd ../klondike-mvp && npm test
 ```
@@ -473,25 +453,18 @@ npm install react -w freecell-mvp
 
 **Problem**: Game can't find shared library
 
-**Solution**: Build shared library first
+**Solution**: The library is resolved via the workspace link and each app's Vite alias (`'@plokmin/shared': '../shared/index.ts'`) — not via a build. Check that:
 
 ```bash
-npm run build:shared
+npm install                       # Workspace link exists in node_modules
+grep "@plokmin/shared" <app>/vite.config.ts   # Alias is present
 ```
 
 ### 2. Changes to Shared Not Reflected
 
 **Problem**: Updated shared library but game doesn't see changes
 
-**Solution**: Rebuild shared library
-
-```bash
-cd shared
-npm run build
-
-# Or from root
-npm run build:shared
-```
+**Solution**: Shared code is imported as source, so changes apply immediately — no rebuild exists. If a dev server seems stale, restart it; for production output, rebuild the app itself (`npm run build -w <app>`).
 
 ### 3. Dependency Version Conflicts
 
@@ -517,12 +490,6 @@ npm install react@18.2.0 -w klondike-mvp
 ```typescript
 // shared/index.ts
 export type { Card, Suit, Value } from './types';
-```
-
-And build shared library:
-
-```bash
-npm run build:shared
 ```
 
 ### 5. Circular Dependencies
