@@ -26,7 +26,7 @@ PlokminFun/
 ├── shared/           # @plokmin/shared library (reusable components/hooks)
 ├── freecell-mvp/     # FreeCell game
 ├── klondike-mvp/     # Klondike game
-├── index.html        # Root landing page (GitHub Pages)
+├── scripts/site/     # Site build: app discovery + generated landing page
 ├── docs/             # Documentation
 └── rfcs/             # Design documents (Request for Comments)
 ```
@@ -145,7 +145,7 @@ npm run validate       # Runs: typecheck + lint + test + build
 
 - **Live site:** https://mikhaidn.github.io/PlokminFun/
 - **Deployment:** Automatic on push to `main`
-- **Root page:** `/index.html` (game selector landing page)
+- **Root page:** landing page generated at deploy time from each app's `plokmin` package.json block (`scripts/site/generate-landing.mjs`)
 - **CI/CD:** `.github/workflows/deploy.yml`
 
 See [docs/deployment/github-pages.md](docs/deployment/github-pages.md) for details.

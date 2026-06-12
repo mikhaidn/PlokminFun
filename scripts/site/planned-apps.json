@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Spider Solitaire",
+    "icon": "🂱",
+    "description": "Arrange cards in descending sequences. Master one, two, or four suits!"
+  },
+  {
+    "title": "Pyramid",
+    "icon": "♠️",
+    "description": "Match pairs of cards that add up to 13. Clear the pyramid to win!"
+  },
+  {
+    "title": "Tri-Peaks",
+    "icon": "♦️",
+    "description": "Clear three peaks of cards by matching ranks. Fast-paced solitaire action!"
+  },
+  {
+    "title": "Yukon",
+    "icon": "♣️",
+    "description": "FreeCell meets Klondike. Move face-up sequences without using free cells!"
+  }
+]

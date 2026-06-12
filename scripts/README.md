@@ -21,10 +21,23 @@ Helper scripts for the Plokmin Consortium monorepo.
 - ✅ Full React + TypeScript + Vite PWA setup
 - ✅ Default icon, manifest, service worker
 - ✅ Integrated into monorepo (workspaces, scripts)
-- ✅ Added to landing page (index.html)
+- ✅ Discovered automatically by deploy + landing page (via the `plokmin` package.json block)
 - ✅ Ready to deploy to GitHub Pages immediately
 
 **📖 Full documentation:** [docs/development/adding-experiences.md](../docs/development/adding-experiences.md)
+
+---
+
+## 🌐 site/ - Site Build & App Discovery
+
+The `scripts/site/` directory makes apps **discovered, not registered** — the deploy workflow and landing page never need editing when an app is added:
+
+- **`apps.mjs`** — discovers deployable apps: every workspace whose `package.json` has a `plokmin` block (title, icon, description, optional slug/cta/order)
+- **`generate-landing.mjs`** — generates the landing page from app metadata (+ `planned-apps.json` for coming-soon cards); run with a file argument to preview
+- **`build-site.mjs`** (`npm run build:site`) — builds every deployable app, copies each `dist/` to `_site/<slug>/`, generates `_site/index.html`; this is exactly what the deploy workflow runs
+- **`check-site.mjs`** (`npm run check:site`) — integrity check, runs in `validate` and CI; fails on missing build scripts, duplicate slugs, or a vite base path that doesn't match `<basePath>/<slug>/`
+
+The site base path (`/PlokminFun`) lives in one place: the `plokmin.basePath` field of the root `package.json`.
 
 ---
 

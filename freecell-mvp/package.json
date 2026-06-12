@@ -11,7 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "npm run build && gh-pages -d dist",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@plokmin/shared": "*"
@@ -32,5 +34,13 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite-plugin-pwa": "^1.2.0"
+  },
+  "plokmin": {
+    "slug": "freecell",
+    "title": "FreeCell",
+    "icon": "🃏",
+    "description": "Strategic solitaire where every card is visible. Plan your moves carefully to build the foundations!",
+    "cta": "Play Now",
+    "order": 4
   }
 }

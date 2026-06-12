@@ -69,9 +69,12 @@ npm run build > /dev/null 2>&1 || {
 }
 
 # 6. Verify all dist folders exist (deployment sanity check)
+# Deployable apps are discovered from package.json plokmin blocks, so this
+# list can never go stale when apps are added (see scripts/site/apps.mjs)
 echo "  ✓ Verifying deployment artifacts..."
+DEPLOYABLE=$(node -e "import('./scripts/site/apps.mjs').then((m) => console.log(m.getApps().map((a) => a.dir).join(' ')))")
 MISSING_DIST=""
-for workspace in freecell-mvp klondike-mvp dog-care-tracker pet-care; do
+for workspace in $DEPLOYABLE; do
   if [ ! -d "$workspace/dist" ]; then
     MISSING_DIST="$MISSING_DIST $workspace"
   fi

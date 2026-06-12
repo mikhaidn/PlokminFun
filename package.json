@@ -18,13 +18,13 @@
     "test:watch": "npm run test:watch -ws --if-present",
     "test:coverage": "npm run test:coverage -ws --if-present",
     "lint": "npm run lint -ws --if-present",
-    "lint:fix": "npm run lint -w klondike-mvp -- --fix && npm run lint -w freecell-mvp -- --fix && npm run lint -w dog-care-tracker -- --fix && npm run lint -w pet-care -- --fix && npm run lint -w light-vod-editor -- --fix",
+    "lint:fix": "npm run lint:fix -ws --if-present",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit -p klondike-mvp/tsconfig.json && tsc --noEmit -p freecell-mvp/tsconfig.json && tsc --noEmit -p dog-care-tracker/tsconfig.json && tsc --noEmit -p pet-care/tsconfig.json && tsc --noEmit -p light-vod-editor/tsconfig.json",
+    "typecheck": "npm run typecheck -ws --if-present",
     "typecheck:watch": "tsc --noEmit --watch -p klondike-mvp/tsconfig.json",
     "check": "bash scripts/check-code-quality.sh",
-    "validate": "npm run format:check && npm run typecheck && npm run lint && npm test && npm run build",
+    "validate": "npm run format:check && npm run check:site && npm run typecheck && npm run lint && npm test && npm run build",
     "setup-hooks": "ln -sf ../../scripts/pre-commit.sh .git/hooks/pre-commit && ln -sf ../../scripts/pre-push.sh .git/hooks/pre-push && chmod +x .git/hooks/pre-commit && chmod +x .git/hooks/pre-push && echo '✅ Git hooks installed (pre-commit + pre-push)!'",
     "clean": "rm -rf */node_modules */dist */.turbo && npm install",
     "clean:build": "rm -rf */dist",
@@ -43,7 +43,9 @@
     "rfc:list": "cd rfcs && ./scripts/list-rfcs.sh",
     "rfc:new": "cd rfcs && ./scripts/new-rfc.sh",
     "rfc:status": "cd rfcs && ./scripts/update-status.sh",
-    "dev:lightvoded": "npm run dev -w light-vod-editor"
+    "dev:lightvoded": "npm run dev -w light-vod-editor",
+    "check:site": "node scripts/site/check-site.mjs",
+    "build:site": "node scripts/site/build-site.mjs"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -60,5 +62,8 @@
     "vite": "^5.4.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
+  },
+  "plokmin": {
+    "basePath": "/PlokminFun"
   }
 }
