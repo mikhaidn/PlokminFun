@@ -11,8 +11,18 @@ interface SegmentListProps {
   onUpdate: (index: number, updates: Partial<Segment>) => void;
 }
 
-export function SegmentList({ segments, selectedIndex, onSelect, onPreview, onDelete, onUpdate }: SegmentListProps) {
-  const [editingField, setEditingField] = useState<{ index: number; field: 'name' | 'start' | 'end' | 'duration' } | null>(null);
+export function SegmentList({
+  segments,
+  selectedIndex,
+  onSelect,
+  onPreview,
+  onDelete,
+  onUpdate,
+}: SegmentListProps) {
+  const [editingField, setEditingField] = useState<{
+    index: number;
+    field: 'name' | 'start' | 'end' | 'duration';
+  } | null>(null);
   const [editValue, setEditValue] = useState('');
 
   if (segments.length === 0) {
@@ -25,7 +35,11 @@ export function SegmentList({ segments, selectedIndex, onSelect, onPreview, onDe
     );
   }
 
-  const startEdit = (index: number, field: 'name' | 'start' | 'end' | 'duration', currentValue: string) => {
+  const startEdit = (
+    index: number,
+    field: 'name' | 'start' | 'end' | 'duration',
+    currentValue: string
+  ) => {
     setEditingField({ index, field });
     setEditValue(currentValue);
   };
@@ -110,7 +124,10 @@ export function SegmentList({ segments, selectedIndex, onSelect, onPreview, onDe
                   />
                 ) : (
                   <div
-                    onClick={(e) => { e.stopPropagation(); startEdit(i, 'name', seg.name || ''); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEdit(i, 'name', seg.name || '');
+                    }}
                     style={{
                       cursor: 'text',
                       padding: '6px 8px',
@@ -155,7 +172,10 @@ export function SegmentList({ segments, selectedIndex, onSelect, onPreview, onDe
                 ) : (
                   <small
                     className="segment-duration"
-                    onClick={(e) => { e.stopPropagation(); startEdit(i, 'start', seg.start.toFixed(2)); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEdit(i, 'start', seg.start.toFixed(2));
+                    }}
                     style={{ cursor: 'pointer', textDecoration: 'underline dotted' }}
                     title="Click to edit"
                   >
@@ -191,7 +211,10 @@ export function SegmentList({ segments, selectedIndex, onSelect, onPreview, onDe
                 ) : (
                   <small
                     className="segment-duration"
-                    onClick={(e) => { e.stopPropagation(); startEdit(i, 'end', seg.end.toFixed(2)); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEdit(i, 'end', seg.end.toFixed(2));
+                    }}
                     style={{ cursor: 'pointer', textDecoration: 'underline dotted' }}
                     title="Click to edit"
                   >
@@ -227,7 +250,10 @@ export function SegmentList({ segments, selectedIndex, onSelect, onPreview, onDe
                 ) : (
                   <small
                     className="segment-duration"
-                    onClick={(e) => { e.stopPropagation(); startEdit(i, 'duration', duration.toFixed(2)); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEdit(i, 'duration', duration.toFixed(2));
+                    }}
                     style={{ cursor: 'pointer', textDecoration: 'underline dotted' }}
                     title="Click to edit"
                   >
@@ -239,13 +265,19 @@ export function SegmentList({ segments, selectedIndex, onSelect, onPreview, onDe
             <div className="segment-actions">
               <button
                 className="secondary small"
-                onClick={(e) => { e.stopPropagation(); onPreview(i); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPreview(i);
+                }}
               >
                 ▶️
               </button>
               <button
                 className="danger small"
-                onClick={(e) => { e.stopPropagation(); onDelete(i); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(i);
+                }}
               >
                 🗑️
               </button>

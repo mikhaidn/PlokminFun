@@ -97,7 +97,8 @@ export async function processConcatMode(
     onProgress?.({
       phase: 'processing',
       progress: 10,
-      message: segments.length === 1 ? 'Extracting segment (fast mode)...' : 'Building filter chain...',
+      message:
+        segments.length === 1 ? 'Extracting segment (fast mode)...' : 'Building filter chain...',
     });
 
     // OPTIMIZATION: Single segment uses stream copy (no re-encoding)
@@ -112,20 +113,30 @@ export async function processConcatMode(
       });
 
       await ffmpeg.exec([
-        '-ss', seg.start.toFixed(2),
-        '-t', duration.toFixed(2),
-        '-i', 'input.mp4',
-        '-c', 'copy',
+        '-ss',
+        seg.start.toFixed(2),
+        '-t',
+        duration.toFixed(2),
+        '-i',
+        'input.mp4',
+        '-c',
+        'copy',
         'output.mp4',
       ]);
     } else {
       // Multiple segments: use filter_complex
       const videoFilters = segments
-        .map((seg, i) => `[0:v]trim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},setpts=PTS-STARTPTS[v${i}]`)
+        .map(
+          (seg, i) =>
+            `[0:v]trim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},setpts=PTS-STARTPTS[v${i}]`
+        )
         .join('; ');
 
       const audioFilters = segments
-        .map((seg, i) => `[0:a]atrim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},asetpts=PTS-STARTPTS[a${i}]`)
+        .map(
+          (seg, i) =>
+            `[0:a]atrim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},asetpts=PTS-STARTPTS[a${i}]`
+        )
         .join('; ');
 
       const concatInputs = segments.map((_, i) => `[v${i}][a${i}]`).join('');
@@ -141,10 +152,14 @@ export async function processConcatMode(
 
       // Execute FFmpeg command
       await ffmpeg.exec([
-        '-i', 'input.mp4',
-        '-filter_complex', filterComplex,
-        '-map', '[outv]',
-        '-map', '[outa]',
+        '-i',
+        'input.mp4',
+        '-filter_complex',
+        filterComplex,
+        '-map',
+        '[outv]',
+        '-map',
+        '[outa]',
         'output.mp4',
       ]);
     }
@@ -219,10 +234,14 @@ export async function processSplitMode(
 
       // Use -c copy for fast extraction (no re-encoding)
       await ffmpeg.exec([
-        '-ss', seg.start.toFixed(2),
-        '-t', duration.toFixed(2),
-        '-i', 'input.mp4',
-        '-c', 'copy',
+        '-ss',
+        seg.start.toFixed(2),
+        '-t',
+        duration.toFixed(2),
+        '-i',
+        'input.mp4',
+        '-c',
+        'copy',
         outputName,
       ]);
 

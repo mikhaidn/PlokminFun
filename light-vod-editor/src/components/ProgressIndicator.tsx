@@ -6,10 +6,7 @@ interface ProgressIndicatorProps {
   onCancel?: () => void;
 }
 
-export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
-  progress,
-  onCancel,
-}) => {
+export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({ progress, onCancel }) => {
   const getStatusColor = () => {
     switch (progress.phase) {
       case 'loading':
@@ -60,9 +57,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '24px' }}>{getStatusIcon()}</span>
-          <span style={{ color: '#e5e7eb', fontWeight: 'bold' }}>
-            {progress.message}
-          </span>
+          <span style={{ color: '#e5e7eb', fontWeight: 'bold' }}>{progress.message}</span>
         </div>
         {progress.phase === 'processing' && onCancel && (
           <button

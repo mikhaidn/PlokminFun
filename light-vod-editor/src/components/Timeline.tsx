@@ -16,7 +16,16 @@ const SEGMENT_COLORS = ['#4a9eff', '#3fb950', '#d29922', '#f85149', '#bc8cff'];
 
 type DragType = 'start' | 'end' | 'segment' | null;
 
-export function Timeline({ duration, currentTime, segments, selectedIndex, onSeek, onSegmentUpdate, onAddSegment, videoRef }: TimelineProps) {
+export function Timeline({
+  duration,
+  currentTime,
+  segments,
+  selectedIndex,
+  onSeek,
+  onSegmentUpdate,
+  onAddSegment,
+  videoRef,
+}: TimelineProps) {
   const timelineRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState<{
     segmentIndex: number;

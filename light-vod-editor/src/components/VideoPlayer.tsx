@@ -30,11 +30,5 @@ export function VideoPlayer({ videoFile, onTimeUpdate, onVideoRef }: VideoPlayer
     return null;
   }
 
-  return (
-    <video
-      ref={videoRef}
-      controls
-      onTimeUpdate={handleTimeUpdate}
-    />
-  );
+  return <video ref={videoRef} controls onTimeUpdate={handleTimeUpdate} />;
 }
