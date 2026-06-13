@@ -21,8 +21,8 @@ A collection of interactive web experiences - each standalone, delightful, and m
 | **Dog Care Tracker** 🐕 | Productivity | ✅ Live | [Track](https://mikhaidn.github.io/PlokminFun/dog-care-tracker/) |
 | **FreeCell** 🃏 | Card Game | ✅ Live | [Play](https://mikhaidn.github.io/PlokminFun/freecell/) |
 | **Klondike** 🎴 | Card Game | ✅ Live | [Play](https://mikhaidn.github.io/PlokminFun/klondike/) |
+| **Spider Solitaire** 🕷️ | Card Game | ✅ Live | [Play](https://mikhaidn.github.io/PlokminFun/spider/) |
 | Habit Tracker | Productivity | 🚧 Planned | - |
-| Spider Solitaire | Card Game | 🚧 Planned | - |
 
 ---
 
@@ -36,6 +36,7 @@ Plokmin/
 ├── dog-care-tracker/    # Dog activity tracking PWA
 ├── freecell-mvp/        # FreeCell solitaire
 ├── klondike-mvp/        # Klondike solitaire
+├── spider-mvp/          # Spider solitaire
 └── index.html           # Landing page (experience selector)
 ```
 
@@ -156,8 +157,8 @@ git push
 - **Linting:** ESLint + Prettier, zero errors
 
 ### Experiences
-- **Live:** 3 (Dog Tracker, FreeCell, Klondike)
-- **Planned:** 3+ (Habit Tracker, Spider, Pyramid)
+- **Live:** 4 (Dog Tracker, FreeCell, Klondike, Spider)
+- **Planned:** 2+ (Habit Tracker, Pyramid)
 - **Architecture:** Monorepo with shared libraries
 
 ### Deployment
@@ -197,6 +198,7 @@ git push
 - Dog Tracker: `/dog-care-tracker/`
 - FreeCell: `/freecell/`
 - Klondike: `/klondike/`
+- Spider: `/spider/`
 
 ### Deployment Process
 1. Push to `main` branch
