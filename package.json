@@ -5,6 +5,7 @@
   "workspaces": [
     "freecell-mvp",
     "klondike-mvp",
+    "spider-mvp",
     "shared",
     "dog-care-tracker",
     "pet-care",
@@ -32,6 +33,7 @@
     "audit:fix": "npm audit fix --workspaces",
     "dev:freecell": "npm run dev -w freecell-mvp",
     "dev:klondike": "npm run dev -w klondike-mvp",
+    "dev:spider": "npm run dev -w spider-mvp",
     "dev:dog": "npm run dev -w dog-care-tracker",
     "dev:pet-care": "npm run dev -w pet-care",
     "docs": "cat DOCS.md",

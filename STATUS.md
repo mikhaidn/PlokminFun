@@ -18,6 +18,19 @@
 
 ## ✅ Recently Completed
 
+### Week of 2026-06-13
+
+**MILESTONE: Spider Solitaire Launched 🕷️**
+
+- [x] **Spider Solitaire (game #3)** ✅ COMPLETE
+  - New `spider-mvp` workspace built on the Klondike pattern and `@plokmin/shared`
+  - Two-deck (104-card) play with 1-suit, 2-suit, and 4-suit difficulty
+  - 10-column tableau, deal-from-stock (10 at a time), same-suit run moves, automatic King→Ace run collection to 8 foundations
+  - Reuses shared GenericTableau, GameControls, useCardInteraction, useGameHistory, SettingsModal, HelpModal, WinCelebration
+  - Spider-specific 10-column responsive layout wrapper (shared sizing is tuned for 8 columns)
+  - 37 unit tests (rules, state, actions); full `npm run validate` green
+  - Auto-discovered by the site builder; deploys to `/PlokminFun/spider/`
+
 ### Week of 2025-12-28
 
 **MILESTONE: Usability Quick Wins Complete - 4 Critical Improvements Shipped 🎉**
@@ -412,8 +425,11 @@
 - **Next:** Game persistence (localStorage)
 
 ### Spider Solitaire
-- **Status:** ⏸️ Planned (Future)
-- **Priority:** Low (focus on polishing existing games first)
+- **Status:** ✅ Live and Playable
+- **Features:** 1/2/4-suit difficulty, two-deck (104-card) play, same-suit run building, automatic completed-run collection, deal-from-stock, undo/redo, smart tap-to-move, accessibility settings, win celebration
+- **URL:** https://mikhaidn.github.io/PlokminFun/spider/
+- **Tests:** 37 (rules, state, actions)
+- **Next:** Game persistence, daily challenge
 
 ---
 

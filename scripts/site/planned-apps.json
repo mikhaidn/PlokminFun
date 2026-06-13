@@ -1,10 +1,5 @@
 [
   {
-    "title": "Spider Solitaire",
-    "icon": "🂱",
-    "description": "Arrange cards in descending sequences. Master one, two, or four suits!"
-  },
-  {
     "title": "Pyramid",
     "icon": "♠️",
     "description": "Match pairs of cards that add up to 13. Clear the pyramid to win!"
