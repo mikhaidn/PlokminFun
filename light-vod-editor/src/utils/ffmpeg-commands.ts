@@ -11,7 +11,11 @@ export interface Segment {
  * For single segment: uses fast -c copy (no re-encoding)
  * For multiple segments: uses filter_complex (requires re-encoding)
  */
-export function generateConcatCommand(inputFile: string, segments: Segment[], outputName?: string): string {
+export function generateConcatCommand(
+  inputFile: string,
+  segments: Segment[],
+  outputName?: string
+): string {
   if (segments.length === 0) {
     throw new Error('Cannot generate command: no segments provided');
   }
@@ -39,12 +43,18 @@ export function generateConcatCommand(inputFile: string, segments: Segment[], ou
   // Multiple segments: use filter_complex to merge
   // Video filters: trim each segment
   const videoFilters = segments
-    .map((seg, i) => `[0:v]trim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},setpts=PTS-STARTPTS[v${i}]`)
+    .map(
+      (seg, i) =>
+        `[0:v]trim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},setpts=PTS-STARTPTS[v${i}]`
+    )
     .join('; ');
 
   // Audio filters: trim each segment
   const audioFilters = segments
-    .map((seg, i) => `[0:a]atrim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},asetpts=PTS-STARTPTS[a${i}]`)
+    .map(
+      (seg, i) =>
+        `[0:a]atrim=start=${seg.start.toFixed(2)}:end=${seg.end.toFixed(2)},asetpts=PTS-STARTPTS[a${i}]`
+    )
     .join('; ');
 
   // Concat filter: combine all segments
@@ -57,7 +67,11 @@ export function generateConcatCommand(inputFile: string, segments: Segment[], ou
 /**
  * Generate FFmpeg split commands to extract segments as separate files
  */
-export function generateSplitCommands(inputFile: string, segments: Segment[], outputPrefix?: string): string[] {
+export function generateSplitCommands(
+  inputFile: string,
+  segments: Segment[],
+  outputPrefix?: string
+): string[] {
   if (segments.length === 0) {
     throw new Error('Cannot generate command: no segments provided');
   }
@@ -70,9 +84,7 @@ export function generateSplitCommands(inputFile: string, segments: Segment[], ou
     const duration = seg.end - seg.start;
 
     // Use segment name if available, otherwise use numbered format
-    const outputName = seg.name
-      ? seg.name
-      : `${prefix}_segment${i + 1}`;
+    const outputName = seg.name ? seg.name : `${prefix}_segment${i + 1}`;
 
     return `ffmpeg -ss ${formatTimeFFmpeg(seg.start)} -t ${duration.toFixed(2)} -i "${inputFile}" -c copy "${outputName}${ext}"`;
   });

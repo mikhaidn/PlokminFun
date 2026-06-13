@@ -7,7 +7,12 @@ import { ProgressIndicator } from './components/ProgressIndicator';
 import { useKeyboardShortcuts } from './hooks/useKeyboard';
 import { generateConcatCommand, generateSplitCommands } from './utils/ffmpeg-commands';
 import { formatBytes, formatTime } from './utils/formatters';
-import { processConcatMode, processSplitMode, downloadBlob, type ProcessingProgress } from './utils/ffmpeg-wasm';
+import {
+  processConcatMode,
+  processSplitMode,
+  downloadBlob,
+  type ProcessingProgress,
+} from './utils/ffmpeg-wasm';
 import type { Segment, VideoFile, ExportMode } from './types';
 
 function App() {
@@ -114,7 +119,9 @@ function App() {
     if (type === 'concat') {
       command = generateConcatCommand(videoFile.file.name, segments, exportName || undefined);
     } else {
-      command = generateSplitCommands(videoFile.file.name, segments, exportName || undefined).join('\n\n');
+      command = generateSplitCommands(videoFile.file.name, segments, exportName || undefined).join(
+        '\n\n'
+      );
     }
 
     try {
@@ -137,7 +144,10 @@ function App() {
 
     try {
       if (exportMode === 'concat') {
-        const outputName = exportName || segments[0]?.name || `${videoFile.file.name.replace(/\.[^/.]+$/, '')}_merged`;
+        const outputName =
+          exportName ||
+          segments[0]?.name ||
+          `${videoFile.file.name.replace(/\.[^/.]+$/, '')}_merged`;
         const blob = await processConcatMode(
           videoFile.file,
           segments,
@@ -167,48 +177,61 @@ function App() {
   };
 
   // Keyboard shortcuts
-  useKeyboardShortcuts({
-    onFrameBack: () => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 0.033);
-      }
+  useKeyboardShortcuts(
+    {
+      onFrameBack: () => {
+        if (videoRef.current) {
+          videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 0.033);
+        }
+      },
+      onFrameForward: () => {
+        if (videoRef.current && videoFile) {
+          videoRef.current.currentTime = Math.min(
+            videoFile.duration,
+            videoRef.current.currentTime + 0.033
+          );
+        }
+      },
+      onJumpBack: () => {
+        if (videoRef.current) {
+          videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 5);
+        }
+      },
+      onJumpForward: () => {
+        if (videoRef.current && videoFile) {
+          videoRef.current.currentTime = Math.min(
+            videoFile.duration,
+            videoRef.current.currentTime + 5
+          );
+        }
+      },
+      onPlayPause: () => {
+        if (!videoRef.current) return;
+        if (videoRef.current.paused) {
+          videoRef.current.play();
+        } else {
+          videoRef.current.pause();
+        }
+      },
     },
-    onFrameForward: () => {
-      if (videoRef.current && videoFile) {
-        videoRef.current.currentTime = Math.min(videoFile.duration, videoRef.current.currentTime + 0.033);
-      }
-    },
-    onJumpBack: () => {
-      if (videoRef.current) {
-        videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 5);
-      }
-    },
-    onJumpForward: () => {
-      if (videoRef.current && videoFile) {
-        videoRef.current.currentTime = Math.min(videoFile.duration, videoRef.current.currentTime + 5);
-      }
-    },
-    onPlayPause: () => {
-      if (!videoRef.current) return;
-      if (videoRef.current.paused) {
-        videoRef.current.play();
-      } else {
-        videoRef.current.pause();
-      }
-    },
-  }, !!videoFile);
+    !!videoFile
+  );
 
   return (
     <div>
       <h1>🎬 Light VOD Editor - Multi-Segment</h1>
       <p className="subtitle">
-        Cut multiple segments and merge into one video or export as separate files. Fast, local, private.
+        Cut multiple segments and merge into one video or export as separate files. Fast, local,
+        private.
       </p>
 
       {/* Step 1: Load Video */}
       <div className="section">
         <h2>📂 Step 1: Load Your Video</h2>
-        <p>No upload needed - file stays on your computer. Works with any size (tested with 4-7 GB files).</p>
+        <p>
+          No upload needed - file stays on your computer. Works with any size (tested with 4-7 GB
+          files).
+        </p>
         <input type="file" accept="video/*" onChange={handleVideoLoad} />
       </div>
 
@@ -227,7 +250,9 @@ function App() {
                 <div className="stat-label">File Size</div>
               </div>
               <div className="stat-card">
-                <div className="stat-value">{videoFile.width}x{videoFile.height}</div>
+                <div className="stat-value">
+                  {videoFile.width}x{videoFile.height}
+                </div>
                 <div className="stat-label">Resolution</div>
               </div>
               <div className="stat-card">
@@ -240,11 +265,15 @@ function App() {
           {/* Step 2: Preview */}
           <div className="section">
             <h2>👁️ Step 2: Preview & Find Trim Points</h2>
-            <p>Scrub through your video to find the perfect start and end points for each segment.</p>
+            <p>
+              Scrub through your video to find the perfect start and end points for each segment.
+            </p>
             <VideoPlayer
               videoFile={videoFile}
               onTimeUpdate={setCurrentTime}
-              onVideoRef={(ref) => { videoRef.current = ref; }}
+              onVideoRef={(ref) => {
+                videoRef.current = ref;
+              }}
             />
           </div>
 
@@ -274,17 +303,37 @@ function App() {
             </div>
 
             <div style={{ margin: '20px 0' }}>
-              <h3 style={{ color: '#6ab7ff', marginBottom: '10px', fontSize: '1.2em' }}>💡 Navigation Tips</h3>
+              <h3 style={{ color: '#6ab7ff', marginBottom: '10px', fontSize: '1.2em' }}>
+                💡 Navigation Tips
+              </h3>
               <ul style={{ paddingLeft: '20px', margin: 0, color: '#c9d1d9', fontSize: '13px' }}>
-                <li><strong>Double-click timeline</strong> - Create 10s segment at position</li>
-                <li><strong>Click timeline</strong> - Jump to position</li>
-                <li><strong>Click and drag timeline</strong> - Scrub continuously</li>
-                <li><strong>Drag handles</strong> - Adjust start/end (video scrubs in real-time!)</li>
-                <li><strong>Drag segment body</strong> - Move entire segment</li>
-                <li><strong>Horizontal trackpad swipe</strong> - Scrub video smoothly</li>
-                <li><strong>← / →</strong> - 1 frame back/forward</li>
-                <li><strong>Shift + ← / →</strong> - Jump 5 seconds</li>
-                <li><strong>Spacebar</strong> - Play/pause</li>
+                <li>
+                  <strong>Double-click timeline</strong> - Create 10s segment at position
+                </li>
+                <li>
+                  <strong>Click timeline</strong> - Jump to position
+                </li>
+                <li>
+                  <strong>Click and drag timeline</strong> - Scrub continuously
+                </li>
+                <li>
+                  <strong>Drag handles</strong> - Adjust start/end (video scrubs in real-time!)
+                </li>
+                <li>
+                  <strong>Drag segment body</strong> - Move entire segment
+                </li>
+                <li>
+                  <strong>Horizontal trackpad swipe</strong> - Scrub video smoothly
+                </li>
+                <li>
+                  <strong>← / →</strong> - 1 frame back/forward
+                </li>
+                <li>
+                  <strong>Shift + ← / →</strong> - Jump 5 seconds
+                </li>
+                <li>
+                  <strong>Spacebar</strong> - Play/pause
+                </li>
               </ul>
             </div>
 
@@ -301,29 +350,53 @@ function App() {
           {/* Step 4: Export */}
           {segments.length > 0 && (
             <div className="section">
-                <h2>🚀 Step 4: Choose Export Mode</h2>
+              <h2>🚀 Step 4: Choose Export Mode</h2>
 
-                {/* Processing method toggle */}
-                <div style={{ marginBottom: '20px', padding: '15px', background: '#2a2a2a', borderRadius: '8px', border: '1px solid #444' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', color: '#c9d1d9', opacity: 0.5 }}>
+              {/* Processing method toggle */}
+              <div
+                style={{
+                  marginBottom: '20px',
+                  padding: '15px',
+                  background: '#2a2a2a',
+                  borderRadius: '8px',
+                  border: '1px solid #444',
+                }}
+              >
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    cursor: 'pointer',
+                    color: '#c9d1d9',
+                    opacity: 0.5,
+                  }}
+                >
                   <input
-                  type="checkbox"
-                  checked={useInAppProcessing}
-                  onChange={(e) => setUseInAppProcessing(e.target.checked)}
-                  style={{ width: '18px', height: '18px', cursor: 'not-allowed' }}
-                  disabled
+                    type="checkbox"
+                    checked={useInAppProcessing}
+                    onChange={(e) => setUseInAppProcessing(e.target.checked)}
+                    style={{ width: '18px', height: '18px', cursor: 'not-allowed' }}
+                    disabled
                   />
                   <span style={{ fontWeight: 600, fontSize: '15px' }}>
-                  ⚡ Process in Browser (Coming Soon)
+                    ⚡ Process in Browser (Coming Soon)
                   </span>
                 </label>
                 <p style={{ margin: '8px 0 0 28px', color: '#8b949e', fontSize: '13px' }}>
                   Browser processing not yet supported. Use FFmpeg commands via terminal for now.
                 </p>
-                </div>
+              </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '8px', color: '#c9d1d9', fontWeight: 600 }}>
+                <label
+                  style={{
+                    display: 'block',
+                    marginBottom: '8px',
+                    color: '#c9d1d9',
+                    fontWeight: 600,
+                  }}
+                >
                   Output Name (optional)
                 </label>
                 <input
@@ -332,7 +405,8 @@ function App() {
                   onChange={(e) => setExportName(e.target.value)}
                   placeholder={
                     exportMode === 'concat'
-                      ? segments[0]?.name || `${videoFile.file.name.replace(/\.[^/.]+$/, '')}_merged`
+                      ? segments[0]?.name ||
+                        `${videoFile.file.name.replace(/\.[^/.]+$/, '')}_merged`
                       : `${videoFile.file.name.replace(/\.[^/.]+$/, '')}_segment#`
                   }
                   style={{
@@ -345,7 +419,9 @@ function App() {
                     fontSize: '15px',
                   }}
                 />
-                <small style={{ display: 'block', marginTop: '6px', color: '#8b949e', fontSize: '13px' }}>
+                <small
+                  style={{ display: 'block', marginTop: '6px', color: '#8b949e', fontSize: '13px' }}
+                >
                   {exportMode === 'concat'
                     ? 'Leave blank to use first segment name or default to "_merged"'
                     : 'Leave blank to use segment names or default to "_segment#"'}
@@ -374,15 +450,18 @@ function App() {
 
               {/* Single segment info */}
               {segments.length === 1 && (
-                <div style={{
-                  padding: '15px',
-                  background: '#1a4d2e',
-                  border: '2px solid #2d7a4f',
-                  borderRadius: '8px',
-                  marginBottom: '15px'
-                }}>
+                <div
+                  style={{
+                    padding: '15px',
+                    background: '#1a4d2e',
+                    border: '2px solid #2d7a4f',
+                    borderRadius: '8px',
+                    marginBottom: '15px',
+                  }}
+                >
                   <p style={{ margin: 0, color: '#a7f3d0', fontSize: '14px' }}>
-                    ⚡ <strong>Fast mode:</strong> Single segment will use stream copy (no re-encoding) for instant export!
+                    ⚡ <strong>Fast mode:</strong> Single segment will use stream copy (no
+                    re-encoding) for instant export!
                   </p>
                 </div>
               )}
@@ -393,16 +472,30 @@ function App() {
                   <div style={{ textAlign: 'center', marginTop: '20px' }}>
                     <button
                       onClick={handleInAppExport}
-                      disabled={processingProgress !== null && processingProgress.phase !== 'complete' && processingProgress.phase !== 'error'}
+                      disabled={
+                        processingProgress !== null &&
+                        processingProgress.phase !== 'complete' &&
+                        processingProgress.phase !== 'error'
+                      }
                       style={{
                         padding: '15px 30px',
                         fontSize: '16px',
                         fontWeight: 'bold',
-                        backgroundColor: processingProgress !== null && processingProgress.phase !== 'complete' && processingProgress.phase !== 'error' ? '#6b7280' : '#10b981',
+                        backgroundColor:
+                          processingProgress !== null &&
+                          processingProgress.phase !== 'complete' &&
+                          processingProgress.phase !== 'error'
+                            ? '#6b7280'
+                            : '#10b981',
                         color: 'white',
                         border: 'none',
                         borderRadius: '8px',
-                        cursor: processingProgress !== null && processingProgress.phase !== 'complete' && processingProgress.phase !== 'error' ? 'not-allowed' : 'pointer',
+                        cursor:
+                          processingProgress !== null &&
+                          processingProgress.phase !== 'complete' &&
+                          processingProgress.phase !== 'error'
+                            ? 'not-allowed'
+                            : 'pointer',
                       }}
                     >
                       {segments.length === 1
@@ -420,7 +513,11 @@ function App() {
                         setProcessingProgress(null);
                         // Note: FFmpeg.wasm doesn't support cancellation easily
                         // We'll need to reload the page to cancel
-                        if (confirm('Cancel processing? This will reload the page and lose your current work.')) {
+                        if (
+                          confirm(
+                            'Cancel processing? This will reload the page and lose your current work.'
+                          )
+                        ) {
                           window.location.reload();
                         }
                       }}
@@ -445,7 +542,13 @@ function App() {
                           {copiedCommand === 'concat' ? '✅ Copied!' : '📋 Copy Command'}
                         </button>
                       </div>
-                      <pre>{generateConcatCommand(videoFile.file.name, segments, exportName || undefined)}</pre>
+                      <pre>
+                        {generateConcatCommand(
+                          videoFile.file.name,
+                          segments,
+                          exportName || undefined
+                        )}
+                      </pre>
                     </div>
                   )}
 
@@ -460,7 +563,13 @@ function App() {
                           {copiedCommand === 'split' ? '✅ Copied!' : '📋 Copy All Commands'}
                         </button>
                       </div>
-                      <pre>{generateSplitCommands(videoFile.file.name, segments, exportName || undefined).join('\n\n')}</pre>
+                      <pre>
+                        {generateSplitCommands(
+                          videoFile.file.name,
+                          segments,
+                          exportName || undefined
+                        ).join('\n\n')}
+                      </pre>
                     </div>
                   )}
                 </>

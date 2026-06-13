@@ -21,11 +21,12 @@
 **Workflow:** `.github/workflows/deploy.yml`
 
 **Steps:**
-1. Build shared library (`npm run build:shared`)
-2. Build both games (`npm run build:pages`)
-3. Create root landing page
-4. Deploy to GitHub Pages
-5. Live in 1-2 minutes
+1. Site integrity check (`npm run check:site`)
+2. Build site (`npm run build:site`) — discovers every workspace with a `plokmin` block in its package.json, builds it, copies `dist/` to `_site/<slug>/`, and generates the landing page
+3. Deploy to GitHub Pages
+4. Live in 1-2 minutes
+
+Apps are **discovered, not registered**: the workflow and landing page never need editing when an app is added.
 
 **To deploy manually:**
 ```bash
@@ -40,18 +41,18 @@ git push origin main
 - **Trigger:** Push to `main` or manual dispatch
 - **Actions:**
   - Install dependencies
-  - Build shared library
-  - Build FreeCell (`cd freecell-mvp && npm run build`)
-  - Build Klondike (`cd klondike-mvp && npm run build`)
-  - Copy builds to `_site/`
+  - Site integrity check (`npm run check:site`)
+  - Build site (`npm run build:site`) — builds all deployable apps and assembles `_site/`
   - Deploy to GitHub Pages
 
 ### 2. PR Validation (`.github/workflows/pr-validation.yml`)
 - **Trigger:** Pull requests to `main`
 - **Checks:**
+  - Site integrity (`npm run check:site`)
+  - Typecheck (`npm run typecheck`)
   - Lint (`npm run lint`)
   - Test (`npm test`)
-  - Build (`npm run build`)
+  - Build site (`npm run build:site`) — same assembly as deploy
 - **Requirement:** Must pass before merging
 
 ---
@@ -200,37 +201,32 @@ export default defineConfig({
 }
 ```
 
-### 5. Update GitHub Actions Deploy Workflow
+### 5. Add the `plokmin` Block (deploy + landing card)
 
-**⚠️ MOST COMMON MISTAKE** - Edit `.github/workflows/deploy.yml`:
+Add a `plokmin` block to the new app's `package.json` — this is what makes the app deployable and gives it a landing-page card. The deploy workflow and landing page are generated from it; **neither needs editing**:
 
-```yaml
-- name: Build Pages
-  run: |
-    npm run build -w freecell-mvp
-    npm run build -w klondike-mvp
-    npm run build -w dog-care-tracker
-    npm run build -w pet-care
-    npm run build -w new-app  # ⚠️ ADD THIS
-
-- name: Create root landing page
-  run: |
-    # ... existing copies ...
-    cp -r new-app/dist _site/new-app  # ⚠️ ADD THIS
+```json
+{
+  "name": "@plokmin/new-app",
+  "plokmin": {
+    "title": "New App",
+    "icon": "🆕",
+    "description": "Description of your app",
+    "cta": "Try Now",
+    "order": 6
+  }
+}
 ```
 
-### 6. Update Root Landing Page (index.html)
+Optional fields: `slug` (deployed path, defaults to the directory name), `cta` (defaults to "Try Now"), `order` (landing-page position, defaults to last).
 
-Add a card for your new app:
+### 6. Verify the Wiring
 
-```html
-<a href="./new-app/" class="game-card">
-  <div class="game-icon">🆕</div>
-  <h2>New App</h2>
-  <p>Description of your app</p>
-  <span class="status available">Try Now</span>
-</a>
+```bash
+npm run check:site
 ```
+
+This fails with an actionable message if the base path doesn't match the slug, the slug collides with another app, the build script is missing, or the landing card can't be generated. It runs in CI on every PR, so mistakes can't silently reach production.
 
 ### 7. Update Deployment Documentation
 
@@ -253,21 +249,18 @@ cd new-app && npm run preview
 
 Before merging to main:
 
-- [ ] `vite.config.ts` has correct `base` path
-- [ ] App added to `.github/workflows/deploy.yml` (2 places: build AND copy)
 - [ ] App added to root `package.json` workspaces
-- [ ] App added to `index.html` landing page
+- [ ] `plokmin` block added to the app's `package.json`
+- [ ] `npm run check:site` passes (validates base path, slug, build script, landing card)
 - [ ] Local build succeeds: `npm run build -w new-app`
-- [ ] `dist/` folder exists and contains `index.html`
+- [ ] Full site assembles: `npm run build:site` (check `_site/new-app/`)
 - [ ] Local preview works: `npm run preview` in app directory
-- [ ] Paths in `dist/index.html` include `/PlokminFun/new-app/` prefix
 
 ### 10. Common Mistakes to Avoid
 
-❌ **Forgot to add to deploy.yml** - App won't deploy (most common!)
-❌ **Wrong base path in vite.config.ts** - 404 errors on production
-❌ **Forgot to add to workspaces** - Build fails in CI
-❌ **Didn't test local build** - Errors only caught in production
+❌ **Forgot to add to workspaces** - App won't be discovered at all
+❌ **Forgot the `plokmin` block** - App builds but won't deploy or appear on the landing page
+❌ **Wrong base path in vite.config.ts** - Caught by `npm run check:site` before it can 404 in production
 
 ---
 

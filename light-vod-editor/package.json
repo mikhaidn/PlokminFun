@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.15",
@@ -30,5 +31,12 @@
     "typescript-eslint": "^8.46.4",
     "vite": "^5.4.11",
     "vitest": "^2.1.5"
+  },
+  "plokmin": {
+    "title": "Video Editor",
+    "icon": "🎬",
+    "description": "Lightweight browser-based video trimming tool. Cut and trim your videos without re-encoding.",
+    "cta": "Try Now",
+    "order": 1
   }
 }

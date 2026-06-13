@@ -1,4 +1,61 @@
-<!doctype html>
+/**
+ * Generates the landing page (index.html) from app metadata.
+ *
+ * The page is generated at site-build time (see build-site.mjs) — it is
+ * NOT checked into the repo, so it can never drift from the actual set of
+ * deployed apps. Available cards come from each workspace's `plokmin`
+ * package.json block; planned cards come from planned-apps.json.
+ *
+ * Usage: node scripts/site/generate-landing.mjs [outFile]
+ *        (prints to stdout when no outFile is given)
+ */
+import { writeFileSync } from 'node:fs';
+import { getApps, getPlannedApps } from './apps.mjs';
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function appCard(app) {
+  return `          <a href="./${app.slug}/" class="game-card">
+            <div class="game-icon">${app.icon}</div>
+            <h2>${escapeHtml(app.title)}</h2>
+            <p>${escapeHtml(app.description)}</p>
+            <span class="status available">${escapeHtml(app.cta)}</span>
+          </a>`;
+}
+
+function plannedCard(app) {
+  return `            <div class="game-card scheduled">
+              <div class="game-icon">${app.icon}</div>
+              <h2>${escapeHtml(app.title)}</h2>
+              <p>${escapeHtml(app.description)}</p>
+              <span class="status coming-soon">Planned</span>
+            </div>`;
+}
+
+export function renderLanding({ apps = getApps(), planned = getPlannedApps() } = {}) {
+  const plannedSection =
+    planned.length === 0
+      ? ''
+      : `
+        <details class="scheduled-games">
+          <summary>
+            <h3>🗓️ Scheduled Games</h3>
+            <p class="scheduled-subtitle">Games planned for future releases</p>
+          </summary>
+
+          <div class="games-grid scheduled-grid">
+${planned.map(plannedCard).join('\n\n')}
+          </div>
+        </details>
+`;
+
+  return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -105,18 +162,8 @@
       }
 
       .status.coming-soon {
-        background: #f59e0b;
+        background: #8b5cf6;
         color: white;
-      }
-
-      .game-card.disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-
-      .game-card.disabled:hover {
-        transform: none;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       }
 
       .scheduled-games {
@@ -196,10 +243,6 @@
         opacity: 0.85;
       }
 
-      .status.coming-soon {
-        background: #8b5cf6;
-      }
-
       footer {
         text-align: center;
         color: white;
@@ -242,90 +285,9 @@
 
       <main>
         <div class="games-grid">
-          <a href="./light-vod-editor/" class="game-card">
-            <div class="game-icon">🎬</div>
-            <h2>Video Editor</h2>
-            <p>
-              Lightweight browser-based video trimming tool. Cut and trim your videos without
-              re-encoding.
-            </p>
-            <span class="status available">Try Now</span>
-          </a>
-
-          <a href="./dog-care-tracker/" class="game-card">
-            <div class="game-icon">🐕</div>
-            <h2>Dog Care Tracker</h2>
-            <p>
-              Track your dog's daily activities and share status with caretakers. Mobile-first PWA.
-            </p>
-            <span class="status available">Try Now</span>
-          </a>
-
-          <a href="./pet-care/" class="game-card">
-            <div class="game-icon">🐾</div>
-            <h2>Pet Care Instructions</h2>
-            <p>
-              Create reusable care instructions for your pet and share them with caretakers. Track
-              daily tasks.
-            </p>
-            <span class="status available">Try Now</span>
-          </a>
-
-          <a href="./freecell/" class="game-card">
-            <div class="game-icon">🃏</div>
-            <h2>FreeCell</h2>
-            <p>
-              Strategic solitaire where every card is visible. Plan your moves carefully to build
-              the foundations!
-            </p>
-            <span class="status available">Play Now</span>
-          </a>
-
-          <a href="./klondike/" class="game-card">
-            <div class="game-icon">🎴</div>
-            <h2>Klondike</h2>
-            <p>The classic solitaire game everyone knows and loves. Draw one card at a time!</p>
-            <span class="status available">Play Now</span>
-          </a>
+${apps.map(appCard).join('\n\n')}
         </div>
-
-        <details class="scheduled-games">
-          <summary>
-            <h3>🗓️ Scheduled Games</h3>
-            <p class="scheduled-subtitle">Games planned for future releases</p>
-          </summary>
-
-          <div class="games-grid scheduled-grid">
-            <div class="game-card scheduled">
-              <div class="game-icon">🂱</div>
-              <h2>Spider Solitaire</h2>
-              <p>Arrange cards in descending sequences. Master one, two, or four suits!</p>
-              <span class="status coming-soon">Planned</span>
-            </div>
-
-            <div class="game-card scheduled">
-              <div class="game-icon">♠️</div>
-              <h2>Pyramid</h2>
-              <p>Match pairs of cards that add up to 13. Clear the pyramid to win!</p>
-              <span class="status coming-soon">Planned</span>
-            </div>
-
-            <div class="game-card scheduled">
-              <div class="game-icon">♦️</div>
-              <h2>Tri-Peaks</h2>
-              <p>Clear three peaks of cards by matching ranks. Fast-paced solitaire action!</p>
-              <span class="status coming-soon">Planned</span>
-            </div>
-
-            <div class="game-card scheduled">
-              <div class="game-icon">♣️</div>
-              <h2>Yukon</h2>
-              <p>FreeCell meets Klondike. Move face-up sequences without using free cells!</p>
-              <span class="status coming-soon">Planned</span>
-            </div>
-          </div>
-        </details>
-      </main>
+${plannedSection}      </main>
 
       <footer>
         <p>Built with React, TypeScript, and Vite</p>
@@ -338,3 +300,17 @@
     </div>
   </body>
 </html>
+`;
+}
+
+const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop());
+if (isMain) {
+  const html = renderLanding();
+  const outFile = process.argv[2];
+  if (outFile) {
+    writeFileSync(outFile, html);
+    console.log(`Landing page written to ${outFile}`);
+  } else {
+    process.stdout.write(html);
+  }
+}

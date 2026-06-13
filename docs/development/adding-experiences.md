@@ -20,7 +20,7 @@ Use the initialization script to create a fully-configured experience in ~30 sec
 - ✅ Full React + TypeScript + Vite setup
 - ✅ PWA-ready (manifest, service worker, default icon)
 - ✅ Integrated into monorepo (workspaces, scripts)
-- ✅ Added to landing page (index.html)
+- ✅ Discovered automatically by deploy + landing page (via the `plokmin` block in package.json)
 - ✅ Ready to deploy to GitHub Pages
 - ✅ Basic "Hello World" app that works immediately
 
@@ -57,9 +57,13 @@ my-experience-name/
 
 The script automatically:
 1. **Adds workspace** to root `package.json`
-2. **Adds npm scripts**: `dev:experiencename`, updates `typecheck`, `lint:fix`
-3. **Updates landing page** (`index.html`) with new card
-4. **Installs dependencies** for the new workspace
+2. **Adds npm script**: `dev:experiencename`
+3. **Installs dependencies** for the new workspace
+
+Everything else is convention-based — no registration needed:
+- **Deploy + landing page** discover the app via the `plokmin` block in its `package.json` (see `scripts/site/`)
+- **Root `typecheck`/`lint:fix`/`lint`/`test`** run across all workspaces via `-ws --if-present`
+- **`npm run check:site`** verifies the wiring (also runs in CI)
 
 ---
 
@@ -84,10 +88,12 @@ cp my-icon.png my-experience-name/public/icon.png
 # Change "icon.svg" to "icon.png" and update type
 ```
 
-**Option C: Use an Emoji**
-```html
-<!-- In index.html landing page -->
-<div class="game-icon">🎯</div>  <!-- Change ✨ to your emoji -->
+**Option C: Use an Emoji (landing page card)**
+```json
+// In my-experience-name/package.json
+"plokmin": {
+  "icon": "🎯"  // Change ✨ to your emoji
+}
 ```
 
 ### 2. Update Manifest (PWA Metadata)
@@ -107,19 +113,19 @@ Edit `my-experience-name/public/manifest.json`:
 
 ### 3. Update Landing Page Card
 
-Edit `index.html` to improve the card:
+The landing page is generated from each app's `plokmin` block — edit it in `my-experience-name/package.json`:
 
-```html
-<a href="./my-experience-name/" class="game-card">
-  <div class="game-icon">🎯</div>  <!-- Better emoji -->
-  <h2>My Experience Name</h2>
-  <p>
-    A compelling description of what this experience does
-    and why someone should try it.
-  </p>
-  <span class="status available">Try Now</span>
-</a>
+```json
+"plokmin": {
+  "title": "My Experience Name",
+  "icon": "🎯",
+  "description": "A compelling description of what this experience does and why someone should try it.",
+  "cta": "Try Now",
+  "order": 6
+}
 ```
+
+Preview the result with `node scripts/site/generate-landing.mjs /tmp/index.html` or build the full site with `npm run build:site`.
 
 ### 4. Build Your Experience
 
@@ -302,11 +308,13 @@ npm run build -w my-experience-name
 
 ### Landing Page Card Not Showing
 ```bash
-# Check index.html for your experience
-grep "my-experience-name" index.html
+# The landing page is generated from each app's plokmin block —
+# check the wiring:
+npm run check:site
 
-# If missing, manually add the card
-# See "Customization Guide" section above
+# If the app isn't listed, add a "plokmin" block to its package.json
+# (see "Customization Guide" section above) and make sure the app is
+# in the root package.json workspaces list
 ```
 
 ### Dev Server Wrong Port/Path
@@ -377,24 +385,22 @@ If the script doesn't work, you can create an experience manually:
    ```
 
 2. **Update all references**
-   - `package.json`: Change name to `@plokmin/my-experience-name`
-   - `vite.config.ts`: Update base path
+   - `package.json`: Change name to `@plokmin/my-experience-name` and update the `plokmin` block (title, icon, description — this drives deploy and the landing card)
+   - `vite.config.ts`: Update base path to `/PlokminFun/my-experience-name/`
    - `manifest.json`: Update name, description, start_url, icons
-   - `index.html`: Update title, description
+   - The app's `index.html`: Update title, description
    - `README.md`: Update content
 
 3. **Update root package.json**
    - Add to `workspaces` array
    - Add `dev:experiencename` script
-   - Update `typecheck` script
-   - Update `lint:fix` script
 
-4. **Update landing page**
-   - Add card to `index.html`
+   (Deploy, the landing page, and the root `typecheck`/`lint`/`lint:fix`/`test` scripts pick the app up automatically.)
 
-5. **Install and validate**
+4. **Install and validate**
    ```bash
    npm install
+   npm run check:site
    npm run validate
    ```
 

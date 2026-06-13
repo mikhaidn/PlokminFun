@@ -331,11 +331,11 @@ button.small {
   font-size: 13px;
 }
 
-.segment-duration[style*="cursor: pointer"] {
+.segment-duration[style*='cursor: pointer'] {
   transition: all 0.2s;
 }
 
-.segment-duration[style*="cursor: pointer"]:hover {
+.segment-duration[style*='cursor: pointer']:hover {
   color: #4a9eff;
   text-decoration: underline;
 }

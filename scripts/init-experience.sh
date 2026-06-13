@@ -45,6 +45,9 @@ fi
 TITLE_CASE=$(echo "$EXPERIENCE_NAME" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2));}1')
 PACKAGE_NAME="@plokmin/$EXPERIENCE_NAME"
 
+# Site base path (e.g. /PlokminFun) — single source of truth in root package.json
+BASE_PATH=$(node -p "require('./package.json').plokmin.basePath")
+
 info "Creating new experience: $TITLE_CASE"
 echo ""
 
@@ -61,13 +64,19 @@ cat > "$EXPERIENCE_NAME/package.json" <<EOF
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "plokmin": {
+    "title": "$TITLE_CASE",
+    "icon": "✨",
+    "description": "$TITLE_CASE - Part of the Plokmin Consortium."
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -147,7 +156,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/CardGames/$EXPERIENCE_NAME/',
+  base: '$BASE_PATH/$EXPERIENCE_NAME/',
   build: {
     outDir: 'dist',
   },
@@ -229,14 +238,14 @@ cat > "$EXPERIENCE_NAME/public/manifest.json" <<EOF
   "name": "$TITLE_CASE",
   "short_name": "$TITLE_CASE",
   "description": "$TITLE_CASE - Part of the Plokmin Consortium",
-  "start_url": "/CardGames/$EXPERIENCE_NAME/",
+  "start_url": "$BASE_PATH/$EXPERIENCE_NAME/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#667eea",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/CardGames/$EXPERIENCE_NAME/icon.svg",
+      "src": "$BASE_PATH/$EXPERIENCE_NAME/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
@@ -336,7 +345,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <a href="/CardGames/">← Back to Plokmin Consortium</a>
+        <a href="$BASE_PATH/">← Back to Plokmin Consortium</a>
       </footer>
     </div>
   );
@@ -527,7 +536,7 @@ npm run typecheck
 
 This experience is one of many interactive web apps in the Plokmin collection.
 
-**Live at**: https://mikhaidn.github.io/CardGames/$EXPERIENCE_NAME/
+**Live at**: https://mikhaidn.github.io$BASE_PATH/$EXPERIENCE_NAME/
 EOF
 success "README.md created"
 
@@ -558,69 +567,12 @@ if ! grep -q "\"$SCRIPT_KEY\"" package.json; then
   success "Added dev:$SCRIPT_KEY script"
 fi
 
-# Update typecheck script
-node -e "
-  const fs = require('fs');
-  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  const current = pkg.scripts.typecheck;
-  if (!current.includes('$EXPERIENCE_NAME')) {
-    pkg.scripts.typecheck = current + ' && tsc --noEmit -p $EXPERIENCE_NAME/tsconfig.json';
-    fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-  }
-"
-success "Updated typecheck script"
-
-# Update lint:fix script
-node -e "
-  const fs = require('fs');
-  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  const current = pkg.scripts['lint:fix'];
-  if (!current.includes('$EXPERIENCE_NAME')) {
-    pkg.scripts['lint:fix'] = current + ' && npm run lint -w $EXPERIENCE_NAME -- --fix';
-    fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-  }
-"
-success "Updated lint:fix script"
-
-# Update GitHub Actions deployment workflow
-info "Updating GitHub Actions deployment workflow..."
-WORKFLOW_FILE=".github/workflows/deploy.yml"
-
-# Add to build step
-if ! grep -q "npm run build -w $EXPERIENCE_NAME" "$WORKFLOW_FILE"; then
-  # Find the last "npm run build -w" line and add after it
-  perl -i.bak -pe 's/(.*npm run build -w .+)/$1\n          npm run build -w '"$EXPERIENCE_NAME"'/ if /npm run build -w/ && !$done++' "$WORKFLOW_FILE"
-  rm -f "${WORKFLOW_FILE}.bak"
-  success "Added build step to workflow"
-else
-  warn "Build step already exists in workflow"
-fi
-
-# Add to copy step
-if ! grep -q "cp -r $EXPERIENCE_NAME/dist _site/$EXPERIENCE_NAME" "$WORKFLOW_FILE"; then
-  # Find the last "cp -r" line in the deploy step and add after it
-  perl -i.bak -pe 's/(.*cp -r .+\/dist _site\/.+)/$1\n          cp -r '"$EXPERIENCE_NAME"'\/dist _site\/'"$EXPERIENCE_NAME"'/ if /cp -r .+\/dist _site\// && !$done2++' "$WORKFLOW_FILE"
-  rm -f "${WORKFLOW_FILE}.bak"
-  success "Added copy step to workflow"
-else
-  warn "Copy step already exists in workflow"
-fi
-
-# Update index.html
-info "Updating landing page (index.html)..."
-# Insert new card before the closing </div> of games-grid
-# Find "</div>" followed by "</main>" and insert before the first </div>
-CARD_HTML="          <a href=\"./${EXPERIENCE_NAME}/\" class=\"game-card\">
-            <div class=\"game-icon\">✨</div>
-            <h2>${TITLE_CASE}</h2>
-            <p>${TITLE_CASE} - Part of the Plokmin Consortium.</p>
-            <span class=\"status available\">Try Now</span>
-          </a>
-"
-# Use perl for more reliable multiline matching
-perl -i.bak -pe 'BEGIN{undef $/;} s{(        </div>\n)(      </main>)}{'"$(echo "$CARD_HTML" | sed 's/\\/\\\\/g; s/&/\\&/g')"'\n$1$2}' index.html
-rm -f index.html.bak
-success "Added card to landing page"
+# Deployment, the landing page card, and root typecheck/lint:fix all pick up
+# the new app automatically: workspaces with a `plokmin` block in package.json
+# are discovered by scripts/site/*.mjs and by the root `-ws` scripts.
+info "Verifying site integrity..."
+node scripts/site/check-site.mjs
+success "New app discovered by site build (deploy + landing page are automatic)"
 
 # Install dependencies
 info "Installing dependencies..."
@@ -639,10 +591,10 @@ echo -e "  2. Run dev:   ${YELLOW}npm run $SCRIPT_KEY${NC}"
 echo -e "  3. Deploy:    ${YELLOW}git add . && git commit -m 'feat: add $EXPERIENCE_NAME' && git push${NC}"
 echo ""
 echo -e "${BLUE}Live URL (after deploy):${NC}"
-echo -e "  ${YELLOW}https://mikhaidn.github.io/CardGames/$EXPERIENCE_NAME/${NC}"
+echo -e "  ${YELLOW}https://mikhaidn.github.io$BASE_PATH/$EXPERIENCE_NAME/${NC}"
 echo ""
 echo -e "${BLUE}Customize:${NC}"
-echo -e "  • Icon:        ${YELLOW}$EXPERIENCE_NAME/public/icon.svg${NC}"
-echo -e "  • Manifest:    ${YELLOW}$EXPERIENCE_NAME/public/manifest.json${NC}"
-echo -e "  • Landing:     ${YELLOW}index.html${NC} (change icon from ✨ to something meaningful)"
+echo -e "  • Icon:         ${YELLOW}$EXPERIENCE_NAME/public/icon.svg${NC}"
+echo -e "  • Manifest:     ${YELLOW}$EXPERIENCE_NAME/public/manifest.json${NC}"
+echo -e "  • Landing card: ${YELLOW}$EXPERIENCE_NAME/package.json${NC} → plokmin block (title, icon, description)"
 echo ""

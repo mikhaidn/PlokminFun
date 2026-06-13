@@ -19,7 +19,7 @@ Plokmin/
 ├── dog-care-tracker/    # Dog activity tracking PWA (NEW!)
 ├── freecell-mvp/        # FreeCell solitaire
 ├── klondike-mvp/        # Klondike solitaire
-└── index.html           # Landing page (experience selector)
+└── scripts/site/        # Site build: app discovery + generated landing page
 ```
 
 **Essential commands:**
@@ -279,17 +279,17 @@ git push origin main  # Triggers GitHub Actions
 # All experiences deployed
 ```
 
-### ⚠️ CRITICAL: When Adding New Apps/Experiences
+### When Adding New Apps/Experiences
 
-**You MUST update `.github/workflows/deploy.yml`** or the app won't deploy!
+Apps are **discovered, not registered** — deploy and the landing page pick them up automatically. Checklist:
 
-Quick checklist:
-1. ✅ Add to deploy.yml build step: `npm run build -w new-app`
-2. ✅ Add to deploy.yml copy step: `cp -r new-app/dist _site/new-app`
+1. ✅ Add to root package.json workspaces
+2. ✅ Add a `plokmin` block to the app's package.json (title, icon, description) — this makes it deployable and generates its landing card
 3. ✅ Set base path in vite.config.ts: `base: '/PlokminFun/new-app/'`
-4. ✅ Add to root package.json workspaces
-5. ✅ Add to index.html landing page
-6. ✅ Test local build: `npm run build -w new-app`
+4. ✅ Verify wiring: `npm run check:site` (also runs in CI — catches base path/slug mistakes)
+5. ✅ Test local build: `npm run build -w new-app`
+
+`.github/workflows/deploy.yml` and the landing page never need editing.
 
 **📖 Full deployment checklist:** [docs/deployment/github-pages.md](docs/deployment/github-pages.md#-adding-new-appsgames)
 

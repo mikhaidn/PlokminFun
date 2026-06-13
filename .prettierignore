@@ -9,3 +9,6 @@ package-lock.json
 *.png
 *.jpg
 *.ico
+
+# Vendored ffmpeg.wasm bundle — never reformat
+light-vod-editor/public/ffmpeg

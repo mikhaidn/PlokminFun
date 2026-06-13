@@ -25,6 +25,8 @@ npm run validate
 | `npm run build` | Build everything (all apps) |
 | `npm run build:shared` | No-op (shared is a no-emit source library, kept for pipeline ordering) |
 | `npm run build:pages` | Build all apps |
+| `npm run build:site` | Build all deployable apps + assemble `_site/` with generated landing page (what deploy runs) |
+| `npm run check:site` | Verify app/deploy wiring: build scripts, slugs, vite base paths, landing cards |
 
 **Note:** `@plokmin/shared` is consumed as TypeScript source — it has no build step, and shared changes are picked up by apps immediately. See [shared/README.md](shared/README.md).
 
