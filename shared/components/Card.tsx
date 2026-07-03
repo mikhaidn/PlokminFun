@@ -131,6 +131,9 @@ export const Card: React.FC<CardProps> = ({
     transition: 'all 0.15s ease',
     opacity: isDragging ? 0.5 : 1,
     animation: isInvalidMove ? 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both' : 'none',
+    // React registers touch listeners as passive, so preventDefault() can't stop
+    // page scrolling during a touch drag — touch-action must do it instead
+    touchAction: onTouchStart ? 'none' : undefined,
     ...style,
   };
 
@@ -151,7 +154,7 @@ export const Card: React.FC<CardProps> = ({
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
       onTouchCancel={onTouchCancel}
-      draggable={draggable && onClick !== undefined}
+      draggable={draggable && (onDragStart !== undefined || onClick !== undefined)}
       title={`${card.value}${card.suit}`}
       data-drop-target-type={dropTargetType}
       data-drop-target-index={dropTargetIndex}

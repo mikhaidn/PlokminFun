@@ -399,7 +399,11 @@ export function useCardInteraction<TLocation extends CardLocation = GameLocation
       // If we were dragging, handle drop
       if (touchDragging && draggingCard) {
         const touch = e.changedTouches[0];
-        const dropElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        // elementFromPoint returns the deepest element (often a card's inner
+        // rank/suit div), so walk up to the nearest annotated drop target
+        const dropElement = document
+          .elementFromPoint(touch.clientX, touch.clientY)
+          ?.closest('[data-drop-target-type]');
 
         if (dropElement) {
           // Find drop target from data attributes
