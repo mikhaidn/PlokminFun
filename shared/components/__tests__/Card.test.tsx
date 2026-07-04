@@ -42,6 +42,45 @@ describe('Card', () => {
     });
   });
 
+  describe('draggable behavior (regression test)', () => {
+    /**
+     * REGRESSION TEST for broken mouse drag-and-drop
+     *
+     * Issue: GenericTableau puts the click handler on a wrapper div and only
+     * passes onDragStart to Card. The old draggable logic required onClick,
+     * so every tableau card rendered draggable=false and drags never started.
+     */
+    it('should be draggable when onDragStart is provided without onClick', () => {
+      const { container } = render(<Card card={mockCard} onDragStart={() => {}} />);
+
+      const cardElement = container.firstChild as HTMLElement;
+      expect(cardElement.getAttribute('draggable')).toBe('true');
+    });
+
+    it('should be draggable when onClick is provided (legacy behavior)', () => {
+      const { container } = render(<Card card={mockCard} onClick={() => {}} />);
+
+      const cardElement = container.firstChild as HTMLElement;
+      expect(cardElement.getAttribute('draggable')).toBe('true');
+    });
+
+    it('should not be draggable when draggable is false', () => {
+      const { container } = render(
+        <Card card={mockCard} draggable={false} onDragStart={() => {}} onClick={() => {}} />
+      );
+
+      const cardElement = container.firstChild as HTMLElement;
+      expect(cardElement.getAttribute('draggable')).toBe('false');
+    });
+
+    it('should not be draggable without any interaction handlers', () => {
+      const { container } = render(<Card card={mockCard} />);
+
+      const cardElement = container.firstChild as HTMLElement;
+      expect(cardElement.getAttribute('draggable')).toBe('false');
+    });
+  });
+
   describe('selection and highlighting', () => {
     it('should apply selected styling', () => {
       const { container } = render(<Card card={mockCard} isSelected={true} />);

@@ -239,13 +239,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '16px',
+          marginBottom: isMobile ? '8px' : '16px',
           color: 'white',
           flexWrap: 'wrap',
-          gap: '12px',
+          gap: isMobile ? '8px' : '12px',
         }}
       >
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Spider Solitaire</h1>
+        <h1 style={{ fontSize: isMobile ? '1.15rem' : '1.5rem', fontWeight: 'bold' }}>
+          Spider Solitaire
+        </h1>
 
         <GameControls
           moves={gameState.moves}
@@ -308,9 +310,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
               );
             })}
           </div>
-          <span style={{ fontSize: '0.7em', color: '#94a3b8', fontStyle: 'italic' }}>
-            (applies to next game)
-          </span>
+          {!isMobile && (
+            <span style={{ fontSize: '0.7em', color: '#94a3b8', fontStyle: 'italic' }}>
+              (applies to next game)
+            </span>
+          )}
         </div>
       </div>
 
@@ -346,6 +350,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ initialState, onNewGame })
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
         positioningStrategy="absolute"
+        dropZoneHeight={Math.round(layoutSizes.cardHeight * 1.5)}
       />
 
       {/* Win celebration + modal */}

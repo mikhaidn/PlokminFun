@@ -322,6 +322,68 @@ describe('Touch Interaction Bugs - Diagnostic Tests', () => {
       );
       expect(mockExecuteMove).toHaveBeenCalled();
     });
+
+    it('Should handle drop on a nested element inside a drop target (regression)', () => {
+      // Bug: elementFromPoint returns the deepest element under the finger,
+      // which is usually a card's inner rank/suit div with no data attributes.
+      // The hook must walk up to the closest [data-drop-target-type] ancestor.
+      mockValidateMove.mockReturnValue(true);
+      const { result } = renderHook(() => useCardInteraction(config));
+
+      const sourceLocation: GameLocation = {
+        type: 'tableau',
+        index: 0,
+        cardIndex: 5,
+        cardCount: 1,
+      };
+
+      const touchStartEvent = {
+        touches: [{ clientX: 100, clientY: 200 }],
+        preventDefault: vi.fn(),
+      } as unknown as React.TouchEvent;
+
+      const touchMoveEvent = {
+        touches: [{ clientX: 150, clientY: 250 }],
+        preventDefault: vi.fn(),
+      } as unknown as React.TouchEvent;
+
+      // Card element with drop attributes containing an inner glyph div
+      const mockCardElement = document.createElement('div');
+      mockCardElement.setAttribute('data-drop-target-type', 'tableau');
+      mockCardElement.setAttribute('data-drop-target-index', '4');
+      const innerGlyph = document.createElement('div');
+      mockCardElement.appendChild(innerGlyph);
+
+      // The finger lands on the inner glyph, not the card element itself
+      document.elementFromPoint = vi.fn().mockReturnValue(innerGlyph);
+
+      const touchEndEvent = {
+        changedTouches: [{ clientX: 250, clientY: 300 }],
+        preventDefault: vi.fn(),
+      } as unknown as React.TouchEvent;
+
+      act(() => {
+        const handler = result.current.handlers.handleTouchStart(sourceLocation);
+        handler(touchStartEvent);
+      });
+
+      act(() => {
+        result.current.handlers.handleTouchMove(touchMoveEvent);
+      });
+
+      act(() => {
+        result.current.handlers.handleTouchEnd(touchEndEvent);
+      });
+
+      expect(mockValidateMove).toHaveBeenCalledWith(
+        sourceLocation,
+        expect.objectContaining({
+          type: 'tableau',
+          index: 4,
+        })
+      );
+      expect(mockExecuteMove).toHaveBeenCalled();
+    });
   });
 
   describe('Touch behavior edge cases', () => {

@@ -308,6 +308,40 @@ describe('GenericTableau', () => {
     });
   });
 
+  describe('mouse drag-and-drop (regression test)', () => {
+    /**
+     * REGRESSION TEST for Spider (and Klondike/FreeCell) drag-and-drop
+     *
+     * Issue: Card only rendered draggable=true when it received an onClick
+     * prop, but GenericTableau attaches clicks to a wrapper div. Result:
+     * no tableau card was ever draggable with the mouse.
+     */
+    it('should render face-up cards as draggable when onDragStart is provided', () => {
+      const columns: TableauColumnData[] = [
+        {
+          cards: [
+            { card: { suit: '♠', value: 'K', rank: 13, id: 'K♠' }, faceUp: false },
+            { card: { suit: '♥', value: 'Q', rank: 12, id: 'Q♥' }, faceUp: true },
+          ],
+        },
+      ];
+
+      const { container } = render(
+        <GenericTableau
+          columns={columns}
+          layoutSizes={mockLayoutSizes}
+          onClick={vi.fn()}
+          onEmptyColumnClick={vi.fn()}
+          onDragStart={() => () => {}}
+          positioningStrategy="absolute"
+        />
+      );
+
+      const draggableCards = container.querySelectorAll('[draggable="true"]');
+      expect(draggableCards.length).toBe(1); // only the face-up card
+    });
+  });
+
   describe('touch drag-and-drop data attributes (regression test)', () => {
     /**
      * REGRESSION TEST for iPhone card movement bug
