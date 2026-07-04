@@ -42,6 +42,29 @@ describe('CardFlip', () => {
     });
   });
 
+  describe('Drag-and-drop (regression test)', () => {
+    /**
+     * REGRESSION TEST for the Klondike waste pile
+     *
+     * StockWaste passes onDragStart to CardFlip but keeps onClick on the
+     * wrapper div, so the inner Card must be draggable without an onClick.
+     */
+    it('should render the card face as draggable when onDragStart is provided', () => {
+      const { container } = render(
+        <CardFlip
+          card={mockCard}
+          faceUp={true}
+          cardWidth={60}
+          cardHeight={84}
+          onDragStart={vi.fn()}
+        />
+      );
+
+      const draggableFace = container.querySelector('.card-flip-front [draggable="true"]');
+      expect(draggableFace).toBeTruthy();
+    });
+  });
+
   describe('Flip animation', () => {
     it('should use custom flip duration', () => {
       const { container } = render(
