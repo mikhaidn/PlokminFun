@@ -9,7 +9,8 @@
     "shared",
     "dog-care-tracker",
     "pet-care",
-    "light-vod-editor"
+    "light-vod-editor",
+    "js-repl"
   ],
   "scripts": {
     "build:shared": "npm run build -w shared",
@@ -46,6 +47,7 @@
     "rfc:new": "cd rfcs && ./scripts/new-rfc.sh",
     "rfc:status": "cd rfcs && ./scripts/update-status.sh",
     "dev:lightvoded": "npm run dev -w light-vod-editor",
+    "dev:js-repl": "npm run dev -w js-repl",
     "check:site": "node scripts/site/check-site.mjs",
     "build:site": "node scripts/site/build-site.mjs"
   },
