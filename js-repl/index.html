@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/PlokminFun/js-repl/icon-192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d1117" />
+    <meta
+      name="description"
+      content="JavaScript Playground - run JavaScript instantly in your browser. Offline-capable REPL with examples and shareable snippets."
+    />
+    <title>JavaScript Playground</title>
+  </head>
+  <body>
+    <header>
+      <span class="logo">⚡</span>
+      <h1>JavaScript Playground</h1>
+      <span class="spacer"></span>
+      <div class="toolbar">
+        <select id="examples" aria-label="Load an example">
+          <option value="" disabled selected>Examples…</option>
+        </select>
+        <button id="share">Share</button>
+        <button id="clear">Clear</button>
+        <button id="run" class="primary">Run ▸</button>
+        <span class="kbd-hint">⌘/Ctrl + Enter</span>
+      </div>
+    </header>
+    <main>
+      <section class="pane">
+        <div class="pane-label">Editor</div>
+        <textarea
+          id="editor"
+          spellcheck="false"
+          autocapitalize="off"
+          autocorrect="off"
+          autocomplete="off"
+          aria-label="JavaScript editor"
+        ></textarea>
+      </section>
+      <section class="pane">
+        <div class="pane-label">Output</div>
+        <div id="output" aria-live="polite"></div>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
