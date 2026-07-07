@@ -1,0 +1,25 @@
+{
+  "name": "sixballmonty-mvp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "6 Ball Monty - falling-ball chain puzzle (RFC-008). Phase 1: headless engine only.",
+  "scripts": {
+    "build": "echo 'sixballmonty-mvp: Phase 1 is a headless engine library, no app build yet'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vitest": "^2.1.8"
+  }
+}
