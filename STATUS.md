@@ -1,15 +1,19 @@
 # Project Status
 
-**Last Updated:** 2025-12-28
-**Current Phase:** P5 - Usability Improvements (Quick Wins)
-**Next Milestone:** Remove confusion points and improve mobile experience
+**Last Updated:** 2026-07-07
+**Current Phase:** RFC-008 6 Ball Monty — Phase 1 (headless deterministic engine, solo + versus core)
+**Next Milestone:** Fully tested, rendering-free engine library (determinism + self-play soak green); graphics begin in Phase 2
 
 ---
 
 ## 🎯 Current Sprint
 
 ### Active Work
-- None - Ready for next priority
+- **RFC-008 6 Ball Monty** ⬅️ **OWNER PRIORITY (2026-07-07)**
+  - Falling-ball chain puzzle (6-Ball-Puzzle / Puyo genre); first real-time game, first multiplayer capability, first puzzle-maker/UGC capability
+  - Approved and prioritized by owner — this comes before other queued work
+  - Start with Phase 1 per [rfcs/008-six-ball-monty/07-implementation.md](rfcs/008-six-ball-monty/07-implementation.md): **engine only, zero graphics** (owner wants engine/graphics as strictly separate phases), including the versus core since **multiplayer is the owner's first focus**
+  - Owner decisions locked in: name **"6 Ball Monty"** (slug `sixballmonty`), rollback netcode, multiplayer (ph3-4) before puzzle maker (ph5), MechanicsConfig-as-data with placeholder tuning, fragment puzzle URLs — see [09-risks-and-decisions.md](rfcs/008-six-ball-monty/09-risks-and-decisions.md)
 
 ### Blocked/Waiting
 - None
@@ -435,28 +439,23 @@
 
 ## 📋 Next 3 Tasks
 
-1. **Game State Serialization (RFC-006)** (1-2 days) ⬅️ NEXT
-   - Encode/decode game state to compact string format (~55-89 bytes)
-   - Self-describing header (version + game type + config)
-   - Support sharing specific tableau positions (independent of seed)
-   - URL-safe base64url format for easy sharing
-   - Foundation for daily challenges and puzzle sharing
-   - Enables "share this game" social feature
-   - See: [RFC-006](../rfcs/006-game-state-serialization/README.md)
+1. **RFC-008 6 Ball Monty — Phase 1: Headless engine (solo + versus core)** (~3 days) ⬅️ NEXT (OWNER PRIORITY)
+   - TDD the pure deterministic engine (tick, pieces, resolve, garbage, MatchController, replay)
+   - **No rendering, no React** — deliverable is a library + test suite
+   - Exit: determinism test green (same seed+inputs ⇒ same hash), self-play soak clean, 95%+ engine coverage
+   - See: [RFC-008 implementation plan](rfcs/008-six-ball-monty/07-implementation.md)
 
-2. **Game Persistence** (1-2 days)
-   - Save game state to localStorage on each move
-   - Restore game state on page load
-   - Handle multiple concurrent games (per-game key)
-   - Clear completed games after celebration
-   - Use serialization from task #1
+2. **RFC-008 6 Ball Monty — Phase 2: Graphics & solo app** (2-3 days)
+   - All rendering: well/ball components, keyboard + touch controls, chrome, PWA, landing-page entry as "6 Ball Monty"
+   - Includes the tuning/playtesting pass that sets real preset values (placeholders until then)
 
-3. **Daily Challenge System** (2-3 days)
-   - Generate daily game position (not just seed)
-   - Same challenge for all players globally
-   - Track completion status in localStorage
-   - Show streak counter
-   - Leverage game state serialization from task #1
+3. **Game State Serialization (RFC-006)** (1-2 days)
+   - Pushed down by RFC-008 priority, and now informed by it: 6 Ball Monty's puzzle/replay
+     URL envelope (deflate + base64url fragment) is a candidate general format
+   - Still the foundation for card-game persistence, daily challenges, and sharing
+   - See: [RFC-006](rfcs/006-game-state-serialization/README.md)
+
+(Previously queued Game Persistence and Daily Challenge move behind these; see ROADMAP.md)
 
 ---
 
