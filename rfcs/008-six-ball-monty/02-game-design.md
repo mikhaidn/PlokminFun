@@ -18,6 +18,7 @@
 |---|---|---|
 | **Marathon** | Solo survival; speed ramps up over time; score chasing | 2 |
 | **Sprint** | Clear N balls / reach score X as fast as possible | 2 |
+| **Sandbox** | Free play for user testing/tuning: live gravity/colors/pop-size knobs, hard drop on, visible seed with same-seed restart | 2 |
 | **Versus (local)** | 2 players, one keyboard or keyboard+gamepad/touch, garbage attacks | 3 |
 | **Versus (online)** | Same rules as local versus over WebRTC | 4 |
 | **Puzzle** | Preset board + fixed piece queue + goal ("clear all", "make a 4-chain") | 5 |

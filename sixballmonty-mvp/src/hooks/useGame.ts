@@ -23,6 +23,8 @@ import { useGameLoop } from './useGameLoop';
 export interface UseGameResult {
   state: GameState;
   running: boolean;
+  /** Seed of the current game — display it so sessions are reproducible. */
+  seed: number;
   /** On-screen touch pad drives this source. */
   touch: VirtualSource;
   pause(): void;
@@ -103,6 +105,7 @@ export function useGame(
   return {
     state: snapshot,
     running,
+    seed,
     touch,
     pause: useCallback(() => setPaused(true), []),
     resume: useCallback(() => setPaused(false), []),

@@ -5,9 +5,11 @@
 import { useMemo, useState } from 'react';
 import { HelpModal } from '@plokmin/shared';
 import { MODES, SPEED_PRESETS, HELP_CONTENT, type Mode } from './sixballmonty.config';
+import { buildSandboxConfig, DEFAULT_SANDBOX_OPTIONS, type SandboxOptions } from './sandbox';
 import { loadBindings, type BindingProfile } from './input';
 import { GameScreen } from './components/GameScreen';
 import { BindingsEditor } from './components/BindingsEditor';
+import { SandboxPanel } from './components/SandboxPanel';
 import './index.css';
 
 type Screen = 'menu' | 'playing';
@@ -16,16 +18,24 @@ export default function App(): React.JSX.Element {
   const [screen, setScreen] = useState<Screen>('menu');
   const [mode, setMode] = useState<Mode>('marathon');
   const [speedPreset, setSpeedPreset] = useState<string>('classic');
+  const [sandboxOptions, setSandboxOptions] = useState<SandboxOptions>(DEFAULT_SANDBOX_OPTIONS);
   const [profile, setProfile] = useState<BindingProfile>(() => loadBindings('p1'));
   const [showSettings, setShowSettings] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
-  // Marathon honors the chosen speed preset; Sprint has its own fixed config.
+  // Marathon honors the chosen speed preset; Sprint is fixed; Sandbox is
+  // rebuilt live from its knobs.
   const config = useMemo(() => {
-    const base = MODES[mode];
-    if (mode === 'marathon') return SPEED_PRESETS[speedPreset] ?? base.config;
-    return base.config;
-  }, [mode, speedPreset]);
+    if (mode === 'marathon') return SPEED_PRESETS[speedPreset] ?? MODES.marathon.config;
+    if (mode === 'sandbox') return buildSandboxConfig(sandboxOptions);
+    return MODES[mode].config;
+  }, [mode, speedPreset, sandboxOptions]);
+
+  // Changing a sandbox knob remounts the game with the new mechanics.
+  const gameKey =
+    mode === 'sandbox'
+      ? `sandbox-${sandboxOptions.gravity}-${sandboxOptions.colors}-${sandboxOptions.matchSize}`
+      : mode;
 
   return (
     <div className="sbm-app">
@@ -66,12 +76,26 @@ export default function App(): React.JSX.Element {
 
       {screen === 'playing' && (
         <GameScreen
+          key={gameKey}
           mode={MODES[mode]}
           config={config}
           profile={profile}
           onExit={() => setScreen('menu')}
           onOpenSettings={() => setShowSettings(true)}
           onOpenHelp={() => setShowHelp(true)}
+          renderExtras={
+            mode === 'sandbox'
+              ? (game) => (
+                  <SandboxPanel
+                    options={sandboxOptions}
+                    onChange={setSandboxOptions}
+                    seed={game.seed}
+                    onReplaySeed={() => game.restart(game.seed)}
+                    onNewSeed={() => game.restart()}
+                  />
+                )
+              : undefined
+          }
         />
       )}
 

@@ -4,10 +4,11 @@
  * snapshots from useGame and paints them.
  */
 import { useEffect, useRef } from 'react';
+import type { ReactNode } from 'react';
 import type { BindingProfile } from '../input';
 import type { MechanicsConfig } from '../engine';
 import type { ModeDef } from '../sixballmonty.config';
-import { useGame } from '../hooks/useGame';
+import { useGame, type UseGameResult } from '../hooks/useGame';
 import { useResponsiveCell } from '../hooks/useResponsiveCell';
 import { Well } from './Well';
 import { GameHud } from './GameHud';
@@ -21,6 +22,8 @@ interface GameScreenProps {
   onExit(): void;
   onOpenSettings(): void;
   onOpenHelp(): void;
+  /** Extra strip rendered under the top bar (sandbox knobs); receives the game. */
+  renderExtras?(game: UseGameResult): ReactNode;
 }
 
 export function GameScreen({
@@ -30,6 +33,7 @@ export function GameScreen({
   onExit,
   onOpenSettings,
   onOpenHelp,
+  renderExtras,
 }: GameScreenProps): React.JSX.Element {
   const game = useGame(config, profile);
   const { state, running, touch, togglePause, restart, pause } = game;
@@ -91,6 +95,8 @@ export function GameScreen({
           </button>
         </div>
       </div>
+
+      {renderExtras?.(game)}
 
       <div className="sbm-play">
         <div className="sbm-well-wrap">

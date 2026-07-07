@@ -157,6 +157,43 @@ body {
   position: relative;
 }
 
+/* --- Sandbox strip --- */
+.sbm-sandbox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  background: var(--sbm-bg-2);
+  border: 1px solid var(--sbm-border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+.sbm-sandbox__field {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--sbm-muted);
+}
+.sbm-sandbox__field select {
+  padding: 0.25rem 0.4rem;
+  border-radius: 6px;
+  background: var(--sbm-bg);
+  color: var(--sbm-text);
+  border: 1px solid var(--sbm-border);
+}
+.sbm-sandbox__seed {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+.sbm-sandbox__seedvalue {
+  font-family: ui-monospace, monospace;
+  color: var(--sbm-muted);
+}
+
 /* --- Well & balls --- */
 .sbm-well {
   position: relative;

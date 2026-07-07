@@ -5,8 +5,9 @@
  */
 import type { HelpContent } from '@plokmin/shared';
 import { CLASSIC, MINI, FRANTIC, type MechanicsConfig } from './engine';
+import { buildSandboxConfig, DEFAULT_SANDBOX_OPTIONS } from './sandbox';
 
-export type Mode = 'marathon' | 'sprint';
+export type Mode = 'marathon' | 'sprint' | 'sandbox';
 
 export interface ModeDef {
   readonly id: Mode;
@@ -30,6 +31,13 @@ export const MODES: Record<Mode, ModeDef> = {
     blurb: 'Clear 40 balls as fast as you can.',
     config: { ...MINI, gravity: { ...MINI.gravity, hardDrop: true } },
     clearGoal: 40,
+  },
+  sandbox: {
+    id: 'sandbox',
+    label: 'Sandbox',
+    blurb: 'Free play. Tweak gravity, colors, and pop size while you play.',
+    // Default only — the app rebuilds this live from the sandbox knobs.
+    config: buildSandboxConfig(DEFAULT_SANDBOX_OPTIONS),
   },
 };
 

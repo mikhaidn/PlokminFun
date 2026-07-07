@@ -28,6 +28,7 @@
 
 - [x] **Graphics & solo app** (`sixballmonty-mvp/src`) ✅ COMPLETE
   - Marathon (survive the speed-up) and Sprint (clear 40 balls) modes on the Phase 1 engine
+  - **Sandbox mode for user testing** (owner request): free play with live knobs (gravity zen/slow/normal/fast, 3-5 colors, pop-at 3-5), hard drop always on, garbage economy off, and a visible seed with "same seed" restart so testers can reproduce exactly what they saw — the venue for the tuning pass
   - **Device-agnostic input config system** (the core of the phase):
     - Six logical `Control`s; devices reduce to them and an adapter turns them into engine events
     - Rebindable `BindingProfile`s — keyboard live (P1 arrows/Z/X/Space, P2 WASD for ph3), gamepad Standard-layout mapping defined for Phase 3
