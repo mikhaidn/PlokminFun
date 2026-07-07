@@ -17,7 +17,7 @@
 | 005 | Unified Game Builder | 📝 Proposed | [README](005-unified-game-builder/) | motivation, solution, alternatives, implementation, testing, risks, decisions |
 | 006 | Game State Serialization + Wire Contracts | 📝 Proposed / ✅ policy adopted | [README](006-game-state-serialization/) | solution, implementation, **wire-contracts (repo-wide policy + registry)** |
 | 007 | FreeCell Mini | 📝 Proposed | [README](007-freecell-mini/) | motivation, solution, implementation, testing, daily-challenge |
-| 008 | 6 Ball Monty (6-Ball-Puzzle-style game) | 🔄 Implementing — **TOP PRIORITY** (Phase 1 ✅) | [README](008-six-ball-monty/) | motivation, game-design, engine, controls-and-multiplayer, online, puzzle-maker, implementation, testing, risks-and-decisions |
+| 008 | 6 Ball Monty (6-Ball-Puzzle-style game) | 🔄 Implementing — **TOP PRIORITY** (Phases 1-2 ✅) | [README](008-six-ball-monty/) | motivation, game-design, engine, controls-and-multiplayer, online, puzzle-maker, implementation, testing, risks-and-decisions |
 
 ---
 

@@ -74,6 +74,7 @@ rules below.
 | 6BM `NetMsg` rollback protocol | network | RFC-008 [05-online.md](../008-six-ball-monty/05-online.md) | Planned (Phase 4) |
 | 6BM `PuzzleDef` | URL + storage | RFC-008 [06-puzzle-maker.md](../008-six-ball-monty/06-puzzle-maker.md) | Planned (Phase 5) |
 | Settings storage | localStorage | `shared/utils/settingsStorage.ts` | Shipped (has migration) |
+| 6BM key bindings (`v1`) | localStorage | `sixballmonty-mvp/src/input/bindings.ts` | Shipped (Phase 2; versioned, validating loader) |
 | Game saves (persistence, P6) | localStorage | RFC-006 + P6 roadmap item | Planned |
 
 ---
