@@ -39,7 +39,7 @@ Random input streams against invariants:
 
 - Adapter tests: synthetic keyboard/pointer events ⇒ expected `InputEvent` streams (DAS/ARR timing via fake timers — timing lives in adapters, *not* the engine, precisely so it can be faked)
 - Smoke: render each mode, play a scripted 10-piece game via dispatched inputs, assert board snapshot
-- Netcode (Phase 5): two in-process peers over a mock DataChannel with injected latency/jitter/reorder ⇒ hash agreement; dropped-connection path
+- Netcode (Phase 4): two in-process peers over a mock DataChannel with injected latency/jitter/reorder ⇒ hash agreement; dropped-connection path
 
 ## CI
 

@@ -57,7 +57,7 @@ Each phase has a tick duration so the UI can animate pops/falls by *observing* p
 
 A match is two independent engine instances plus a thin `MatchController` that moves `outgoingGarbage` from one state's resolution into the other's `pendingGarbage`. The controller is itself pure and tick-driven, so a whole 2P match is *also* deterministic and replayable. Local and online versus share this controller; only the input sources differ (04/05).
 
-## Module layout (in `chaindrop-mvp/src/engine/`)
+## Module layout (in `sixballmonty-mvp/src/engine/`)
 
 ```
 engine/

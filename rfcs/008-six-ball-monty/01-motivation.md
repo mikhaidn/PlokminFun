@@ -16,7 +16,7 @@ The *essence* we want is not Nintendo's specific implementation — it's the gen
 
 The repo has two shipped solitaire games, a shared library, and a config-driven game-builder direction (RFC-005). What we *don't* have:
 
-| Capability gap | How Chain Drop fills it |
+| Capability gap | How 6 Ball Monty fills it |
 |---|---|
 | **Real-time gameplay** | Fixed-timestep engine with gravity, lock delay, input queue |
 | **Multiplayer (any kind)** | Local 2P versus is a core mode, not an add-on |

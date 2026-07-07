@@ -1,22 +1,22 @@
 # Project Status
 
 **Last Updated:** 2026-07-07
-**Current Phase:** RFC-008 Chain Drop — Phase 1 (deterministic engine + solo play)
-**Next Milestone:** Playable Marathon mode backed by a fully tested, deterministic engine
+**Current Phase:** RFC-008 6 Ball Monty — Phase 1 (headless deterministic engine, solo + versus core)
+**Next Milestone:** Fully tested, rendering-free engine library (determinism + self-play soak green); graphics begin in Phase 2
 
 ---
 
 ## 🎯 Current Sprint
 
 ### Active Work
-- **RFC-008 Chain Drop** ⬅️ **OWNER PRIORITY (2026-07-07)**
+- **RFC-008 6 Ball Monty** ⬅️ **OWNER PRIORITY (2026-07-07)**
   - Falling-ball chain puzzle (6-Ball-Puzzle / Puyo genre); first real-time game, first multiplayer capability, first puzzle-maker/UGC capability
   - Approved and prioritized by owner — this comes before other queued work
-  - Start with Phase 1 (engine, TDD) per [rfcs/008-chain-drop/07-implementation.md](rfcs/008-chain-drop/07-implementation.md)
-  - Key decisions already made: rollback netcode, MechanicsConfig-as-data, fragment puzzle URLs — see [09-risks-and-decisions.md](rfcs/008-chain-drop/09-risks-and-decisions.md)
+  - Start with Phase 1 per [rfcs/008-six-ball-monty/07-implementation.md](rfcs/008-six-ball-monty/07-implementation.md): **engine only, zero graphics** (owner wants engine/graphics as strictly separate phases), including the versus core since **multiplayer is the owner's first focus**
+  - Owner decisions locked in: name **"6 Ball Monty"** (slug `sixballmonty`), rollback netcode, multiplayer (ph3-4) before puzzle maker (ph5), MechanicsConfig-as-data with placeholder tuning, fragment puzzle URLs — see [09-risks-and-decisions.md](rfcs/008-six-ball-monty/09-risks-and-decisions.md)
 
 ### Blocked/Waiting
-- Ship name for Chain Drop (RFC-008 decision D5) — needed before Phase 2 landing-page entry, not blocking Phase 1
+- None
 
 ---
 
@@ -439,18 +439,18 @@
 
 ## 📋 Next 3 Tasks
 
-1. **RFC-008 Chain Drop — Phase 1: Engine + minimal solo** (3-4 days) ⬅️ NEXT (OWNER PRIORITY)
-   - TDD the pure deterministic engine (tick, pieces, resolve, garbage, replay)
-   - Bare-bones well rendering + keyboard adapter; Marathon mode playable
-   - Exit: determinism test green (same seed+inputs ⇒ same hash), 95%+ engine coverage
-   - See: [RFC-008 implementation plan](rfcs/008-chain-drop/07-implementation.md)
+1. **RFC-008 6 Ball Monty — Phase 1: Headless engine (solo + versus core)** (~3 days) ⬅️ NEXT (OWNER PRIORITY)
+   - TDD the pure deterministic engine (tick, pieces, resolve, garbage, MatchController, replay)
+   - **No rendering, no React** — deliverable is a library + test suite
+   - Exit: determinism test green (same seed+inputs ⇒ same hash), self-play soak clean, 95%+ engine coverage
+   - See: [RFC-008 implementation plan](rfcs/008-six-ball-monty/07-implementation.md)
 
-2. **RFC-008 Chain Drop — Phase 2: Real app** (2-3 days)
-   - Touch controls, settings/help/victory chrome, animations, PWA, landing-page entry
+2. **RFC-008 6 Ball Monty — Phase 2: Graphics & solo app** (2-3 days)
+   - All rendering: well/ball components, keyboard + touch controls, chrome, PWA, landing-page entry as "6 Ball Monty"
    - Includes the tuning/playtesting pass that sets real preset values (placeholders until then)
 
 3. **Game State Serialization (RFC-006)** (1-2 days)
-   - Pushed down by RFC-008 priority, and now informed by it: Chain Drop's puzzle/replay
+   - Pushed down by RFC-008 priority, and now informed by it: 6 Ball Monty's puzzle/replay
      URL envelope (deflate + base64url fragment) is a candidate general format
    - Still the foundation for card-game persistence, daily challenges, and sharing
    - See: [RFC-006](rfcs/006-game-state-serialization/README.md)

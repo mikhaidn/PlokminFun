@@ -16,11 +16,11 @@
 
 | Mode | Description | Phase |
 |---|---|---|
-| **Marathon** | Solo survival; speed ramps up over time; score chasing | 1 |
+| **Marathon** | Solo survival; speed ramps up over time; score chasing | 2 |
 | **Sprint** | Clear N balls / reach score X as fast as possible | 2 |
 | **Versus (local)** | 2 players, one keyboard or keyboard+gamepad/touch, garbage attacks | 3 |
-| **Puzzle** | Preset board + fixed piece queue + goal ("clear all", "make a 4-chain") | 4 |
-| **Versus (online)** | Same rules as local versus over WebRTC | 5 |
+| **Versus (online)** | Same rules as local versus over WebRTC | 4 |
+| **Puzzle** | Preset board + fixed piece queue + goal ("clear all", "make a 4-chain") | 5 |
 | **Daily challenge** | Seeded marathon/puzzle of the day (ties into RFC-006/007 daily systems) | later |
 
 ## MechanicsConfig — configurable mechanics

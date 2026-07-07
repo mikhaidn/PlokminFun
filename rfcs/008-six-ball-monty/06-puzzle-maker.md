@@ -25,7 +25,7 @@ interface PuzzleDef {
 
 ## Puzzle maker (authoring)
 
-An in-app editor page (route within `chaindrop-mvp`, feature-flagged via `FEATURE_FLAGS`):
+An in-app editor page (route within `sixballmonty-mvp`, feature-flagged via `FEATURE_FLAGS`):
 
 1. **Board painter:** tap/click cells cycling colors (or pick color then paint); garbage balls paintable too
 2. **Queue builder:** compose the exact piece sequence (1-8 pieces)

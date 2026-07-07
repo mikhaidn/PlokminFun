@@ -17,7 +17,7 @@
 | 005 | Unified Game Builder | 📝 Proposed | [README](005-unified-game-builder/) | motivation, solution, alternatives, implementation, testing, risks, decisions |
 | 006 | Game State Serialization | 📝 Proposed | [README](006-game-state-serialization/) | solution, implementation |
 | 007 | FreeCell Mini | 📝 Proposed | [README](007-freecell-mini/) | motivation, solution, implementation, testing, daily-challenge |
-| 008 | Chain Drop (6-Ball-Puzzle-style game) | ✅ Approved — **TOP PRIORITY** | [README](008-chain-drop/) | motivation, game-design, engine, controls-and-multiplayer, online, puzzle-maker, implementation, testing, risks-and-decisions |
+| 008 | 6 Ball Monty (6-Ball-Puzzle-style game) | ✅ Approved — **TOP PRIORITY** | [README](008-six-ball-monty/) | motivation, game-design, engine, controls-and-multiplayer, online, puzzle-maker, implementation, testing, risks-and-decisions |
 
 ---
 

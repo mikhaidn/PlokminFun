@@ -14,7 +14,7 @@ Deterministic `(config, seed, inputs)` replays (03-engine.md) enable server-less
 
 This ships real "play against a friend" value with zero servers and is the fallback whenever real-time fails.
 
-## Step 2: Real-time versus over WebRTC (Phase 5)
+## Step 2: Real-time versus over WebRTC (Phase 4)
 
 **Topology:** 1v1 peer-to-peer `RTCDataChannel`, no relay of game traffic.
 
