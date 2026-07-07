@@ -17,6 +17,7 @@
 | 005 | Unified Game Builder | 📝 Proposed | [README](005-unified-game-builder/) | motivation, solution, alternatives, implementation, testing, risks, decisions |
 | 006 | Game State Serialization | 📝 Proposed | [README](006-game-state-serialization/) | solution, implementation |
 | 007 | FreeCell Mini | 📝 Proposed | [README](007-freecell-mini/) | motivation, solution, implementation, testing, daily-challenge |
+| 008 | Chain Drop (6-Ball-Puzzle-style game) | 📝 Proposed | [README](008-chain-drop/) | motivation, game-design, engine, controls-and-multiplayer, online, puzzle-maker, implementation, testing, risks-and-decisions |
 
 ---
 
@@ -154,10 +155,10 @@ grep -r "your topic" rfcs/
 
 ## 📊 RFC Statistics
 
-- **Total RFCs:** 7
+- **Total RFCs:** 8
 - **Implemented:** 1 (RFC-001)
 - **In Progress:** 1 (RFC-003)
-- **Proposed:** 5 (RFC-002, RFC-004, RFC-005, RFC-006, RFC-007)
+- **Proposed:** 6 (RFC-002, RFC-004, RFC-005, RFC-006, RFC-007, RFC-008)
 - **Average sections per RFC:** 5-7
 - **Max lines per RFC:** ~1000 (split across sections)
 
