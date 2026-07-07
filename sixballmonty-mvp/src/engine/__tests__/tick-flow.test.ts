@@ -26,7 +26,7 @@ describe('spawning', () => {
     const s = tick(createInitialState(1, noFall), [], noFall);
     expect(s.phase).toBe('falling');
     expect(s.active).not.toBeNull();
-    expect(s.active!.row).toBe(1); // first visible row (1 hidden row above)
+    expect(s.active!.row).toBe(2); // pivot on 2nd visible row; satellite above on the 1st
     expect(s.active!.col).toBe(2);
     expect(s.active!.orientation).toBe(0);
     expect(s.queue).toHaveLength(2); // previewCount stays visible

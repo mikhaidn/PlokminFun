@@ -138,7 +138,9 @@ function spawn(s: GameState, config: MechanicsConfig): GameState {
   const [pair, ...rest] = refilled.queue;
   const piece = {
     colors: pair,
-    row: config.board.hiddenRows,
+    // Pivot on the second visible row so the satellite (above it, orientation 0)
+    // lands on the first visible row — both balls of a fresh pair are visible.
+    row: config.board.hiddenRows + 1,
     col: Math.floor((config.board.columns - 1) / 2),
     orientation: 0 as const,
   };

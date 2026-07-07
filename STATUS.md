@@ -1,8 +1,8 @@
 # Project Status
 
 **Last Updated:** 2026-07-07
-**Current Phase:** RFC-008 6 Ball Monty — Phase 1 ✅ complete, Phase 2 (graphics & solo app) next
-**Next Milestone:** Playable Marathon/Sprint on phone, shipped to the landing page as "6 Ball Monty"
+**Current Phase:** RFC-008 6 Ball Monty — Phases 1 & 2 ✅ complete, Phase 3 (local versus) next
+**Next Milestone:** Two players, one device — couch versus over the Phase 1 MatchController
 
 ---
 
@@ -11,18 +11,36 @@
 ### Active Work
 - **RFC-008 6 Ball Monty** ⬅️ **OWNER PRIORITY (2026-07-07)**
   - Falling-ball chain puzzle (6-Ball-Puzzle / Puyo genre); first real-time game, first multiplayer capability, first puzzle-maker/UGC capability
-  - **Phase 1 (headless engine) is DONE** — see Recently Completed below
-  - Next: Phase 2 per [rfcs/008-six-ball-monty/07-implementation.md](rfcs/008-six-ball-monty/07-implementation.md) — all rendering, keyboard+touch adapters, app chrome, PWA, landing-page entry, and the tuning/playtest pass
+  - **Phases 1 (headless engine) and 2 (graphics & solo app) are DONE** — see Recently Completed below
+  - Next: Phase 3 (local versus) per [rfcs/008-six-ball-monty/07-implementation.md](rfcs/008-six-ball-monty/07-implementation.md) — UI over the already-tested MatchController: side-by-side wells, P2 keyboard + gamepad adapters, best-of-N
   - Owner decisions locked in: name **"6 Ball Monty"** (slug `sixballmonty`), rollback netcode, multiplayer (ph3-4) before puzzle maker (ph5), MechanicsConfig-as-data with placeholder tuning, fragment puzzle URLs — see [09-risks-and-decisions.md](rfcs/008-six-ball-monty/09-risks-and-decisions.md)
 
 ### Blocked/Waiting
-- None
+- **Placeholder PWA icons** for 6 Ball Monty (currently Spider's art) — replace before wide release; not blocking (landing card uses the 🎱 emoji)
 
 ---
 
 ## ✅ Recently Completed
 
 ### Week of 2026-07-07
+
+**MILESTONE: RFC-008 Phase 2 — 6 Ball Monty solo app is live & playable 🎱**
+
+- [x] **Graphics & solo app** (`sixballmonty-mvp/src`) ✅ COMPLETE
+  - Marathon (survive the speed-up) and Sprint (clear 40 balls) modes on the Phase 1 engine
+  - **Device-agnostic input config system** (the core of the phase):
+    - Six logical `Control`s; devices reduce to them and an adapter turns them into engine events
+    - Rebindable `BindingProfile`s — keyboard live (P1 arrows/Z/X/Space, P2 WASD for ph3), gamepad Standard-layout mapping defined for Phase 3
+    - Pure, unit-tested DAS/ARR `stepAdapter` (immediate move → delay → auto-repeat); timing lives here, not in the engine
+    - In-app keyboard rebinding UI; custom bindings persist as a versioned localStorage wire contract (registered in RFC-006)
+  - `useGameLoop`: rAF + fixed-timestep accumulator, frame-rate independent, edge inputs fire once per frame
+  - Rendering: Well + balls with color **and** symbol (accessible), next-queue, HUD, pop/chain animations honoring `prefers-reduced-motion`
+  - On-screen touch button-pad for mobile (shares the same Control path); responsive sizing; PWA parity
+  - Fresh pairs now spawn with **both balls visible** (engine spawn refined from Phase 1)
+  - Landing-page entry as **6 Ball Monty** (🎱); auto-discovered by the site builder
+  - **Tests:** 100 total (+23 input: DAS/ARR timing, edge/toggle semantics, rebind + versioned storage round-trip/fallback)
+  - Verified in a real browser (desktop + emulated mobile): sim advances, pieces lock, rebinding persists, touch pad appears, zero console errors
+  - Full `npm run validate` green
 
 **MILESTONE: RFC-008 Phase 1 — 6 Ball Monty headless engine 🎱**
 
@@ -456,13 +474,13 @@
 
 ## 📋 Next 3 Tasks
 
-1. **RFC-008 6 Ball Monty — Phase 2: Graphics & solo app** (2-3 days) ⬅️ NEXT (OWNER PRIORITY)
-   - All rendering: well/ball components, keyboard + touch adapters, chrome, PWA, landing-page entry as "6 Ball Monty" (add the `plokmin` block + vite config)
-   - Includes the tuning/playtesting pass that sets real preset values (placeholders until then)
-   - Engine is done and frozen behind `src/engine/index.ts` — Phase 2 only consumes it
-
-2. **RFC-008 6 Ball Monty — Phase 3: Local versus** (2 days)
+1. **RFC-008 6 Ball Monty — Phase 3: Local versus** (2 days) ⬅️ NEXT (OWNER PRIORITY)
    - UI over the already-tested versus core (`MatchController`): side-by-side layout, P2 keyboard + gamepad adapters, best-of-N
+   - Input layer already supports P2 (keyboard-p2 profile) and a merged multi-source path; gamepad polling is the main new piece
+
+2. **RFC-008 6 Ball Monty — tuning pass + real icons** (0.5 day)
+   - Playtest the placeholder preset values (gravity curve, power/score tables) and set real defaults
+   - Replace placeholder PWA icons with 6 Ball Monty art
 
 3. **Game State Serialization (RFC-006)** (1-2 days)
    - Pushed down by RFC-008 priority, and now informed by it: 6 Ball Monty's puzzle/replay
