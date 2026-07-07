@@ -1,6 +1,6 @@
 # RFC-008: 6 Ball Monty - Falling-Ball Chain Puzzle (6-Ball Puzzle Style)
 
-**Status:** APPROVED — **top priority** (owner-prioritized 2026-07-07; see STATUS.md / ROADMAP.md)
+**Status:** IMPLEMENTING — **top priority** (Phase 1 headless engine ✅ complete 2026-07-07; Phase 2 next)
 **Author:** Claude Code
 **Created:** 2026-07-07
 **Updated:** 2026-07-07

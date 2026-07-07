@@ -44,7 +44,8 @@ Game *mechanics* are not protectable and the drop-match-chain genre long predate
 - **Ship name:** "6 Ball Monty" (D5) — owner call
 - **Phase ordering:** multiplayer before puzzle maker (owner call): online versus is Phase 4, puzzle maker moves to Phase 5. Versus core (MatchController + garbage) is built headless in Phase 1
 - **Engine/graphics split:** hard phase boundary (owner call) — Phase 1 is a rendering-free library + tests; all graphics start in Phase 2
+- **URL envelope / wire contracts (was open question #1):** resolved by folding a repo-wide wire-contracts & versioning policy into RFC-006 (owner call, 2026-07-07). This RFC's replays, `hashState`, `NetMsg`, and `PuzzleDef` are registered contracts — see [RFC-006 06-wire-contracts.md](../006-game-state-serialization/06-wire-contracts.md)
 
 ## Open questions for review
 
-1. Does RFC-006 want to adopt this RFC's URL envelope (deflate+base64url fragment) as its general format?
+None — new serialized formats introduced by later phases must register in the [RFC-006 wire-contract registry](../006-game-state-serialization/06-wire-contracts.md) in the PR that ships them.

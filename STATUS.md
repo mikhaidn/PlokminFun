@@ -1,8 +1,8 @@
 # Project Status
 
 **Last Updated:** 2026-07-07
-**Current Phase:** RFC-008 6 Ball Monty — Phase 1 (headless deterministic engine, solo + versus core)
-**Next Milestone:** Fully tested, rendering-free engine library (determinism + self-play soak green); graphics begin in Phase 2
+**Current Phase:** RFC-008 6 Ball Monty — Phase 1 ✅ complete, Phase 2 (graphics & solo app) next
+**Next Milestone:** Playable Marathon/Sprint on phone, shipped to the landing page as "6 Ball Monty"
 
 ---
 
@@ -11,8 +11,8 @@
 ### Active Work
 - **RFC-008 6 Ball Monty** ⬅️ **OWNER PRIORITY (2026-07-07)**
   - Falling-ball chain puzzle (6-Ball-Puzzle / Puyo genre); first real-time game, first multiplayer capability, first puzzle-maker/UGC capability
-  - Approved and prioritized by owner — this comes before other queued work
-  - Start with Phase 1 per [rfcs/008-six-ball-monty/07-implementation.md](rfcs/008-six-ball-monty/07-implementation.md): **engine only, zero graphics** (owner wants engine/graphics as strictly separate phases), including the versus core since **multiplayer is the owner's first focus**
+  - **Phase 1 (headless engine) is DONE** — see Recently Completed below
+  - Next: Phase 2 per [rfcs/008-six-ball-monty/07-implementation.md](rfcs/008-six-ball-monty/07-implementation.md) — all rendering, keyboard+touch adapters, app chrome, PWA, landing-page entry, and the tuning/playtest pass
   - Owner decisions locked in: name **"6 Ball Monty"** (slug `sixballmonty`), rollback netcode, multiplayer (ph3-4) before puzzle maker (ph5), MechanicsConfig-as-data with placeholder tuning, fragment puzzle URLs — see [09-risks-and-decisions.md](rfcs/008-six-ball-monty/09-risks-and-decisions.md)
 
 ### Blocked/Waiting
@@ -21,6 +21,23 @@
 ---
 
 ## ✅ Recently Completed
+
+### Week of 2026-07-07
+
+**MILESTONE: RFC-008 Phase 1 — 6 Ball Monty headless engine 🎱**
+
+- [x] **Deterministic engine library** (`sixballmonty-mvp/src/engine/`) ✅ COMPLETE
+  - Pure fixed-60Hz `tick(state, inputs, config)` — no React, no DOM, no ambient time/randomness
+  - Full phase machine: spawn → fall → lock (with lock-delay + capped resets) → resolve ⇄ cascade → garbage drop
+  - Chains, placeholder scoring/power tables, garbage with offsetting and adjacent-pop clearing
+  - Versus core: `MatchController` routing garbage between two engine instances (multiplayer-first)
+  - Replays (`(seed, inputs, ticks)` + JSON round-trip) and `hashState` fingerprinting for netcode/golden tests
+  - Pure RNG step proven identical to `@plokmin/shared` `seededRandom` sequence by test
+  - `classic` / `mini` / `frantic` presets — **all numeric tuning is placeholder** until the Phase 2 playtest pass
+  - **Zero rendering by owner direction** — graphics start in Phase 2; workspace has no `plokmin` block yet so it stays off the landing page
+  - **Tests:** 77 across 10 files — determinism (identical hash timelines), purity (deep-frozen states), 20-match random self-play soak with invariant checks, chain/garbage fixtures
+  - **Coverage:** 100% lines/functions, 96.6% branches on `src/engine/`
+  - Full `npm run validate` green (format, site check, typecheck, lint, tests, build)
 
 ### Week of 2026-06-13
 
@@ -439,15 +456,13 @@
 
 ## 📋 Next 3 Tasks
 
-1. **RFC-008 6 Ball Monty — Phase 1: Headless engine (solo + versus core)** (~3 days) ⬅️ NEXT (OWNER PRIORITY)
-   - TDD the pure deterministic engine (tick, pieces, resolve, garbage, MatchController, replay)
-   - **No rendering, no React** — deliverable is a library + test suite
-   - Exit: determinism test green (same seed+inputs ⇒ same hash), self-play soak clean, 95%+ engine coverage
-   - See: [RFC-008 implementation plan](rfcs/008-six-ball-monty/07-implementation.md)
-
-2. **RFC-008 6 Ball Monty — Phase 2: Graphics & solo app** (2-3 days)
-   - All rendering: well/ball components, keyboard + touch controls, chrome, PWA, landing-page entry as "6 Ball Monty"
+1. **RFC-008 6 Ball Monty — Phase 2: Graphics & solo app** (2-3 days) ⬅️ NEXT (OWNER PRIORITY)
+   - All rendering: well/ball components, keyboard + touch adapters, chrome, PWA, landing-page entry as "6 Ball Monty" (add the `plokmin` block + vite config)
    - Includes the tuning/playtesting pass that sets real preset values (placeholders until then)
+   - Engine is done and frozen behind `src/engine/index.ts` — Phase 2 only consumes it
+
+2. **RFC-008 6 Ball Monty — Phase 3: Local versus** (2 days)
+   - UI over the already-tested versus core (`MatchController`): side-by-side layout, P2 keyboard + gamepad adapters, best-of-N
 
 3. **Game State Serialization (RFC-006)** (1-2 days)
    - Pushed down by RFC-008 priority, and now informed by it: 6 Ball Monty's puzzle/replay

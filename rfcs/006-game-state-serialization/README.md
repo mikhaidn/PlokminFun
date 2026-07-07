@@ -1,8 +1,9 @@
 # RFC-006: Game State Serialization & Position Sharing
 
-**Status:** 📝 Proposed
+**Status:** 📝 Proposed (encoding) / ✅ **Adopted** ([06-wire-contracts.md](06-wire-contracts.md) policy, 2026-07-07)
 **Author:** Architecture Team
 **Created:** 2025-12-27
+**Updated:** 2026-07-07 — folded in the repo-wide wire-contracts & versioning policy
 **Target Version:** 2.1.0
 
 ---
@@ -12,6 +13,8 @@
 Enable sharing specific game positions (tableaus) via compact, URL-safe encoding. Unlike RFC-002's move-based approach, this encodes the **current board state** directly, enabling daily challenges, puzzle sharing, and instant playable positions without replay.
 
 **Key Innovation:** Self-describing position encoding in ~55-89 bytes (vs 520KB full state or 400B move history).
+
+**Expanded scope (2026-07-07):** RFC-006 now also owns the repo-wide **wire-contracts policy** — the rules and registry for *every* serialized format that escapes a build (URLs, saves, network messages, state hashes), not just card positions. See [06-wire-contracts.md](06-wire-contracts.md). That section is active policy today and resolves RFC-008's envelope question; new wire contracts must register there in the PR that ships them.
 
 ---
 
@@ -80,11 +83,9 @@ https://cardgames.com/tutorial?p=v1FM2...
 
 ## Navigation
 
-- [01-motivation.md](./01-motivation.md) - Why position-based vs move-based
 - [02-solution.md](./02-solution.md) - Encoding format and strategy
-- [03-alternatives.md](./03-alternatives.md) - Design trade-offs
 - [04-implementation.md](./04-implementation.md) - 3-phase development plan
-- [05-testing.md](./05-testing.md) - Test strategy and validation
+- [06-wire-contracts.md](./06-wire-contracts.md) - **Repo-wide wire-contracts & versioning policy (adopted)** + contract registry
 
 ---
 
@@ -237,6 +238,7 @@ const { metadata, state } = decodeGamePosition(position);
 
 - **RFC-002:** Move-based sharing (complementary)
 - **RFC-005:** Unified game builder (uses this for config)
+- **RFC-008:** 6 Ball Monty — its replays, puzzle URLs, and netcode protocol are wire contracts registered in [06-wire-contracts.md](06-wire-contracts.md)
 - **P8 Roadmap:** Daily challenge system (depends on this)
 
 ---
