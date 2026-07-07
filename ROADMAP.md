@@ -1,21 +1,29 @@
 # CardGames Roadmap
 
-**Last Updated:** 2025-12-26
-**Current Status:** RFC-005 Phase 1 in progress, shared component consolidation complete
+**Last Updated:** 2026-07-07
+**Current Status:** RFC-008 Chain Drop approved and owner-prioritized — top priority
 
 ---
 
 ## Product Strategy
 
 ### Vision
-Build the best collection of classic card games on the web - mobile-first, accessible, and delightful.
+Build the best collection of classic games on the web - mobile-first, accessible, and delightful.
 
 ### Current Focus
-**Phase: RFC-005 - Unified Game Builder**
+**Phase: RFC-008 - Chain Drop (⬅️ OWNER PRIORITY, 2026-07-07)**
 
-We have TWO working games (FreeCell and Klondike), a monorepo architecture, shared component library, and comprehensive accessibility features. RFC-003 Phase 2 (card backs) is complete with RFC-005 compatibility.
+The owner has explicitly prioritized [RFC-008 Chain Drop](rfcs/008-chain-drop/) — a
+6-Ball-Puzzle / Puyo-style falling-ball chain game — above all other queued work.
+It is the repo's first real-time game and unlocks three new capabilities: local
+multiplayer, online play (rollback netcode over WebRTC), and user-generated puzzles.
+Execute the phases in [07-implementation.md](rfcs/008-chain-drop/07-implementation.md),
+starting with the deterministic engine (Phase 1). Any agent picking up work should
+default to the next incomplete RFC-008 phase unless directed otherwise.
 
-**Strategic pivot:** Instead of adding features to individual games, we're investing in a unified game builder system (RFC-005) that will make adding new games take <1 day instead of 3-4 days, and allow UI improvements to benefit all games at once.
+**Previous focus (RFC-005 Unified Game Builder)** continues as supporting
+infrastructure — its config-driven philosophy is baked into RFC-008's MechanicsConfig,
+but new RFC-005-specific work is paused while Chain Drop ships.
 
 ---
 
@@ -281,6 +289,12 @@ We have TWO working games (FreeCell and Klondike), a monorepo architecture, shar
 ---
 
 ## Decision Log
+
+### 2026-07-07: RFC-008 Chain Drop Is Top Priority
+**Decision:** Owner approved and prioritized RFC-008 (Chain Drop) above P6-P8 (persistence, analytics, daily challenge). Those remain on the roadmap but queue behind Chain Drop phases.
+**Rationale:** Chain Drop opens new capability classes (real-time engine, multiplayer, online rollback netcode, puzzle maker/UGC) rather than incrementally improving existing solitaire games; the deterministic-engine pattern becomes reusable infrastructure.
+**Owner calls recorded in the RFC:** rollback netcode over lockstep (lean/pure engine makes re-simulation cheap); all tuning numbers are placeholders until a Phase 2 playtest pass; puzzle URLs use fragment encoding.
+**Trade-off:** Card-game persistence and daily challenges slip; accepted.
 
 ### 2025-12-23: Monorepo Complete - Focus on User Growth
 **Decision:** With monorepo, 2 games, and shared library complete, shift focus to user retention and analytics

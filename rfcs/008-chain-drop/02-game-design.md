@@ -63,6 +63,8 @@ interface MechanicsConfig {
 
 **Presets:** `classic` (values above), `mini` (5×9 board, 3 colors — mobile/daily-friendly, RFC-007 spirit), `frantic` (5 colors, fast curve, hard drop on). Presets live next to the engine as plain data and are selectable in `SettingsModal`.
 
+> ⚠️ **All numeric values in this file are illustrative placeholders, not commitments.** Nobody has playtested them. Phase 1 ships with whatever feels roughly right; a dedicated tuning pass during Phase 2 playtesting sets the real defaults. The structure of `MechanicsConfig` is the design decision here — the numbers inside it are deliberately cheap to change.
+
 ## Feel & accessibility requirements
 
 - Ball colors must pass the existing high-contrast/accessibility settings: each color gets a **distinct symbol/pattern overlay** (reuse the approach of `highContrastStyles` / `AccessibilitySettings` from `@plokmin/shared`)

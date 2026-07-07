@@ -51,6 +51,7 @@ Each phase has a tick duration so the UI can animate pops/falls by *observing* p
 2. **Inputs are discrete events with tick timestamps:** `{ tick: number; action: 'left'|'right'|'rotateCW'|'rotateCCW'|'softDropStart'|'softDropEnd'|'hardDrop' }`
 3. **A replay is just** `{ configPresetOrOverrides, seed, inputs[] }` — tiny, serializable, and the foundation for RFC-002-style sharing, ghost races, and netcode
 4. **State hash:** a cheap stable hash of `GameState` for desync detection (online) and golden-replay tests
+5. **Free snapshots:** because states are immutable, a snapshot is just a reference — a ring buffer of the last ~120 states costs nothing to maintain. Rewind-and-re-simulate (rollback netcode, replay scrubbing) is then just re-running `tick` with corrected inputs; purity guarantees the re-simulation is exactly right
 
 ## Versus = two engines + a router
 

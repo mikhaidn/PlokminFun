@@ -18,12 +18,14 @@ This ships real "play against a friend" value with zero servers and is the fallb
 
 **Topology:** 1v1 peer-to-peer `RTCDataChannel`, no relay of game traffic.
 
-**Netcode model: deterministic lockstep with input delay.**
-- Both peers run the full `MatchController` locally
-- Each peer sends its `InputEvent`s stamped for tick `T + delay` (delay ≈ 3-6 ticks, tuned to RTT); engines only advance tick `T` once both peers' inputs for `T` are in hand
-- Periodic **state-hash exchange** (every ~60 ticks) detects desync; on mismatch, end the round gracefully with a diagnostic (and a bug-report link via the existing `bugReport` utility)
+**Netcode model: rollback with input prediction (owner decision, 2026-07-07).**
+- Both peers run the full `MatchController` locally and advance every tick immediately — **zero added input latency** for the local player
+- The remote player's input for not-yet-received ticks is predicted as **"no new events"** — correct the vast majority of the time, since puzzle inputs are sparse (a few events/second against 60 ticks/second)
+- When real remote inputs arrive for a past tick `T` and the prediction was wrong: rewind to `T`, re-simulate to the present with corrected inputs. The pure engine makes this nearly free — immutable states mean the snapshot ring buffer is just an array of references, and re-running `tick` over a ≤78-cell board for an RTT's worth of ticks costs microseconds
+- Mispredictions surface only as an occasional visual correction on the *opponent's* well; optionally render the remote board a few confirmed ticks behind to hide even that
+- Periodic **state-hash exchange** on confirmed ticks (every ~60) detects desync; on mismatch, end the round gracefully with a diagnostic (and a bug-report link via the existing `bugReport` utility)
 
-Why lockstep and not rollback: for a 2-player puzzle game with modest input rates, a few ticks of input delay is imperceptible, and lockstep avoids re-simulation machinery entirely. Rollback (GGPO-style) stays on the table as a later upgrade — the pure `tick` function is exactly what rollback needs, so nothing is foreclosed.
+Lockstep-with-input-delay was considered and rejected: it buys simplicity by taxing local input feel on every tick, while rollback's cost is paid only on the rare misprediction — and the engine's purity (03) was designed precisely so re-simulation is cheap and trivially correct (deterministic replay of reordered inputs).
 
 **Signaling (the only infra question):**
 1. **v1 — copy/paste signaling:** host generates an offer code, guest pastes it back (manual SDP exchange). Zero backend; clunky but proves the netcode
@@ -49,5 +51,6 @@ Versioned by app build + config hash in `hello`; mismatch → refuse match with 
 ## Failure handling
 
 - Data channel drop → 5s reconnect window (ICE restart), else opponent wins by disconnect
+- Rollback window overflow (remote inputs delayed beyond the ring buffer, ~1-2s) → brief freeze waiting for inputs, then resume; repeated stalls → treat as disconnect
 - Clock skew is irrelevant (tick-synced, not wall-clock-synced)
 - All net code lives in `src/net/`, implementing the same input-producer interface as local adapters (04) — the engine and UI cannot tell the difference

@@ -1,6 +1,6 @@
 # RFC-008: Chain Drop - Falling-Ball Chain Puzzle (6-Ball Puzzle Style)
 
-**Status:** PROPOSED
+**Status:** APPROVED — **top priority** (owner-prioritized 2026-07-07; see STATUS.md / ROADMAP.md)
 **Author:** Claude Code
 **Created:** 2026-07-07
 **Updated:** 2026-07-07
@@ -23,7 +23,7 @@
 - **[02-game-design.md](02-game-design.md)** - Rules, modes, and the MechanicsConfig (configurable mechanics).
 - **[03-engine.md](03-engine.md)** - Deterministic core: state, tick loop, phases, RNG, replays.
 - **[04-controls-and-multiplayer.md](04-controls-and-multiplayer.md)** - Input abstraction, keyboard/touch/gamepad, local versus.
-- **[05-online.md](05-online.md)** - Async challenges first, then WebRTC lockstep versus.
+- **[05-online.md](05-online.md)** - Async challenges first, then WebRTC rollback-netcode versus.
 - **[06-puzzle-maker.md](06-puzzle-maker.md)** - Puzzle mode, editor, URL sharing, solvability validation.
 - **[07-implementation.md](07-implementation.md)** - Phases and the @plokmin/shared reuse map.
 - **[08-testing.md](08-testing.md)** - Determinism/replay/property testing strategy.

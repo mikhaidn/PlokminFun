@@ -58,7 +58,7 @@ Not reused: card components (`Card`, `GenericTableau`, `FoundationArea`, `useCar
 
 **Phase 5 — Online (3-5 days, feature-flagged)**
 - Step 1 async (seed race + ghost URLs) first — ships alone if WebRTC slips
-- Lockstep over RTCDataChannel with copy/paste signaling → then minimal room-code worker
+- Rollback netcode over RTCDataChannel with copy/paste signaling → then minimal room-code worker
 - Exit: cross-network match completes; desync detector never fires across 50 automated selfplay matches
 
 ## Dependencies & ordering notes

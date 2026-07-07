@@ -1,18 +1,22 @@
 # Project Status
 
-**Last Updated:** 2025-12-28
-**Current Phase:** P5 - Usability Improvements (Quick Wins)
-**Next Milestone:** Remove confusion points and improve mobile experience
+**Last Updated:** 2026-07-07
+**Current Phase:** RFC-008 Chain Drop — Phase 1 (deterministic engine + solo play)
+**Next Milestone:** Playable Marathon mode backed by a fully tested, deterministic engine
 
 ---
 
 ## 🎯 Current Sprint
 
 ### Active Work
-- None - Ready for next priority
+- **RFC-008 Chain Drop** ⬅️ **OWNER PRIORITY (2026-07-07)**
+  - Falling-ball chain puzzle (6-Ball-Puzzle / Puyo genre); first real-time game, first multiplayer capability, first puzzle-maker/UGC capability
+  - Approved and prioritized by owner — this comes before other queued work
+  - Start with Phase 1 (engine, TDD) per [rfcs/008-chain-drop/07-implementation.md](rfcs/008-chain-drop/07-implementation.md)
+  - Key decisions already made: rollback netcode, MechanicsConfig-as-data, fragment puzzle URLs — see [09-risks-and-decisions.md](rfcs/008-chain-drop/09-risks-and-decisions.md)
 
 ### Blocked/Waiting
-- None
+- Ship name for Chain Drop (RFC-008 decision D5) — needed before Phase 2 landing-page entry, not blocking Phase 1
 
 ---
 
@@ -435,28 +439,23 @@
 
 ## 📋 Next 3 Tasks
 
-1. **Game State Serialization (RFC-006)** (1-2 days) ⬅️ NEXT
-   - Encode/decode game state to compact string format (~55-89 bytes)
-   - Self-describing header (version + game type + config)
-   - Support sharing specific tableau positions (independent of seed)
-   - URL-safe base64url format for easy sharing
-   - Foundation for daily challenges and puzzle sharing
-   - Enables "share this game" social feature
-   - See: [RFC-006](../rfcs/006-game-state-serialization/README.md)
+1. **RFC-008 Chain Drop — Phase 1: Engine + minimal solo** (3-4 days) ⬅️ NEXT (OWNER PRIORITY)
+   - TDD the pure deterministic engine (tick, pieces, resolve, garbage, replay)
+   - Bare-bones well rendering + keyboard adapter; Marathon mode playable
+   - Exit: determinism test green (same seed+inputs ⇒ same hash), 95%+ engine coverage
+   - See: [RFC-008 implementation plan](rfcs/008-chain-drop/07-implementation.md)
 
-2. **Game Persistence** (1-2 days)
-   - Save game state to localStorage on each move
-   - Restore game state on page load
-   - Handle multiple concurrent games (per-game key)
-   - Clear completed games after celebration
-   - Use serialization from task #1
+2. **RFC-008 Chain Drop — Phase 2: Real app** (2-3 days)
+   - Touch controls, settings/help/victory chrome, animations, PWA, landing-page entry
+   - Includes the tuning/playtesting pass that sets real preset values (placeholders until then)
 
-3. **Daily Challenge System** (2-3 days)
-   - Generate daily game position (not just seed)
-   - Same challenge for all players globally
-   - Track completion status in localStorage
-   - Show streak counter
-   - Leverage game state serialization from task #1
+3. **Game State Serialization (RFC-006)** (1-2 days)
+   - Pushed down by RFC-008 priority, and now informed by it: Chain Drop's puzzle/replay
+     URL envelope (deflate + base64url fragment) is a candidate general format
+   - Still the foundation for card-game persistence, daily challenges, and sharing
+   - See: [RFC-006](rfcs/006-game-state-serialization/README.md)
+
+(Previously queued Game Persistence and Daily Challenge move behind these; see ROADMAP.md)
 
 ---
 
