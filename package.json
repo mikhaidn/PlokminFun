@@ -11,7 +11,8 @@
     "dog-care-tracker",
     "pet-care",
     "light-vod-editor",
-    "js-repl"
+    "js-repl",
+    "peer-doc"
   ],
   "scripts": {
     "build:shared": "npm run build -w shared",
@@ -50,7 +51,8 @@
     "dev:lightvoded": "npm run dev -w light-vod-editor",
     "dev:js-repl": "npm run dev -w js-repl",
     "check:site": "node scripts/site/check-site.mjs",
-    "build:site": "node scripts/site/build-site.mjs"
+    "build:site": "node scripts/site/build-site.mjs",
+    "dev:peer-doc": "npm run dev -w peer-doc"
   },
   "dependencies": {
     "react": "^18.2.0",

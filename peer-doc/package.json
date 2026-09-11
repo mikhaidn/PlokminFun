@@ -1,0 +1,37 @@
+{
+  "name": "@plokmin/peer-doc",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "yjs": "^13.6.20"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "jsdom": "^27.0.1",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.5"
+  },
+  "plokmin": {
+    "slug": "peer-doc",
+    "title": "Peer Doc",
+    "icon": "🔗",
+    "description": "Serverless collaborative text editing over WebRTC. Host a document, invite others with a link, co-write live, then download the result.",
+    "cta": "Open Peer Doc",
+    "order": 8
+  }
+}
