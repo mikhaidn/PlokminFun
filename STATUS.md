@@ -22,6 +22,17 @@
 
 ## ✅ Recently Completed
 
+### Week of 2026-09-08
+
+**Peer Doc — WebRTC collaborative text PoC 🔗** (`peer-doc/`)
+
+- [x] Host a plain-text document; invite guests with a link (offer in the URL hash); guests hand back a reply code (answer) — manual signaling, no server
+- [x] Star topology over data channels; host relays; Yjs CRDT merges concurrent edits; caret preserved through remote edits
+- [x] Roster, disconnect detection via connection state, download as `.txt`
+- [x] 49 unit tests over an in-memory `Link` interface; verified end-to-end in Chromium (host + 2 guests, both directions, download, guest drop)
+- Limitations: copy/paste signaling, no TURN, no host migration — see `peer-doc/README.md`
+
+
 ### Week of 2026-07-07
 
 **MILESTONE: RFC-008 Phase 2 — 6 Ball Monty solo app is live & playable 🎱**
